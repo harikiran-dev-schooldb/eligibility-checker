@@ -196,7 +196,7 @@
 
     <script>
       // 📅 AGE REFERENCE DATE
-      const referenceDate = new Date(2026, 6, 1); // 1 July 2026
+      const referenceDate = new Date(2026, 5, 1); // 1 July 2026
 
       // 📊 Eligibility + Fees Data
       const eligibilityData = [
@@ -215,34 +215,57 @@
         { age: 15, class: "X", fees: 45400, term: 11350 },
       ];
 
-      function calculateAge(dob) {
-        let birth = new Date(dob);
-        let years = referenceDate.getFullYear() - birth.getFullYear();
-        let m = referenceDate.getMonth() - birth.getMonth();
-        if (m < 0 || (m === 0 && referenceDate.getDate() < birth.getDate())) {
-          years--;
+      function calculateExactAge(dob) {
+        const dobDate = new Date(dob);
+
+        let years = referenceDate.getFullYear() - dobDate.getFullYear();
+        let months = referenceDate.getMonth() - dobDate.getMonth();
+        let days = referenceDate.getDate() - dobDate.getDate();
+
+        if (days < 0) {
+          months--;
+          const prevMonthDays = new Date(
+            referenceDate.getFullYear(),
+            referenceDate.getMonth(),
+            0
+          ).getDate();
+          days += prevMonthDays;
         }
-        return years;
+
+        if (months < 0) {
+          years--;
+          months += 12;
+        }
+
+        return {
+          years,
+          months,
+          days,
+          formatted: `${years} years, ${months} months, ${days} day(s)`,
+        };
       }
 
       function checkEligibility() {
         const dob = document.getElementById("dob").value;
         if (!dob) return alert("Enter Date of Birth");
 
-        const age = calculateAge(dob);
+        const ageObj = calculateExactAge(dob);
         let eligible = "Not Eligible";
 
+        // Use YEARS for eligibility check
         for (let i = eligibilityData.length - 1; i >= 0; i--) {
-          if (age >= eligibilityData[i].age) {
+          if (ageObj.years >= eligibilityData[i].age) {
             eligible = eligibilityData[i].class;
             break;
           }
         }
 
-        document.getElementById(
-          "result"
-        ).innerHTML = `Age: ${age}<br><span style="color:#d32f2f;font-size:32px">
-         Eligible Class: ${eligible}</span>`;
+        document.getElementById("result").innerHTML = `
+  Age: ${ageObj.formatted}<br>
+  <span style="color:#d32f2f;font-size:32px;">
+    Eligible Class: ${eligible}
+  </span>
+`;
 
         document.querySelectorAll("#tableBody tr").forEach((row) => {
           row.classList.remove("highlight");
