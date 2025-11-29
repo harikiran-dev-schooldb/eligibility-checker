@@ -1,61 +1,77 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>Class Eligibility Checker</title>
-  <link rel="stylesheet" href="styles.css">
-</head>
+  <head>
+    <title>Class Eligibility Checker</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
 
-<body>
-
-  <div class="school-header">
-    <img src="KOTAK_LOGO.png" alt="School Logo">
-    <h2>KOTAK SALESIAN SCHOOL</h2>
-    <p>Academic Year 2026 – 27</p>
-  </div>
-
-  <h2>Class Eligibility Checker</h2>
-
-  <input type="date" id="dob">
-  <button onclick="checkEligibility()">Check Eligibility</button>
-
-  <div id="result"></div>
-
-  <select id="percentSelect" onchange="updateColumns()">
-    <option value="4">8%</option>
-    <option value="5">9%</option>
-    <option value="6" selected>10%</option>
-  </select>
-
-  <button onclick="window.print()">⬇️ Download PDF</button>
-
-  <table id="eligibilityTable">
-    <thead>
-      <tr>
-        <th>Age</th>
-        <th>Class</th>
-        <th>Fees</th>
-        <th>Term Fee</th>
-        <th>8%</th>
-        <th>9%</th>
-        <th>10%</th>
-      </tr>
-    </thead>
-    <tbody id="tableBody"></tbody>
-  </table>
-
-   <div class="documents-container">
-      <h3>📌 Admission Process</h3>
-      <ul class="document-list">
-        <li>🎓 Graduation required for either parent</li>
-        <li>🏫 Previous school must be recognized</li>
-        <li>💵 Application Fee ₹500 (non-refundable)</li>
-        <li>📝 Entrance test from UKG onwards</li>
-        <li>✅ Admission Fee ₹12,000 after qualification</li>
-        <li>📈 Annual increase 8% – 10%</li>
-        <li>👕 Books & Uniform separate</li>
-      </ul>
+  <body>
+    <div class="school-header">
+      <img src="KOTAK_LOGO.png" alt="School Logo" />
+      <h2>KOTAK SALESIAN SCHOOL</h2>
+      <p>Academic Year 2026 – 27</p>
     </div>
 
+    <h2>Class Eligibility Checker</h2>
+
+    <input type="date" id="dob" />
+    <button onclick="checkEligibility()">Check Eligibility</button>
+
+    <div id="result"></div>
+
+    <select id="percentSelect" onchange="updateColumns()">
+      <option value="4">8%</option>
+      <option value="5">9%</option>
+      <option value="6" selected>10%</option>
+    </select>
+
+    <button onclick="window.print()">⬇️ Download PDF</button>
+
+    <table id="eligibilityTable">
+      <thead>
+        <tr>
+          <th>Age</th>
+          <th>Class</th>
+          <th>Fees</th>
+          <th>Term Fee</th>
+          <th>8%</th>
+          <th>9%</th>
+          <th>10%</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+
+    <div class="documents-container">
+      <h3>📌 Admission Process:</h3>
+      <ul class="document-list">
+        <li>
+          🎓 Either parent (Father or Mother) must possess a minimum Graduation
+          qualification.
+        </li>
+        <li>
+          🏫 The student must be transferring from a Government / CBSE / ICSE /
+          Recognized school.
+        </li>
+        <li>💵 Application Fee: ₹500 (non-refundable).</li>
+        <li>
+          📝 Entrance examination is mandatory for admissions from UKG onwards.
+        </li>
+        <li>
+          ✅ Upon qualifying the entrance test, an Admission Fee of ₹12,000 is
+          payable.
+        </li>
+        <li>
+          📈 Annual school fees are subject to an increase of 8%–10% every
+          academic year.
+        </li>
+        <li>
+          👕 Books and uniform charges are separate and not included in the
+          school fees.
+        </li>
+      </ul>
+    </div>
+    
     <div class="documents-container">
       <h3>📄 Documents to be Submitted:</h3>
       <ul class="document-list">
@@ -72,11 +88,14 @@
         </li>
         <li>🪪 Aadhaar Card copies of the Student, Father, and Mother.</li>
         <li>👨‍👩‍👧 Three (3) passport-size photographs of Father and Mother.</li>
-        <li>📜 Caste Certificate of either the Student or the Father.</li>
+        <li>
+          📜 Caste Certificate of either the Student or the Father (where
+          applicable).
+        </li>
       </ul>
     </div>
 
-  <script src="data.js"></script>
-  <script src="app.js"></script>
-</body>
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+  </body>
 </html>
