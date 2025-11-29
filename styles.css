@@ -1,0 +1,112 @@
+
+      body {
+        font-family: Arial, sans-serif;
+        margin: 40px;
+        background: #f9fafc;
+        text-align: center;
+      }
+
+      input,
+      button,
+      select {
+        padding: 10px;
+        margin: 10px;
+        font-size: 18px;
+      }
+
+      .school-header h2 {
+        margin: 0;
+        font-size: 30px;
+      }
+
+      .school-header p {
+        margin: 6px 0 0;
+        color: #555;
+      }
+
+      #result {
+        margin-top: 20px;
+        font-size: 28px;
+        font-weight: bold;
+      }
+
+      table {
+        width: 80%;
+        margin: 30px auto;
+        border-collapse: collapse;
+        background: #fff;
+        font-size: 18px;
+      }
+
+      th,
+      td {
+        border: 1px solid #000;
+        padding: 12px;
+        text-align: center;
+      }
+
+      th {
+        background: #f2f2f2;
+      }
+
+      .highlight {
+        background: #fff59d;
+        outline: 3px solid #fbc02d;
+        font-weight: bold;
+      }
+
+      .documents-container {
+        background: #fff;
+        border-radius: 18px;
+        padding: 32px;
+        width: 72%;
+        margin: 50px auto;
+        text-align: left;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      }
+
+      .document-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .document-list li {
+        display: flex;
+        gap: 12px;
+        padding: 10px 0;
+        border-bottom: 1px dashed #ccc;
+        font-size: 18px;
+      }
+
+      .download-btn {
+        background: #1976d2;
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        padding: 12px 24px;
+        font-size: 18px;
+        cursor: pointer;
+      }
+
+      @media print {
+        input,
+        button,
+        select {
+          display: none;
+        }
+        .documents-container {
+          break-inside: avoid;
+        }
+      }
+
+      .school-header img {
+        height: 90px;
+        margin-bottom: 12px;
+      }
+
+      @media (max-width: 600px) {
+        .school-header img {
+          height: 70px;
+        }
+      }
