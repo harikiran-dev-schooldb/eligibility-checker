@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Class Eligibility Checker</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+      background: #f9fafc;
+      text-align: center;
+    }
+
+    input, button, select {
+      padding: 10px;
+      margin: 10px;
+      font-size: 18px;
+    }
+
+    .school-header h2 {
+      margin: 0;
+      font-size: 30px;
+    }
+
+    .school-header p {
+      margin: 6px 0 0;
+      color: #555;
+    }
+
+    #result {
+      margin-top: 20px;
+      font-size: 28px;
+      font-weight: bold;
+    }
+
+    table {
+      width: 80%;
+      margin: 30px auto;
+      border-collapse: collapse;
+      background: #fff;
+      font-size: 18px;
+    }
+
+    th, td {
+      border: 1px solid #000;
+      padding: 12px;
+      text-align: center;
+    }
+
+    th {
+      background: #f2f2f2;
+    }
+
+    .highlight {
+      background: #fff59d;
+      outline: 3px solid #fbc02d;
+      font-weight: bold;
+    }
+
+    .documents-container {
+      background: #fff;
+      border-radius: 18px;
+      padding: 32px;
+      width: 72%;
+      margin: 50px auto;
+      text-align: left;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.10);
+    }
+
+    .document-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .document-list li {
+      display: flex;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px dashed #ccc;
+      font-size: 18px;
+    }
+
+    .download-btn {
+      background: #1976d2;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 24px;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    @media print {
+      input, button, select { display: none; }
+      .documents-container { break-inside: avoid; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- HEADER -->
+  <div class="school-header">
+    <h2>KOTAK SALESIAN SCHOOL</h2>
+    <p>Academic Year 2026 – 27</p>
+  </div>
+
+  <h2>Class Eligibility Checker</h2>
+
+  <p>Enter Date of Birth</p>
+  <input type="date" id="dob">
+  <button onclick="checkEligibility()">Check Eligibility</button>
+
+  <div id="result"></div>
+
+  <h3>Eligibility Criteria & Fees Structure</h3>
+
+  <select id="percentSelect" onchange="updateColumns()">
+    <option value="4">8%</option>
+    <option value="5">9%</option>
+    <option value="6" selected>10%</option>
+  </select>
+
+  <button class="download-btn" onclick="window.print()">⬇️ Download PDF</button>
+
+  <table id="eligibilityTable">
+    <thead>
+      <tr>
+        <th>Age</th>
+        <th>Class</th>
+        <th>Fees</th>
+        <th>Term Fee</th>
+        <th>8%</th>
+        <th>9%</th>
+        <th>10%</th>
+      </tr>
+    </thead>
+    <tbody id="tableBody"></tbody>
+  </table>
+
+  <div class="documents-container">
+    <h3>📌 Admission Process</h3>
+    <ul class="document-list">
+      <li>🎓 Graduation required for either parent</li>
+      <li>🏫 Previous school must be recognized</li>
+      <li>💵 Application Fee ₹500 (non-refundable)</li>
+      <li>📝 Entrance test from UKG onwards</li>
+      <li>✅ Admission Fee ₹12,000 after qualification</li>
+      <li>📈 Annual increase 8% – 10%</li>
+      <li>👕 Books & Uniform separate</li>
+    </ul>
+  </div>
+
+  <script>
+    // 📅 AGE REFERENCE DATE
+    const referenceDate = new Date(2026, 6, 1); // 1 July 2026
+
+    // 📊 Eligibility + Fees Data
+    const eligibilityData = [
+      { age: 3, class: "Pre KG", fees: 24000, term: 6000 },
+      { age: 4, class: "LKG", fees: 27000, term: 6750 },
+      { age: 5, class: "UKG", fees: 27000, term: 6750 },
+      { age: 6, class: "I", fees: 31500, term: 7750 },
+      { age: 7, class: "II", fees: 31500, term: 7750 },
+      { age: 8, class: "III", fees: 32700, term: 8050 },
+      { age: 9, class: "IV", fees: 32700, term: 8050 },
+      { age: 10, class: "V", fees: 33900, term: 8350 },
+      { age: 11, class: "VI", fees: 33900, term: 8350 },
+      { age: 12, class: "VII", fees: 35100, term: 8650 },
+      { age: 13, class: "VIII", fees: 43500, term: 10750 },
+      { age: 14, class: "IX", fees: 45900, term: 11350 },
+      { age: 15, class: "X", fees: 45400, term: 11350 },
+    ];
+
+    function calculateAge(dob) {
+      let birth = new Date(dob);
+      let years = referenceDate.getFullYear() - birth.getFullYear();
+      let m = referenceDate.getMonth() - birth.getMonth();
+      if (m < 0 || (m === 0 && referenceDate.getDate() < birth.getDate())) {
+        years--;
+      }
+      return years;
+    }
+
+    function checkEligibility() {
+      const dob = document.getElementById("dob").value;
+      if (!dob) return alert("Enter Date of Birth");
+
+      const age = calculateAge(dob);
+      let eligible = "Not Eligible";
+
+      for (let i = eligibilityData.length - 1; i >= 0; i--) {
+        if (age >= eligibilityData[i].age) {
+          eligible = eligibilityData[i].class;
+          break;
+        }
+      }
+
+      document.getElementById("result").innerHTML =
+        `Age: ${age}<br><span style="color:#d32f2f;font-size:32px">
+         Eligible Class: ${eligible}</span>`;
+
+      document.querySelectorAll("#tableBody tr").forEach(row => {
+        row.classList.remove("highlight");
+        if (row.cells[1].innerText === eligible) {
+          row.classList.add("highlight");
+          row.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+      });
+    }
+
+    function updateColumns() {
+      const col = parseInt(document.getElementById("percentSelect").value);
+      document.querySelectorAll("#eligibilityTable tr").forEach(row => {
+        for (let i = 4; i <= 6; i++) {
+          if (row.cells[i]) row.cells[i].style.display = (i === col) ? "" : "none";
+        }
+      });
+    }
+
+    function loadTable() {
+      const tbody = document.getElementById("tableBody");
+      eligibilityData.forEach(r => {
+        const yearly = r.term * 4;
+        tbody.innerHTML += `
+          <tr>
+            <td>${r.age}</td>
+            <td>${r.class}</td>
+            <td>${r.fees}</td>
+            <td>${r.term}</td>
+            <td>${Math.round(yearly * 1.08 / 100) * 100}</td>
+            <td>${Math.round(yearly * 1.09 / 100) * 100}</td>
+            <td>${Math.round(yearly * 1.10 / 100) * 100}</td>
+          </tr>`;
+      });
+      updateColumns();
+    }
+
+    loadTable();
+  </script>
+</body>
+</html>
