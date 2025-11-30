@@ -3,16 +3,16 @@
 // -------------------------------
 const repoUser = "harikiran-dev-schooldb";
 const repoName = "eligibility-checker";
-const filePath = "data.json";
+const filePath = "data.js";
 
-// Admin login credentials
+// Login credentials
 const ADMIN = {
   username: "admin",
   password: "admin"
 };
 
 // -------------------------------
-// LOGIN SYSTEM
+// LOGIN
 // -------------------------------
 function login() {
   const u = document.getElementById("user").value.trim();
@@ -23,26 +23,30 @@ function login() {
     document.getElementById("adminPanel").style.display = "block";
     loadFeeTable();
   } else {
-    alert("❌ Invalid Username or Password");
+    alert("❌ Invalid username or password");
   }
 }
 
 // -------------------------------
-// LOAD data.json FROM GITHUB
+// LOAD data.js FROM GITHUB
 // -------------------------------
 async function loadData() {
-  const res = await fetch(`https://raw.githubusercontent.com/${repoUser}/${repoName}/main/data.json`);
-  return res.json();
+  const res = await fetch(`https://raw.githubusercontent.com/${repoUser}/${repoName}/main/data.js`);
+  const text = await res.text();
+
+  // Convert JS → executable
+  eval(text);
+
+  return { manualFees, eligibilityData };
 }
 
 // -------------------------------
-// LOAD TABLE BASED ON YEAR
+// LOAD TABLE
 // -------------------------------
 async function loadFeeTable() {
   const year = document.getElementById("yearSelect").value;
   const data = await loadData();
 
-  // ✅ FIXED tbody selector
   const tbody = document.getElementById("feeTableBody");
   tbody.innerHTML = "";
 
@@ -51,52 +55,59 @@ async function loadFeeTable() {
       <tr>
         <td>${r.age}</td>
         <td>${r.class}</td>
-        <td><input value="${r.fees}" data-age="${r.age}" data-type="fees"></td>
-        <td><input value="${r.term}" data-age="${r.age}" data-type="term"></td>
-      </tr>
-    `;
+        <td><input data-age="${r.age}" data-type="fees" value="${r.fees}"></td>
+        <td><input data-age="${r.age}" data-type="term" value="${r.term}"></td>
+      </tr>`;
   });
 }
 
 // -------------------------------
-// SAVE BACK TO GITHUB
+// SAVE CHANGES BACK TO data.js
 // -------------------------------
 async function saveChanges() {
   const token = document.getElementById("token").value.trim();
-  
   if (!token) return alert("Enter GitHub Token");
-  alert(document.getElementById("token").value.length)
 
   const year = document.getElementById("yearSelect").value;
-
   const res = await fetch(`https://api.github.com/repos/${repoUser}/${repoName}/contents/${filePath}`);
   const file = await res.json();
-  const content = JSON.parse(atob(file.content));
 
-  // ✅ FIXED: Only read inputs inside feeTableBody
-  document.querySelectorAll("#feeTableBody input").forEach(input => {
-    const age = input.dataset.age;
-    const type = input.dataset.type;
+  // Parse existing file
+  const originalText = atob(file.content);
+  eval(originalText); // loads manualFees + eligibilityData
 
-    const row = content.manualFees[year].find(r => r.age == age);
-    row[type] = Number(input.value);
+  // Update values
+  document.querySelectorAll("#feeTable input").forEach(inp => {
+    const age = inp.dataset.age;
+    const type = inp.dataset.type;
+
+    const item = manualFees[year].find(r => r.age == age);
+    item[type] = Number(inp.value);
   });
 
-  const newContent = btoa(JSON.stringify(content, null, 2));
+  // Rebuild JS file content
+  const newJs =
+    "const referenceDate = new Date(2026, 5, 1);\n\n" +
+    "const manualFees = " + JSON.stringify(manualFees, null, 2) + ";\n\n" +
+    "const eligibilityData = " + JSON.stringify(eligibilityData, null, 2) + ";";
 
-  await fetch(`https://api.github.com/repos/${repoUser}/${repoName}/contents/${filePath}`, {
-    method: "PUT",
-    headers: {
-      "Authorization": `Bearer ${token}`,
-      "Accept": "application/vnd.github+json",
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      message: `Updated Fees for ${year}`,
-      content: newContent,
-      sha: file.sha
-    })
-  });
+  // Upload to GitHub
+  const uploadRes = await fetch(
+    `https://api.github.com/repos/${repoUser}/${repoName}/contents/${filePath}`,
+    {
+      method: "PUT",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json",
+        "Accept": "application/vnd.github+json"
+      },
+      body: JSON.stringify({
+        message: `Updated Fees for ${year}`,
+        content: btoa(newJs),
+        sha: file.sha
+      })
+    }
+  );
 
   alert("✔ Saved Successfully!");
 }
