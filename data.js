@@ -5,7 +5,7 @@ const manualFees = {
     {
       "age": 3,
       "class": "Pre KG",
-      "fees": 22000,
+      "fees": 20000,
       "term": 5500
     },
     {
