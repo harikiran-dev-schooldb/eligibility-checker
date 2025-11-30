@@ -42,7 +42,8 @@ async function loadFeeTable() {
   const year = document.getElementById("yearSelect").value;
   const data = await loadData();
 
-  const tbody = document.querySelector("#feeTable tbody");
+  // ✅ FIXED tbody selector
+  const tbody = document.getElementById("feeTableBody");
   tbody.innerHTML = "";
 
   data.manualFees[year].forEach(r => {
@@ -66,23 +67,21 @@ async function saveChanges() {
 
   const year = document.getElementById("yearSelect").value;
 
-  // load file metadata
   const res = await fetch(`https://api.github.com/repos/${repoUser}/${repoName}/contents/${filePath}`);
   const file = await res.json();
-
   const content = JSON.parse(atob(file.content));
 
-  // update values
-  document.querySelectorAll("#feeTable input").forEach(input => {
+  // ✅ FIXED: Only read inputs inside feeTableBody
+  document.querySelectorAll("#feeTableBody input").forEach(input => {
     const age = input.dataset.age;
     const type = input.dataset.type;
+
     const row = content.manualFees[year].find(r => r.age == age);
     row[type] = Number(input.value);
   });
 
   const newContent = btoa(JSON.stringify(content, null, 2));
 
-  // upload updated file
   await fetch(`https://api.github.com/repos/${repoUser}/${repoName}/contents/${filePath}`, {
     method: "PUT",
     headers: {
