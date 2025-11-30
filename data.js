@@ -5,14 +5,14 @@ const manualFees = {
     {
       "age": 3,
       "class": "Pre KG",
-      "fees": 22000,
-      "term": 5500
+      "fees": 24000,
+      "term": 6000
     },
     {
       "age": 4,
       "class": "LKG",
-      "fees": 20000,
-      "term": 5000
+      "fees": 27000,
+      "term": 6750
     },
     {
       "age": 5,
@@ -165,8 +165,8 @@ const manualFees = {
     {
       "age": 3,
       "class": "Pre KG",
-      "fees": 20000,
-      "term": 5000
+      "fees": 24000,
+      "term": 6750
     },
     {
       "age": 4,
