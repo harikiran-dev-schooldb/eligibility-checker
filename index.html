@@ -108,8 +108,30 @@
       </ul>
     </div>
 
-    <script src="data.js"></script>
-    <script src="app.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", async () => {
+        const version = Date.now();
+
+        // Load data.js FIRST
+        await new Promise((resolve) => {
+          const s1 = document.createElement("script");
+          s1.src = "data.js?ver=" + version;
+          s1.onload = resolve;
+          document.body.appendChild(s1);
+        });
+
+        // Load app.js AFTER data.js is completely loaded
+        await new Promise((resolve) => {
+          const s2 = document.createElement("script");
+          s2.src = "app.js?ver=" + version;
+          s2.onload = resolve;
+          document.body.appendChild(s2);
+        });
+
+        console.log("✔ All scripts loaded in correct order");
+      });
+    </script>
+
     <script>
       if ("serviceWorker" in navigator) {
         navigator.serviceWorker

@@ -61,10 +61,15 @@
     </div>
 
     <script>
-      const version = Date.now(); // always unique
-    </script>
+      const version = Date.now(); // cache buster
 
-    <script src="data.js?ver=" +version></script>
-    <script src="admin.js?ver=" +version></script>
+      const s1 = document.createElement("script");
+      s1.src = "data.js?ver=" + version;
+      document.body.appendChild(s1);
+
+      const s2 = document.createElement("script");
+      s2.src = "admin.js?ver=" + version;
+      document.body.appendChild(s2);
+    </script>
   </body>
 </html>

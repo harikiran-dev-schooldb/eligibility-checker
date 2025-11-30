@@ -1,4 +1,14 @@
-document.addEventListener("DOMContentLoaded", loadTable);
+// --------------------------------------------------
+// ENSURE LOADTABLE RUNS ON FIRST LOAD
+// --------------------------------------------------
+
+// Ensure loadTable runs even when app.js is loaded AFTER DOM is ready
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", loadTable);
+} else {
+  loadTable(); // DOM already loaded → run immediately
+}
+
 
 // --------------------------------------------------
 // AGE CALCULATION
