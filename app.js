@@ -1,3 +1,5 @@
+document.addEventListener("DOMContentLoaded", loadTable);
+
 function calculateExactAge(dob) {
   const dobDate = new Date(dob);
 
@@ -59,21 +61,69 @@ function updateColumns() {
 }
 
 function loadTable() {
+  const year = document.getElementById("yearSelect").value;
   const tbody = document.getElementById("tableBody");
+  tbody.innerHTML = "";
+
+  const incrementCols = [4, 5, 6]; // 8%, 9%, 10%
+  const table = document.getElementById("eligibilityTable");
+
+  // CASE 1: Old years (manual fees: 2023, 2024, 2025)
+  if (year !== "2026") {
+
+    // Hide increment dropdown
+    document.getElementById("percentSelect").style.display = "none";
+
+    // Hide increment columns in table header + rows
+    incrementCols.forEach(i => {
+      table.querySelectorAll(`th:nth-child(${i+1}), td:nth-child(${i+1})`)
+           .forEach(cell => cell.style.display = "none");
+    });
+
+    // Load manual fees
+    const rows = manualFees[year];
+    rows.forEach(r => {
+      tbody.innerHTML += `
+        <tr>
+          <td>${r.age}</td>
+          <td>${r.class}</td>
+          <td>${r.fees}</td>
+          <td>${r.term}</td>
+          <td style="display:none">-</td>
+          <td style="display:none">-</td>
+          <td style="display:none">-</td>
+        </tr>
+      `;
+    });
+
+    return;
+  }
+
+  // CASE 2: 2026–27 (auto increment)
+  document.getElementById("percentSelect").style.display = "";
+
+  // Show increment columns
+  incrementCols.forEach(i => {
+    table.querySelectorAll(`th:nth-child(${i+1}), td:nth-child(${i+1})`)
+         .forEach(cell => cell.style.display = "");
+  });
+
+  // Load 2026–27 auto-increment rows
   eligibilityData.forEach(r => {
     const yearly = r.term * 4;
+
     tbody.innerHTML += `
       <tr>
         <td>${r.age}</td>
         <td>${r.class}</td>
-        <td>${r.fees}</td>
+        <td>${r.baseFees}</td>
         <td>${r.term}</td>
-        <td>${Math.round(yearly * 1.08 / 100) * 100}</td>
-        <td>${Math.round(yearly * 1.09 / 100) * 100}</td>
-        <td>${Math.round(yearly * 1.10 / 100) * 100}</td>
-      </tr>`;
+        <td>${Math.round((yearly * 1.08) / 100) * 100}</td>
+        <td>${Math.round((yearly * 1.09) / 100) * 100}</td>
+        <td>${Math.round((yearly * 1.1) / 100) * 100}</td>
+      </tr>
+    `;
   });
+
   updateColumns();
 }
-
-loadTable();

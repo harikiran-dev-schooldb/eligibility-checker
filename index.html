@@ -2,6 +2,7 @@
 <html>
   <head>
     <title>Class Eligibility Checker</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon" />
     <link rel="stylesheet" href="styles.css" />
   </head>
 
@@ -19,6 +20,14 @@
 
     <div id="result"></div>
 
+    <label><b>Select Academic Year:</b></label>
+    <select id="yearSelect" onchange="loadTable()">
+      <option value="2023">2023–24</option>
+      <option value="2024">2024–25</option>
+      <option value="2025">2025–26</option>
+      <option value="2026" selected>2026–27</option>
+    </select>
+
     <select id="percentSelect" onchange="updateColumns()">
       <option value="4">8%</option>
       <option value="5">9%</option>
@@ -34,9 +43,9 @@
           <th>Class</th>
           <th>Fees</th>
           <th>Term Fee</th>
-          <th>8%</th>
-          <th>9%</th>
-          <th>10%</th>
+          <th>8% Increment</th>
+          <th>9% Increment</th>
+          <th>10% Increment</th>
         </tr>
       </thead>
       <tbody id="tableBody"></tbody>
@@ -71,7 +80,7 @@
         </li>
       </ul>
     </div>
-    
+
     <div class="documents-container">
       <h3>📄 Documents to be Submitted:</h3>
       <ul class="document-list">
