@@ -121,7 +121,7 @@ const manualFees = {
     {
       "age": 9,
       "class": "IV",
-      "fees": 300100,
+      "fees": 30100,
       "term": 7425
     },
     {
