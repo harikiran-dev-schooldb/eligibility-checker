@@ -1,68 +1,70 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>Admin Panel - Fee Editor</title>
-  <link rel="stylesheet" href="styles.css">
-  <style>
-    .admin-container {
-      width: 80%;
-      margin: auto;
-      background: white;
-      padding: 30px;
-      border-radius: 16px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-      margin-top: 40px;
-    }
-    table input {
-      width: 120px;
-      padding: 6px;
-      font-size: 16px;
-      text-align: center;
-    }
-  </style>
-</head>
-<body>
+  <head>
+    <title>Admin Panel - Fee Editor</title>
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      .admin-container {
+        width: 80%;
+        margin: auto;
+        background: white;
+        padding: 30px;
+        border-radius: 16px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        margin-top: 40px;
+      }
+      table input {
+        width: 120px;
+        padding: 6px;
+        font-size: 16px;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>🔐 Admin Login</h2>
+    <div id="loginBox">
+      <input type="text" id="user" placeholder="Username" /><br />
+      <input type="password" id="pass" placeholder="Password" /><br />
+      <button onclick="login()">Login</button>
+    </div>
 
-<h2>🔐 Admin Login</h2>
-<div id="loginBox">
-  <input type="text" id="user" placeholder="Username"><br>
-  <input type="password" id="pass" placeholder="Password"><br>
-  <button onclick="login()">Login</button>
-</div>
+    <div id="adminPanel" style="display: none">
+      <h2>🛠 Fee Editor (2023–2025)</h2>
 
-<div id="adminPanel" style="display:none">
-  <h2>🛠 Fee Editor (2023–2025)</h2>
+      <label><b>Select Year:</b></label>
+      <select id="yearSelect" onchange="loadFeeTable()">
+        <option value="2023">2023–24</option>
+        <option value="2024">2024–25</option>
+        <option value="2025">2025–26</option>
+      </select>
 
-  <label><b>Select Year:</b></label>
-  <select id="yearSelect" onchange="loadFeeTable()">
-    <option value="2023">2023–24</option>
-    <option value="2024">2024–25</option>
-    <option value="2025">2025–26</option>
-  </select>
+      <div class="admin-container">
+        <table id="feeTable">
+          <thead>
+            <tr>
+              <th>Age</th>
+              <th>Class</th>
+              <th>Fees</th>
+              <th>Term Fee</th>
+            </tr>
+          </thead>
 
-  <div class="admin-container">
-    <table id="feeTable">
-      <thead>
-        <tr>
-          <th>Age</th>
-          <th>Class</th>
-          <th>Fees</th>
-          <th>Term Fee</th>
-        </tr>
-      </thead>
+          <!-- FIXED ID -->
+          <tbody id="feeTableBody"></tbody>
+        </table>
 
-      <!-- FIXED ID -->
-      <tbody id="feeTableBody"></tbody>
+        <br />
+        <input type="password" id="token" placeholder="GitHub PAT Token" />
+        <button onclick="saveChanges()">💾 Save Changes</button>
+      </div>
+    </div>
 
-    </table>
+    <script>
+      const version = Date.now(); // always unique
+    </script>
 
-    <br>
-    <input type="password" id="token" placeholder="GitHub PAT Token">
-    <button onclick="saveChanges()">💾 Save Changes</button>
-  </div>
-</div>
-
-<script src="data.js"></script>
-<script src="admin.js"></script>
-</body>
+    <script src="data.js?ver=" +version></script>
+    <script src="admin.js?ver=" +version></script>
+  </body>
 </html>
