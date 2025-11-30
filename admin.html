@@ -34,7 +34,7 @@
   <h2>🛠 Fee Editor (2023–2025)</h2>
 
   <label><b>Select Year:</b></label>
-  <select id="yearSelect" onchange="loadFeeTable()">
+  <select id="yearSelect" onchange="loadTable()">
     <option value="2023">2023–24</option>
     <option value="2024">2024–25</option>
     <option value="2025">2025–26</option>
@@ -50,7 +50,10 @@
           <th>Term Fee</th>
         </tr>
       </thead>
-      <tbody></tbody>
+
+      <!-- FIXED ID -->
+      <tbody id="feeTableBody"></tbody>
+
     </table>
 
     <br>
@@ -59,6 +62,7 @@
   </div>
 </div>
 
+<script src="data.js"></script>
 <script src="admin.js"></script>
 </body>
 </html>
