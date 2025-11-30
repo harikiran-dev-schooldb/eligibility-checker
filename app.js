@@ -1,5 +1,8 @@
 document.addEventListener("DOMContentLoaded", loadTable);
 
+// --------------------------------------------------
+// AGE CALCULATION
+// --------------------------------------------------
 function calculateExactAge(dob) {
   const dobDate = new Date(dob);
 
@@ -9,7 +12,11 @@ function calculateExactAge(dob) {
 
   if (days < 0) {
     months--;
-    days += new Date(referenceDate.getFullYear(), referenceDate.getMonth(), 0).getDate();
+    days += new Date(
+      referenceDate.getFullYear(),
+      referenceDate.getMonth(),
+      0
+    ).getDate();
   }
 
   if (months < 0) {
@@ -21,10 +28,13 @@ function calculateExactAge(dob) {
     years,
     months,
     days,
-    formatted: `${years} years, ${months} months, ${days} day(s)`
+    formatted: `${years} years, ${months} months, ${days} day(s)`,
   };
 }
 
+// --------------------------------------------------
+// ELIGIBILITY CHECK
+// --------------------------------------------------
 function checkEligibility() {
   const dob = document.getElementById("dob").value;
   if (!dob) return alert("Enter Date of Birth");
@@ -41,48 +51,90 @@ function checkEligibility() {
 
   document.getElementById("result").innerHTML = `
     Age: ${ageObj.formatted}<br>
-    <span style="color:#d32f2f;font-size:32px;">
-      Eligible Class: ${eligible}
-    </span>
+    <span style="color:#d32f2f;font-size:32px;">Eligible Class: ${eligible}</span>
   `;
 
-  document.querySelectorAll("#tableBody tr").forEach(row => {
+  // highlight the correct row
+  document.querySelectorAll("#tableBody tr").forEach((row) => {
     row.classList.toggle("highlight", row.cells[1].innerText === eligible);
   });
 }
 
+// --------------------------------------------------
+// SHOW/HIDE INCREMENT COLUMNS
+// --------------------------------------------------
 function updateColumns() {
-  const col = +document.getElementById("percentSelect").value;
-  document.querySelectorAll("#eligibilityTable tr").forEach(row => {
+  const selectedCol = Number(document.getElementById("incrementSelect").value);
+
+  document.querySelectorAll("#eligibilityTable tr").forEach((row) => {
     for (let i = 4; i <= 6; i++) {
-      if (row.cells[i]) row.cells[i].style.display = i === col ? "" : "none";
+      if (row.cells[i]) {
+        row.cells[i].style.display = i === selectedCol ? "" : "none";
+      }
     }
   });
 }
 
+function updateIncrementView() {
+  const year = document.getElementById("yearSelect").value;
+  const choice = document.getElementById("incrementSelect").value;
+
+  // No increments for old years
+  if (year !== "2026") return;
+
+  // Show all columns
+  if (choice === "all") {
+    for (let i = 4; i <= 6; i++) {
+      document
+        .querySelectorAll(
+          `#eligibilityTable tr td:nth-child(${i + 1}), 
+                                 #eligibilityTable th:nth-child(${i + 1})`
+        )
+        .forEach((cell) => (cell.style.display = ""));
+    }
+    return;
+  }
+
+  // Show only the selected column
+  for (let i = 4; i <= 6; i++) {
+    document
+      .querySelectorAll(
+        `#eligibilityTable tr td:nth-child(${i + 1}), 
+                               #eligibilityTable th:nth-child(${i + 1})`
+      )
+      .forEach((cell) => {
+        cell.style.display = String(i) === choice ? "" : "none";
+      });
+  }
+}
+
+// --------------------------------------------------
+// LOAD TABLE BASED ON SELECTED YEAR
+// --------------------------------------------------
 function loadTable() {
   const year = document.getElementById("yearSelect").value;
   const tbody = document.getElementById("tableBody");
+  const table = document.getElementById("eligibilityTable");
+  const incrementCols = [4, 5, 6];
+
   tbody.innerHTML = "";
 
-  const incrementCols = [4, 5, 6]; // 8%, 9%, 10%
-  const table = document.getElementById("eligibilityTable");
+  // RESET HEADER TITLES
+  document.querySelector("#eligibilityTable th:nth-child(3)").innerText = "Fees";
+  document.querySelector("#eligibilityTable th:nth-child(4)").innerText = "Term Fee";
 
-  // CASE 1: Old years (manual fees: 2023, 2024, 2025)
+  // 🔹 OLD YEARS (2023, 2024, 2025)
   if (year !== "2026") {
+    document.getElementById("incrementSelect").style.display = "none";
 
-    // Hide increment dropdown
-    document.getElementById("percentSelect").style.display = "none";
-
-    // Hide increment columns in table header + rows
+    // Hide increment columns
     incrementCols.forEach(i => {
       table.querySelectorAll(`th:nth-child(${i+1}), td:nth-child(${i+1})`)
            .forEach(cell => cell.style.display = "none");
     });
 
     // Load manual fees
-    const rows = manualFees[year];
-    rows.forEach(r => {
+    manualFees[year].forEach(r => {
       tbody.innerHTML += `
         <tr>
           <td>${r.age}</td>
@@ -92,15 +144,18 @@ function loadTable() {
           <td style="display:none">-</td>
           <td style="display:none">-</td>
           <td style="display:none">-</td>
-        </tr>
-      `;
+        </tr>`;
     });
 
     return;
   }
 
-  // CASE 2: 2026–27 (auto increment)
-  document.getElementById("percentSelect").style.display = "";
+  // 🔹 2026–27 (AUTO-INCREMENT MODE)
+  document.getElementById("incrementSelect").style.display = "";
+
+  // Update column headers for 2026–27
+  document.querySelector("#eligibilityTable th:nth-child(3)").innerText = "Fees (2025–26)";
+  document.querySelector("#eligibilityTable th:nth-child(4)").innerText = "Term Fee (2025–26)";
 
   // Show increment columns
   incrementCols.forEach(i => {
@@ -108,22 +163,24 @@ function loadTable() {
          .forEach(cell => cell.style.display = "");
   });
 
-  // Load 2026–27 auto-increment rows
-  eligibilityData.forEach(r => {
+  // Load 2025–26 fees and auto increment for 2026–27
+  const previousYrFees = manualFees["2025"];
+
+  previousYrFees.forEach(r => {
     const yearly = r.term * 4;
 
     tbody.innerHTML += `
       <tr>
         <td>${r.age}</td>
         <td>${r.class}</td>
-        <td>${r.baseFees}</td>
+        <td>${r.fees}</td>
         <td>${r.term}</td>
         <td>${Math.round((yearly * 1.08) / 100) * 100}</td>
         <td>${Math.round((yearly * 1.09) / 100) * 100}</td>
-        <td>${Math.round((yearly * 1.1) / 100) * 100}</td>
-      </tr>
-    `;
+        <td>${Math.round((yearly * 1.10) / 100) * 100}</td>
+      </tr>`;
   });
 
   updateColumns();
 }
+
