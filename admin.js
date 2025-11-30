@@ -63,7 +63,9 @@ async function loadFeeTable() {
 // -------------------------------
 async function saveChanges() {
   const token = document.getElementById("token").value.trim();
+  
   if (!token) return alert("Enter GitHub Token");
+  alert(document.getElementById("token").value.length)
 
   const year = document.getElementById("yearSelect").value;
 
