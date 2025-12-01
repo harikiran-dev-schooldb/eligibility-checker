@@ -118,7 +118,6 @@ eligibility-checker/
 │── app.js                   → Frontend Logic
 │── admin.js                 → Admin Logic + GitHub API
 │── data.js                  → Fetches data.json into JS
-│── data.json                → Stores Fees per Year
 │── styles.css               → Styling file
 │── sw.js                    → Service Worker (PWA)
 │── manifest.json            → PWA Config
@@ -134,11 +133,11 @@ eligibility-checker/
 
 1. Admin logs in → username + password
 2. Admin enters GitHub PAT token
-3. `admin.js` fetches **data.json** metadata from GitHub
+3. `admin.js` fetches **data.js** metadata from GitHub
 4. Admin edits fees
 5. On *Save*:
 
-   * Updates JSON in memory
+   * Updates JS in memory
    * Encodes as Base64
    * Sends PUT request to GitHub API
 6. GitHub commits update to repository
@@ -165,19 +164,24 @@ eligibility-checker/
 
 ---
 
-# 📦 Data File Format (data.json)
+# 📦 Data File Format (data.js)
 
 ```json
 {
-  "manualFees": {
-    "2023": [
-      { "age": 3, "class": "Pre KG", "fees": 24000, "term": 6000 },
-      ...
-    ],
-    "2024": [...],
-    "2025": [...],
-    "2026": "Auto-calculated inside app.js"
-  }
+  const manualFees = {
+  "2023": [
+    {
+      "age": 3,
+      "class": "Pre KG",
+      "fees": 0,
+      "term": 0
+    },
+    {
+      "age": 4,
+      "class": "LKG",
+      "fees": 22000,
+      "term": 5500
+    },
 }
 ```
 
@@ -208,7 +212,7 @@ Enable auto-refresh cache via PWA versioning (already added).
 * public_repo
 * metadata
 
-🔸 Data stored in `main/data.json`
+🔸 Data stored in `main/data.js`
 
 ### ❌ Mobile shows old data but incognito shows correct
 
