@@ -1,105 +1,259 @@
-🎓 Kotak Salesian School – Class Eligibility Checker
+Sure! Here's an **expanded, more detailed, professional README** with additional sections such as project goals, technical flow, admin workflow, troubleshooting, caching explanation, security notes, and future roadmap.
 
-A simple and powerful tool to calculate class eligibility, view school fees, and manage future fee increments.
+You can copy-paste into **README.md**.
 
-This project includes:
+---
 
-✔ Student Class Eligibility Calculator
+# 🎓 Kotak Salesian School
 
-✔ Dynamic Fee Table (2023–2026)
+## **Class Eligibility Checker & Fee Management System**
 
-✔ Auto Increment Calculation (8%, 9%, 10%)
+A complete web-based solution for age eligibility validation, academic fee management, and secure admin fee editing.
 
-✔ Admin Panel to Edit Fees (Option C Enabled — edit BOTH Fees & Term Fees)
+<p align="center">
+  <img src="https://raw.githubusercontent.com/harikiran-dev-schooldb/eligibility-checker/main/KOTAK_LOGO.png" width="150">
+</p>
 
-✔ Automatic Update to GitHub Pages
+<p align="center"><b>Academic Year 2026 – 27</b></p>
 
-✔ PWA + Offline Support (Service Worker)
+---
 
-📌 Live Website
+# 📌 Overview
 
-🔗 https://harikiran-dev-schooldb.github.io/eligibility-checker/
+This project provides a **smart age eligibility calculator** along with a **dynamic fee table** for academic years 2023–2026.
+It also includes a **secure admin panel** that allows authorized users to modify annual fees and term fees directly from a browser.
 
-📸 Screenshots
-Eligibility Checker (Frontend)
+The system updates and stores data in **GitHub**, allowing the school to maintain an always-updated, centralized fee management system without needing a database or server.
 
-Displays fees, increments & eligibility based on DOB and year selection.
+---
 
-Fee Editor – Admin Panel
+# 🔗 Live Website
 
-Manages yearly fees (2023–2025)
-✔ Option C: Edit BOTH Fees + Term Fee
+👉 **[https://harikiran-dev-schooldb.github.io/eligibility-checker/](https://harikiran-dev-schooldb.github.io/eligibility-checker/)**
 
-⚙️ Features
-✅ Eligibility Calculator
+Works on:
+✔ Mobile
+✔ Tablets
+✔ Desktop
+✔ Offline (PWA enabled)
 
-Enter Date of Birth → Shows exact age (Years/Months/Days)
+---
 
-Highlights eligible class
+# ⭐ Features
 
-Auto-scrolls to correct row
+## 1️⃣ **Eligibility Checker**
 
-✅ Fee Table
+* Takes student **Date of Birth**
+* Calculates:
 
-Select Academic Year: 2023–24 → 2026–27
+  * Years
+  * Months
+  * Days
+* Matches age with applicable class (Pre KG → X)
+* Highlights the eligible class row
+* Real-time result display
 
-For 2026–27 → Auto calculates 8%, 9%, 10% increments
+---
 
-PDF printable
+## 2️⃣ **Fee Table (Multi-Year)**
 
-✅ Admin Panel (Option C Enabled)
+### Supports academic years:
 
-Admin can modify:
+* **2023–24**
+* **2024–25**
+* **2025–26**
+* **2026–27 (Auto Increment Mode)**
 
-Editable?	Field
-✔ Yes	Annual Fees
-✔ Yes	Term Fees
-❌ No	Age or Class Name
+### For 2026–27:
 
-All edits save automatically to:
+* Uses previous year (2025–26) data
+* Calculates 8%, 9%, and 10% increments dynamically
+* User can switch increment columns via dropdown
 
-data.json
+---
 
+## 3️⃣ **Admin Panel (Option C – Fees + Term Fees Editable)**
 
-Using a GitHub Personal Access Token.
+Secure login system for administrative updates:
 
-🔐 Admin Panel Login
+### Editable Fields:
 
-Default Login:
+| Field       | Editable? |
+| ----------- | --------- |
+| Annual Fees | ✔ YES     |
+| Term Fees   | ✔ YES     |
+| Age         | ❌ NO      |
+| Class Name  | ❌ NO      |
 
-username: admin
-password: admin
+### Features:
 
+* Dropdown to select year (2023–25)
+* Real-time table updates
+* One-click save to GitHub
+* GitHub API integration
+* Uses PAT token securely (client-side)
+* No backend server required
 
-You must paste your GitHub PAT Token to save changes.
+---
 
-🗂 File Structure
-📁 eligibility-checker
- ┣ index.html
- ┣ admin.html
- ┣ app.js
- ┣ admin.js
- ┣ data.js
- ┣ data.json
- ┣ styles.css
- ┣ manifest.json
- ┗ sw.js
+## 4️⃣ **PWA – Installable Web App**
 
-🔧 Service Worker
+This project supports:
 
-Full PWA support
+✔ Offline Access
+✔ Home Screen Installation
+✔ Cached Files
+✔ Lightning-fast performance
 
-Auto cache-busting using timestamp version
+### Service Worker Features:
 
-Ensures users always get the latest data.js & app.js updates
+* Auto-versioning (`v11 + timestamp`)
+* Automatic cache refresh when new version detected
+* Pre-caches all main assets
+* Solves “old data loading” problem
+* Works seamlessly on mobile & desktop
 
-🚀 Hosting
+---
 
-Hosted on GitHub Pages:
+# 📁 Project Directory Structure
 
-https://harikiran-dev-schooldb.github.io/eligibility-checker/
+```
+eligibility-checker/
+│── index.html               → Main Eligibility Checker
+│── admin.html               → Admin Editor (Protected)
+│── app.js                   → Frontend Logic
+│── admin.js                 → Admin Logic + GitHub API
+│── data.js                  → Fetches data.json into JS
+│── data.json                → Stores Fees per Year
+│── styles.css               → Styling file
+│── sw.js                    → Service Worker (PWA)
+│── manifest.json            → PWA Config
+│── favicon.ico
+└── KOTAK_LOGO.png
+```
 
-🙌 Credits
+---
 
-Developed for Kotak Salesian School
-Designed by Harikiran
+# 🔧 How Fee Editing Works (Technical Flow)
+
+### Step-by-Step Flow:
+
+1. Admin logs in → username + password
+2. Admin enters GitHub PAT token
+3. `admin.js` fetches **data.json** metadata from GitHub
+4. Admin edits fees
+5. On *Save*:
+
+   * Updates JSON in memory
+   * Encodes as Base64
+   * Sends PUT request to GitHub API
+6. GitHub commits update to repository
+7. All visitors instantly get updated fees due to versioned caching
+
+---
+
+# 🔐 Security Notes
+
+### Important:
+
+* PAT Token is **never stored**
+* Admin must paste token each session
+* Username/password stored in frontend (editable)
+* PAT must have:
+
+  ```
+  repo  
+  public_repo  
+  metadata
+  ```
+* Recommended: Use a **fine-grained token** restricted to this repo only
+* Do NOT commit PAT token anywhere
+
+---
+
+# 📦 Data File Format (data.json)
+
+```json
+{
+  "manualFees": {
+    "2023": [
+      { "age": 3, "class": "Pre KG", "fees": 24000, "term": 6000 },
+      ...
+    ],
+    "2024": [...],
+    "2025": [...],
+    "2026": "Auto-calculated inside app.js"
+  }
+}
+```
+
+Editing through admin.html updates only:
+
+✔ Fees
+✔ Term Fees
+
+All other fields must be edited manually in data.json if needed.
+
+---
+
+# 🚫 Common Issues + Fixes
+
+### ❌ Website shows old version
+
+**Fix:**
+Clear cache OR refresh twice
+or
+Enable auto-refresh cache via PWA versioning (already added).
+
+### ❌ Admin changes not visible
+
+**Fix:**
+🔸 Ensure GitHub Token has:
+
+* repo
+* public_repo
+* metadata
+
+🔸 Data stored in `main/data.json`
+
+### ❌ Mobile shows old data but incognito shows correct
+
+**Reason:**
+Old service worker cached version.
+
+**Fix:**
+Refresh 3× or reinstall PWA (new version auto-updates now).
+
+---
+
+# 🚀 Future Roadmap (Optional Enhancements)
+
+You may add these if needed:
+
+* Dark/Light Mode
+* Export Fees to PDF/Excel
+* Staff Login + Multi-Admin Access
+* Student Admission Registration Form
+* OTP-based login for admin
+* Automatic DOB → Class Eligibility API
+* Version history log (fee changes)
+
+---
+
+# 🙌 Developed With Care
+
+Designed & developed by **Harikiran**
+Kotak Salesian School
+
+If you want a **footer logo**, **custom branding**, or **PDF print design**, I can create that too.
+
+---
+
+If you'd like, I can prepare:
+
+📄 A *documentation PDF*
+🎥 A *demo video script*
+📱 A *mobile UI mockup*
+📊 A *fees analytics dashboard*
+
+Just tell me!
