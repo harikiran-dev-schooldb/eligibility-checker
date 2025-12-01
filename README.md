@@ -1,9 +1,3 @@
-Sure! Here's an **expanded, more detailed, professional README** with additional sections such as project goals, technical flow, admin workflow, troubleshooting, caching explanation, security notes, and future roadmap.
-
-You can copy-paste into **README.md**.
-
----
-
 # 🎓 Kotak Salesian School
 
 ## **Class Eligibility Checker & Fee Management System**
@@ -244,16 +238,3 @@ You may add these if needed:
 
 Designed & developed by **Harikiran**
 Kotak Salesian School
-
-If you want a **footer logo**, **custom branding**, or **PDF print design**, I can create that too.
-
----
-
-If you'd like, I can prepare:
-
-📄 A *documentation PDF*
-🎥 A *demo video script*
-📱 A *mobile UI mockup*
-📊 A *fees analytics dashboard*
-
-Just tell me!
