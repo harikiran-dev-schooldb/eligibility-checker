@@ -9,7 +9,6 @@ if (document.readyState === "loading") {
   loadTable(); // DOM already loaded → run immediately
 }
 
-
 // --------------------------------------------------
 // AGE CALCULATION
 // --------------------------------------------------
@@ -130,27 +129,30 @@ function loadTable() {
   tbody.innerHTML = "";
 
   // RESET HEADER TITLES
-  document.querySelector("#eligibilityTable th:nth-child(3)").innerText = "Fees";
-  document.querySelector("#eligibilityTable th:nth-child(4)").innerText = "Term Fee";
+  document.querySelector("#eligibilityTable th:nth-child(3)").innerText =
+    "Term Fee";
+  document.querySelector("#eligibilityTable th:nth-child(4)").innerText =
+    "Fees";
 
   // 🔹 OLD YEARS (2023, 2024, 2025)
   if (year !== "2026") {
     document.getElementById("incrementSelect").style.display = "none";
 
     // Hide increment columns
-    incrementCols.forEach(i => {
-      table.querySelectorAll(`th:nth-child(${i+1}), td:nth-child(${i+1})`)
-           .forEach(cell => cell.style.display = "none");
+    incrementCols.forEach((i) => {
+      table
+        .querySelectorAll(`th:nth-child(${i + 1}), td:nth-child(${i + 1})`)
+        .forEach((cell) => (cell.style.display = "none"));
     });
 
     // Load manual fees
-    manualFees[year].forEach(r => {
+    manualFees[year].forEach((r) => {
       tbody.innerHTML += `
         <tr>
           <td>${r.age}</td>
           <td>${r.class}</td>
-          <td>${r.fees}</td>
           <td>${r.term}</td>
+          <td>${r.fees}</td>
           <td style="display:none">-</td>
           <td style="display:none">-</td>
           <td style="display:none">-</td>
@@ -164,33 +166,35 @@ function loadTable() {
   document.getElementById("incrementSelect").style.display = "";
 
   // Update column headers for 2026–27
-  document.querySelector("#eligibilityTable th:nth-child(3)").innerText = "Fees (2025–26)";
-  document.querySelector("#eligibilityTable th:nth-child(4)").innerText = "Term Fee (2025–26)";
+  document.querySelector("#eligibilityTable th:nth-child(3)").innerText =
+    "Term Fee (2025–26)";
+  document.querySelector("#eligibilityTable th:nth-child(4)").innerText =
+    "Fees (2025–26)";
 
   // Show increment columns
-  incrementCols.forEach(i => {
-    table.querySelectorAll(`th:nth-child(${i+1}), td:nth-child(${i+1})`)
-         .forEach(cell => cell.style.display = "");
+  incrementCols.forEach((i) => {
+    table
+      .querySelectorAll(`th:nth-child(${i + 1}), td:nth-child(${i + 1})`)
+      .forEach((cell) => (cell.style.display = ""));
   });
 
   // Load 2025–26 fees and auto increment for 2026–27
   const previousYrFees = manualFees["2025"];
 
-  previousYrFees.forEach(r => {
+  previousYrFees.forEach((r) => {
     const yearly = r.term * 4;
 
     tbody.innerHTML += `
       <tr>
         <td>${r.age}</td>
         <td>${r.class}</td>
-        <td>${r.fees}</td>
         <td>${r.term}</td>
+        <td>${r.fees}</td>
         <td>${Math.round((yearly * 1.08) / 100) * 100}</td>
         <td>${Math.round((yearly * 1.09) / 100) * 100}</td>
-        <td>${Math.round((yearly * 1.10) / 100) * 100}</td>
+        <td>${Math.round((yearly * 1.1) / 100) * 100}</td>
       </tr>`;
   });
 
   updateColumns();
 }
-
