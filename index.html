@@ -33,7 +33,7 @@
 
     <select id="incrementSelect" onchange="loadTable()">
       <option value="1.08">8% Increment</option>
-      <option value="1.09" >9% Increment</option>
+      <option value="1.09">9% Increment</option>
       <option value="1.10" selected>10% Increment</option>
     </select>
 
@@ -139,5 +139,41 @@
           .catch((err) => console.log("SW Error:", err));
       }
     </script>
+
+    <!-- Admission Modal -->
+    <div id="admissionModal" class="modal">
+      <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+
+        <h2>Admission Application</h2>
+
+        <input id="parentName" type="text" placeholder="Parent Name" required />
+        <input
+          id="studentName"
+          type="text"
+          placeholder="Student Name"
+          required
+        />
+        <input id="mobile" type="tel" placeholder="Mobile Number" required />
+        <select id="admClass" required>
+          <option value="">Select Admission Class</option>
+          <option value="Pre KG">Pre KG</option>
+          <option value="LKG">LKG</option>
+          <option value="UKG">UKG</option>
+          <option value="I">I</option>
+          <option value="II">II</option>
+          <option value="III">III</option>
+          <option value="IV">IV</option>
+          <option value="V">V</option>
+          <option value="VI">VI</option>
+          <option value="VII">VII</option>
+          <option value="VIII">VIII</option>
+          <option value="IX">IX</option>
+          <option value="X">X</option>
+        </select>
+
+        <button onclick="submitAdmission()">Submit Application</button>
+      </div>
+    </div>
   </body>
 </html>
