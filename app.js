@@ -49,6 +49,7 @@ function checkEligibility() {
   if (!dob) return alert("Enter Date of Birth");
 
   const ageObj = calculateExactAge(dob);
+  const resultDiv = document.getElementById("result");
   let eligible = "Not Eligible";
 
   for (let i = eligibilityData.length - 1; i >= 0; i--) {
@@ -58,10 +59,25 @@ function checkEligibility() {
     }
   }
 
-  document.getElementById("result").innerHTML = `
-    Age: ${ageObj.formatted}<br>
-    <span style="color:#d32f2f;font-size:32px;">Eligible Class: ${eligible}</span>
+
+resultDiv.innerHTML = `
+  Age: ${ageObj.formatted}<br><br>
+  <span style="color:#d32f2f;font-size:32px;font-weight:bold;">
+    Eligible Class: ${eligible}
+  </span><br><br>
+`;
+
+// ✅ Eligible → Celebration
+if (eligible !== "Not Eligible") {
+  launchConfetti();
+}
+// ❌ Not Eligible → Sad emoji
+else {
+  resultDiv.innerHTML += `
+    <div class="sad-emoji">😔</div>
   `;
+}
+
 
   // highlight the correct row
   document.querySelectorAll("#tableBody tr").forEach((row) => {
@@ -122,30 +138,31 @@ function updateIncrementView() {
 // --------------------------------------------------
 function loadTable() {
   const year = document.getElementById("yearSelect").value;
+  const increment = Number(
+    document.getElementById("incrementSelect").value || 1.09
+  );
   const tbody = document.getElementById("tableBody");
   const table = document.getElementById("eligibilityTable");
-  const incrementCols = [4, 5, 6];
 
   tbody.innerHTML = "";
 
-  // RESET HEADER TITLES
+  // Reset headers
   document.querySelector("#eligibilityTable th:nth-child(3)").innerText =
     "Term Fee";
   document.querySelector("#eligibilityTable th:nth-child(4)").innerText =
     "Fees";
 
-  // 🔹 OLD YEARS (2023, 2024, 2025)
+  // ✅ OLD YEARS (2023–2025)
   if (year !== "2026") {
     document.getElementById("incrementSelect").style.display = "none";
 
-    // Hide increment columns
-    incrementCols.forEach((i) => {
+    // Hide extra columns
+    [5, 6, 7].forEach((c) => {
       table
-        .querySelectorAll(`th:nth-child(${i + 1}), td:nth-child(${i + 1})`)
+        .querySelectorAll(`th:nth-child(${c}), td:nth-child(${c})`)
         .forEach((cell) => (cell.style.display = "none"));
     });
 
-    // Load manual fees
     manualFees[year].forEach((r) => {
       tbody.innerHTML += `
         <tr>
@@ -153,48 +170,75 @@ function loadTable() {
           <td>${r.class}</td>
           <td>${r.term}</td>
           <td>${r.fees}</td>
-          <td style="display:none">-</td>
-          <td style="display:none">-</td>
-          <td style="display:none">-</td>
         </tr>`;
     });
 
     return;
   }
 
-  // 🔹 2026–27 (AUTO-INCREMENT MODE)
+  // ✅ 2026–27 (AUTO INCREMENT MODE)
   document.getElementById("incrementSelect").style.display = "";
 
-  // Update column headers for 2026–27
   document.querySelector("#eligibilityTable th:nth-child(3)").innerText =
-    "Term Fee (2025–26)";
+    "Term Fee (2026–27)";
   document.querySelector("#eligibilityTable th:nth-child(4)").innerText =
-    "Fees (2025–26)";
+    "Fees (2026–27)";
 
-  // Show increment columns
-  incrementCols.forEach((i) => {
+  // Hide increment columns completely
+  [5, 6, 7].forEach((c) => {
     table
-      .querySelectorAll(`th:nth-child(${i + 1}), td:nth-child(${i + 1})`)
-      .forEach((cell) => (cell.style.display = ""));
+      .querySelectorAll(`th:nth-child(${c}), td:nth-child(${c})`)
+      .forEach((cell) => (cell.style.display = "none"));
   });
 
-  // Load 2025–26 fees and auto increment for 2026–27
-  const previousYrFees = manualFees["2025"];
+  const baseFees = manualFees["2025"];
 
-  previousYrFees.forEach((r) => {
+  baseFees.forEach((r) => {
     const yearly = r.term * 4;
+
+    const newTerm = Math.round((r.term * increment) / 100) * 100;
+    const newFees = Math.round((yearly * increment) / 100) * 100;
 
     tbody.innerHTML += `
       <tr>
         <td>${r.age}</td>
         <td>${r.class}</td>
-        <td>${r.term}</td>
-        <td>${r.fees}</td>
-        <td>${Math.round((yearly * 1.08) / 100) * 100}</td>
-        <td>${Math.round((yearly * 1.09) / 100) * 100}</td>
-        <td>${Math.round((yearly * 1.1) / 100) * 100}</td>
+        <td>${newTerm}</td>
+        <td>${newFees}</td>
       </tr>`;
   });
-
-  updateColumns();
 }
+
+// --------------------------------------------------
+// CONFETTI / RIBBON ANIMATION
+// --------------------------------------------------
+function launchConfetti() {
+  let layer = document.getElementById("confetti-layer");
+
+  if (!layer) {
+    layer = document.createElement("div");
+    layer.id = "confetti-layer";
+    document.body.appendChild(layer);
+  }
+
+  layer.innerHTML = "";
+
+  const colors = ["#f44336", "#e91e63", "#ff5252", "#ffcdd2"];
+  const types = ["ribbon-long", "ribbon-curve", "ribbon-strip"];
+
+  for (let i = 0; i < 180; i++) {
+    const conf = document.createElement("div");
+    const type = types[Math.floor(Math.random() * types.length)];
+
+    conf.className = `confetti ${type}`;
+    conf.style.left = Math.random() * 100 + "vw";
+    conf.style.background =
+      colors[Math.floor(Math.random() * colors.length)];
+    conf.style.animationDuration = 2 + Math.random() * 3 + "s";
+
+    layer.appendChild(conf);
+
+    setTimeout(() => conf.remove(), 5500);
+  }
+}
+
