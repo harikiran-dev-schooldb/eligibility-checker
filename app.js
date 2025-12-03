@@ -341,39 +341,42 @@ function submitAdmission() {
   const student = document.getElementById("studentName").value;
   const mobile = document.getElementById("mobile").value;
   const admClass = document.getElementById("admClass").value;
+  const dob = document.getElementById("dob").value; // ✅ DOB input
 
-  if (!parent || !student || !mobile || !admClass) {
+  if (!parent || !student || !mobile || !admClass || !dob) {
     alert("Please fill all required fields");
     return;
   }
+
+  // ✅ Age already calculated in your app
+  const ageText = document
+    .querySelector("#result")
+    .innerHTML.match(/Age:([^<]+)/)?.[1]?.trim() || "";
 
   const eligibleClass = document
     .querySelector("#result span")
     .innerText.replace("Eligible Class: ", "");
 
-  const API_URL =
-    "https://script.google.com/macros/s/AKfycbwPbnulijOkiwUnPIS9JD5u4XahR52owl4I0dRiNHC4T1fKn4twkDxYRlV_1m4YO5brqw/exec";
+  const payload = {
+    parent,
+    student,
+    mobile,
+    dob,        // ✅ send DOB
+    age: ageText, // ✅ send formatted age
+    admClass,
+    eligibleClass,
+  };
 
-  fetch(API_URL, {
+  fetch("https://script.google.com/macros/s/AKfycbx0f494g2LnAq1swuCvOtmyTiCKaGioY8K859jXndc5bRkts9eZIOnT98MrgrmRFrWGNw/exec", {
     method: "POST",
-    mode: "no-cors", // ✅ required
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      parent,
-      student,
-      mobile,
-      admClass,
-      eligibleClass,
-    }),
+    mode: "no-cors",   // ✅ keep this
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
   });
 
-  // ✅ Guaranteed success UI
-  alert("✅ Application submitted successfully!");
+  alert("✅ Enquiry saved successfully!");
   closeModal();
 
-  // ✅ WhatsApp notify
   sendWhatsApp(mobile, student, eligibleClass);
 }
 
