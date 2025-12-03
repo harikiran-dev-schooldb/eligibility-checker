@@ -336,12 +336,18 @@ function closeModal() {
   document.getElementById("admissionModal").style.display = "none";
 }
 
+function formatDOB(dob) {
+  const [year, month, day] = dob.split("-");
+  return `${day}-${month}-${year}`; // DD-MM-YYYY
+}
+
 function submitAdmission() {
   const parent = document.getElementById("parentName").value;
   const student = document.getElementById("studentName").value;
   const mobile = document.getElementById("mobile").value;
   const admClass = document.getElementById("admClass").value;
-  const dob = document.getElementById("dob").value; // ✅ DOB input
+  const dobRaw = document.getElementById("dob").value;
+  const dob = formatDOB(dobRaw);
 
   if (!parent || !student || !mobile || !admClass || !dob) {
     alert("Please fill all required fields");
@@ -349,9 +355,11 @@ function submitAdmission() {
   }
 
   // ✅ Age already calculated in your app
-  const ageText = document
-    .querySelector("#result")
-    .innerHTML.match(/Age:([^<]+)/)?.[1]?.trim() || "";
+  const ageText =
+    document
+      .querySelector("#result")
+      .innerHTML.match(/Age:([^<]+)/)?.[1]
+      ?.trim() || "";
 
   const eligibleClass = document
     .querySelector("#result span")
@@ -361,15 +369,18 @@ function submitAdmission() {
     parent,
     student,
     mobile,
-    dob,        // ✅ send DOB
+    dob, // ✅ send DOB
     age: ageText, // ✅ send formatted age
     admClass,
     eligibleClass,
   };
 
-  fetch("https://script.google.com/macros/s/AKfycbx0f494g2LnAq1swuCvOtmyTiCKaGioY8K859jXndc5bRkts9eZIOnT98MrgrmRFrWGNw/exec", {
+  const APP_URL =
+    "https://script.google.com/macros/s/AKfycbxYk7ai3tRB2WJR_ryKIMifn7vIzkcPKE7I3d7z0WNBK0GQ1eFdUL26Zt1O-HT1AR4Kzw/exec";
+
+  fetch(APP_URL, {
     method: "POST",
-    mode: "no-cors",   // ✅ keep this
+    mode: "no-cors", // ✅ keep this
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   });
@@ -377,10 +388,10 @@ function submitAdmission() {
   alert("✅ Enquiry saved successfully!");
   closeModal();
 
-  sendWhatsApp(mobile, student, eligibleClass);
+  sendWhatsApp(mobile, parent, student, dob, ageText, eligibleClass);
 }
 
-function sendWhatsApp(mobile, student, cls) {
+function sendWhatsApp(mobile, parent, student, dob, age, eligibleClass) {
   mobile = mobile.replace(/\D/g, "").slice(-10);
 
   if (mobile.length !== 10) {
@@ -388,36 +399,52 @@ function sendWhatsApp(mobile, student, cls) {
     return;
   }
 
-  const message = `🌟 Kotak Salesian School – Visakhapatnam 🌟
+  // Professional message
+  const message = `🌟 *Kotak Salesian School – Visakhapatnam* 🌟
 
 Dear Parent,
 
-Greetings from Kotak Salesian School.
+Thank you for visiting Kotak Salesian School and showing interest in admissions for the Academic Year *2026–27*.
 
-Thank you for your enquiry regarding admissions and fee structure.
+Below are the details of your enquiry:
 
-Student Name: ${student}
-Eligible Class: ${cls}
+🎒 *Student Name:* ${student}  
 
-Important Information:
-• This is an enquiry only.
-• Admissions for the Academic Year 2026–27 open from *15th December 2025*.
-• Application forms will be issued at the school office from the above date.
-• From UKG onwards, students must qualify in an Entrance Test.
-• Admission fees are payable only after selection.
+👤 *Parent Name:* ${parent}  
 
-Warm regards,  
-Admissions Office  
-Kotak Salesian School  
+🎂 *Date of Birth:* ${dob}  
+
+📅 *Age:* ${age}  
+
+🏫 *Eligible Class:* ${eligibleClass}
+
+------------------------------------
+
+📌 *Important Admission Information:*
+
+• This is an *enquiry only*.  
+• Admissions officially begin on *15th December 2025*.  
+• Application forms will be issued from the school office from the above date.  
+• From *UKG onwards*, students must appear for an *Entrance Test*.  
+• Admission fees are payable *only after the student qualifies* in the Entrance Test.
+
+------------------------------------
+
+📍 *Kotak Salesian School*  
 Chinna Waltair, Visakhapatnam  
-📞 9949523412 | 7032984974`;
+📞 *Contact:* 9949523412 | 7032984974  
 
-  const url =
-    "https://web.whatsapp.com/send?phone=91" +
-    mobile +
-    "&text=" +
-    encodeURIComponent(message);
+Thank you for choosing Kotak Salesian School.  
+We look forward to assisting you further. 🌟`;
+
+  // Detect mobile or desktop
+  const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+  const baseURL = isMobile
+    ? "https://wa.me/91" + mobile + "?text="
+    : "https://web.whatsapp.com/send?phone=91" + mobile + "&text=";
+
+  const url = baseURL + encodeURIComponent(message);
 
   window.open(url, "_blank");
 }
-
