@@ -87,7 +87,7 @@ function checkEligibility() {
     </div>
   `;
     // launchConfetti(); // ribbons
-    launchEmojiConfetti(); // 🎊 side blast
+    // launchEmojiConfetti(); // 🎊 side blast
     showProceedButton();
   }
 
@@ -378,33 +378,42 @@ function submitAdmission() {
 }
 
 function sendWhatsApp(mobile, student, cls) {
+  mobile = mobile.replace(/\D/g, "").slice(-10);
+
+  if (mobile.length !== 10) {
+    alert("Invalid mobile number. WhatsApp not sent.");
+    return;
+  }
+
   const message = `🌟 Kotak Salesian School – Visakhapatnam 🌟
 
 Dear Parent,
 
 Greetings from Kotak Salesian School.
 
-This message is to acknowledge your enquiry regarding admission and fee structure for your child.
+Thank you for your enquiry regarding admissions and fee structure.
 
-📌 Student Name : ${student}  
-📘 Eligible Class (as per age) : ${cls}
+Student Name: ${student}
+Eligible Class: ${cls}
 
-Please note:
-• This is only an enquiry and does not confirm admission.  
-• Application forms must be obtained from the school office.  
-• From UKG onwards, students are required to attend an Entrance Test.  
-• Admission will be confirmed only after qualifying the Entrance Test.  
-• Admission fees are payable only after selection and confirmation.
+Important Information:
+• This is an enquiry only.
+• Admissions for the Academic Year 2026–27 open from *15th December 2025*.
+• Application forms will be issued at the school office from the above date.
+• From UKG onwards, students must qualify in an Entrance Test.
+• Admission fees are payable only after selection.
 
-For further details regarding application forms, entrance test schedule, and admissions process, kindly visit the school office during working hours.
-
-Warm regards,   
-Kotak Salesian School
-Mobile: 9949523412, 7032984974  
-Chinna Waltair, Visakhapatnam`;
+Warm regards,  
+Admissions Office  
+Kotak Salesian School  
+Chinna Waltair, Visakhapatnam  
+📞 9949523412 | 7032984974`;
 
   const url =
-    "https://wa.me/91" + mobile + "?text=" + encodeURIComponent(message);
+    "https://web.whatsapp.com/send?phone=91" +
+    mobile +
+    "&text=" +
+    encodeURIComponent(message);
 
   window.open(url, "_blank");
 }
