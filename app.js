@@ -376,7 +376,7 @@ function submitAdmission() {
   };
 
   const APP_URL =
-    "https://script.google.com/macros/s/AKfycbxYk7ai3tRB2WJR_ryKIMifn7vIzkcPKE7I3d7z0WNBK0GQ1eFdUL26Zt1O-HT1AR4Kzw/exec";
+    "https://script.google.com/macros/s/AKfycbxZPE_QOjfWxGpk6PopXVxI-f5elmf3qJy8QO7BbNE_UXpqkLS8K0aUgnl-R9JyCBTCGQ/exec";
 
   fetch(APP_URL, {
     method: "POST",
