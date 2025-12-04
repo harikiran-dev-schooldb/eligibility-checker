@@ -388,10 +388,10 @@ function submitAdmission() {
   alert("✅ Enquiry saved successfully!");
   closeModal();
 
-  sendWhatsApp(mobile, parent, student, dob, ageText, eligibleClass);
+  sendWhatsApp(mobile, parent, student, dob, ageText, admClass);
 }
 
-function sendWhatsApp(mobile, parent, student, dob, age, eligibleClass) {
+function sendWhatsApp(mobile, parent, student, dob, age, admClass) {
   mobile = mobile.replace(/\D/g, "").slice(-10);
 
   if (mobile.length !== 10) {
@@ -399,52 +399,47 @@ function sendWhatsApp(mobile, parent, student, dob, age, eligibleClass) {
     return;
   }
 
-  // Professional message
   const message = `🌟 *Kotak Salesian School – Visakhapatnam* 🌟
 
-Dear Parent,
+Dear Parent (${parent}),  
 
-Thank you for visiting Kotak Salesian School and showing interest in admissions for the Academic Year *2026–27*.
+Thank you for visiting Kotak Salesian School and showing interest in admissions for the Academic Year *2026–27*.  
 
-Below are the details of your enquiry:
+We have recorded the following details for your enquiry:
 
-🎒 *Student Name:* ${student}  
-
-👤 *Parent Name:* ${parent}  
-
+👦 *Student Name:* ${student}  
 🎂 *Date of Birth:* ${dob}  
-
 📅 *Age:* ${age}  
+🏫 *Class Seeking Admission:* ${admClass}  
 
-🏫 *Eligible Class:* ${eligibleClass}
+──────────────────────────────
 
-------------------------------------
+📌 *Important Admission Information*  
 
-📌 *Important Admission Information:*
-
-• This is an *enquiry only*.  
-• Admissions officially begin on *15th December 2025*.  
+• This message confirms only the *enquiry*.  
+• Admissions officially begin on *15 December 2025*.  
 • Application forms will be issued from the school office from the above date.  
 • From *UKG onwards*, students must appear for an *Entrance Test*.  
-• Admission fees are payable *only after the student qualifies* in the Entrance Test.
+• Admission will be confirmed only after clearing all required stages.  
 
-------------------------------------
+──────────────────────────────
 
 📍 *Kotak Salesian School*  
 Chinna Waltair, Visakhapatnam  
-📞 *Contact:* 9949523412 | 7032984974  
+
+📞 *Contact Numbers:*  
+9949523412  
+7032984974  
 
 Thank you for choosing Kotak Salesian School.  
-We look forward to assisting you further. 🌟`;
+We look forward to supporting you throughout the admission process. 🌟`;
 
-  // Detect mobile or desktop
-  const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-
-  const baseURL = isMobile
-    ? "https://wa.me/91" + mobile + "?text="
-    : "https://web.whatsapp.com/send?phone=91" + mobile + "&text=";
-
-  const url = baseURL + encodeURIComponent(message);
+  // Always use WhatsApp Web
+  const url =
+    "https://web.whatsapp.com/send?phone=91" +
+    mobile +
+    "&text=" +
+    encodeURIComponent(message);
 
   window.open(url, "_blank");
 }
