@@ -376,7 +376,7 @@ function submitAdmission() {
   };
 
   const APP_URL =
-    "https://script.google.com/macros/s/AKfycbz6mmEUgSW9gidpYhrGzmhAqHGV39iPgjCMEr7s_UuovtHxnO73tHSyoyCgWCUd6mSztQ/exec";
+    "https://script.google.com/macros/s/AKfycbxp3h2lTOx-SkP9dHILf3ZS-f2008A1SvHhYMBJWNQFOTzZRPs7v8CYcHTUSylK0ZrVCQ/exec";
 
   fetch(APP_URL, {
     method: "POST",
@@ -409,7 +409,7 @@ We have recorded the following details for your enquiry:
 
 👦 *Student Name:* ${student}  
 🎂 *Date of Birth:* ${dob}  
-📅 *Age:* ${age}  
+📅 *Age:* ${age} as on 01st June 2026.
 🏫 *Class Seeking Admission:* ${admClass}  
 
 ──────────────────────────────
