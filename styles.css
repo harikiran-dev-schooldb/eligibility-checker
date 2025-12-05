@@ -309,11 +309,17 @@ th {
 .modal-content select {
   width: 100%;
   margin-bottom: 16px;
-  padding: 14px;
+  padding: 14px 18px;
   font-size: 17px;
   border-radius: 8px;
   border: 1px solid #ccc;
+  box-sizing: border-box;
 }
+
+.modal-content select {
+  padding-right: 42px;
+}
+
 
 .modal-content h2 {
   margin-bottom: 20px;
