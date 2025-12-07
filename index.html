@@ -4,8 +4,7 @@
     <title>Class Eligibility Checker</title>
     <link rel="manifest" href="manifest.json" />
     <meta name="theme-color" content="#1976d2" />
-
-    <link rel="icon" href="favicon.ico" type="image/x-icon" />
+    <link rel="icon" href="favicon.ico" />
     <link rel="stylesheet" href="styles.css" />
   </head>
 
@@ -31,10 +30,11 @@
       <option value="2026" selected>2026–27</option>
     </select>
 
-    <select id="incrementSelect" onchange="loadTable()">
-      <option value="1.08">8% Increment</option>
-      <option value="1.09">9% Increment</option>
-      <option value="1.10" selected>10% Increment</option>
+    <select id="incrementSelect" onchange="updateIncrementView()">
+      <option value="all">View All</option>
+      <option value="8">8% Increment</option>
+      <option value="9">9% Increment</option>
+      <option value="10" selected>10% Increment</option>
     </select>
 
     <button onclick="window.print()">⬇️ Download PDF</button>
@@ -107,36 +107,20 @@
       </ul>
     </div>
 
-    <script>
-      document.addEventListener("DOMContentLoaded", async () => {
-        const version = Date.now();
+    <!-- Load Supabase Library -->
+    <!-- Load Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-        // Load data.js FIRST
-        await new Promise((resolve) => {
-          const s1 = document.createElement("script");
-          s1.src = "data.js?ver=" + version;
-          s1.onload = resolve;
-          document.body.appendChild(s1);
-        });
+    <!-- Load data.js BEFORE app.js -->
+    <script src="data.js"></script>
+    <script src="app.js"></script>
 
-        // Load app.js AFTER data.js is completely loaded
-        await new Promise((resolve) => {
-          const s2 = document.createElement("script");
-          s2.src = "app.js?ver=" + version;
-          s2.onload = resolve;
-          document.body.appendChild(s2);
-        });
-
-        console.log("✔ All scripts loaded in correct order");
-      });
-    </script>
-
+    <!-- Register Service Worker -->
     <script>
       if ("serviceWorker" in navigator) {
-        navigator.serviceWorker
-          .register("sw.js")
-          .then(() => console.log("Service Worker Registered"))
-          .catch((err) => console.log("SW Error:", err));
+        navigator.serviceWorker.register("sw.js").then(() => {
+          console.log("Service Worker Registered");
+        });
       }
     </script>
 
@@ -147,15 +131,10 @@
 
         <h2>Admission Application</h2>
 
-        <input id="parentName" type="text" placeholder="Parent Name" required />
-        <input
-          id="studentName"
-          type="text"
-          placeholder="Student Name"
-          required
-        />
-        <input id="mobile" type="tel" placeholder="Mobile Number" required />
-        <select id="admClass" required>
+        <input id="parentName" type="text" placeholder="Parent Name" />
+        <input id="studentName" type="text" placeholder="Student Name" />
+        <input id="mobile" type="tel" placeholder="Mobile Number" />
+        <select id="admClass">
           <option value="">Select Admission Class</option>
           <option value="Pre KG">Pre KG</option>
           <option value="LKG">LKG</option>
