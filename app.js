@@ -199,6 +199,14 @@ function closeModal() {
   document.getElementById("admissionModal").style.display = "none";
 }
 
+function formatDateDDMMYYYY(date) {
+  const d = new Date(date);
+  const day = String(d.getDate()).padStart(2, "0");
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const year = d.getFullYear();
+  return `${day}-${month}-${year}`;
+}
+
 /* --------------------------------------------------
    SUBMIT ADMISSION
 -------------------------------------------------- */
@@ -224,9 +232,7 @@ async function submitAdmission() {
 
   // ---------- GET NEXT ENQUIRY NUMBER ----------
   let enquiryNo = "";
-  const { data: rpcData, error: rpcError } = await db.rpc(
-    "get_next_enquiry_no"
-  );
+  const { data: rpcData, error: rpcError } = await db.rpc("get_next_enquiry_no");
 
   if (rpcError || !rpcData) {
     console.error(rpcError);
@@ -246,7 +252,7 @@ async function submitAdmission() {
     dob,
     age: ageText,
     eligible: eligibleClass,
-    date: new Date().toISOString(),
+    date: formatDateDDMMYYYY(new Date()),
     application: "NO",
     entrance: "NOT STARTED",
     interview: "PENDING",
@@ -260,16 +266,11 @@ async function submitAdmission() {
     return alert("❌ Error saving into Supabase!");
   }
 
-  exportAdmissionToExcel(payload);
-
-
-  // Optional - manual sync
-  saveToGoogleSheet(payload);
-
   alert("✅ Enquiry saved successfully!");
   closeModal();
   sendWhatsApp(mobileNum, parent, student, dob, ageText, admClassValue);
 }
+
 
 
 

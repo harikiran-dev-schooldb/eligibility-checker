@@ -14,6 +14,9 @@ const SUPA_HEADERS = {
   "Content-Type": "application/json"
 };
 
+const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+
 let allRows = []; // cache
 
 /**************************************************
@@ -218,31 +221,165 @@ function sendManualWhatsApp(mobile, parent, student, enquiryNo) {
 }
 
 /**************************************************
- MESSAGE TEMPLATES
+ WHATSAPP MESSAGE TEMPLATES – PREMIUM VERSION
+ Clean, Attractive, Parent-Friendly Messages
 **************************************************/
+
+// 👉 Application Issued
 function waApplicationIssued(student, parent, enq) {
-  return `📄 *Application Issued*\nEnquiry: ${enq}\n\nDear Parent (${parent}),\nApplication issued for ${student}.`;
+  return `
+📄 *Application Issued Successfully*
+
+📝 *Enquiry No:* ${enq}
+
+Dear Parent *(${parent})*,  
+We are happy to inform you that the *Admission Application* for *${student}* has been issued.
+
+🕒 Kindly complete and submit the form at the earliest.
+
+Thank you for choosing *Kotak Salesian School*.  
+🌟 _We look forward to supporting your child’s educational journey._`;
 }
 
+// 👉 Application NOT Issued
 function waApplicationNotIssued(student, parent, enq) {
-  return `📄 *Application NOT Issued*\nEnquiry: ${enq}\n\nDear Parent (${parent}),\nPlease collect the form for ${student}.`;
+  return `
+📄 *Application Pending*
+
+📝 *Enquiry No:* ${enq}
+
+Dear Parent *(${parent})*,  
+The admission application for *${student}* is *not yet collected*.
+
+📌 Kindly visit the school office to collect the form.
+
+🙏 Thank you for your interest in *Kotak Salesian School*.`;
 }
 
+// 👉 Entrance Result
 function waEntranceResult(student, parent, result, enq) {
-  return result === "PASS"
-    ? `✅ *Entrance Test – PASS*\nEnquiry: ${enq}\n\n${student} has passed.`
-    : `❌ *Entrance Test – FAIL*\nEnquiry: ${enq}\n\nThank you for your interest.`;
+  if (result === "PASS") {
+    return `
+🎉 *Entrance Test Result – PASS*
+
+📝 *Enquiry No:* ${enq}
+
+Congratulations Parent *(${parent})*!  
+Your child *${student}* has *successfully passed* the entrance test.
+
+📌 Please visit the school for the next steps in the admission process.
+
+🌟 _We are excited to welcome ${student} into our school community!_`;
+  } else {
+    return `
+❌ *Entrance Test Result – FAIL*
+
+📝 *Enquiry No:* ${enq}
+
+Dear Parent *(${parent})*,  
+We appreciate the efforts of *${student}*. However, the entrance test result did not meet the required criteria.
+
+🙏 Thank you for your time and interest in our school.  
+We wish ${student} the very best for future opportunities.`;
+  }
 }
 
+// 👉 Interview Result
 function waInterviewResult(student, parent, status, enq) {
-  return `🎤 *Interview Status*\nEnquiry: ${enq}\n\n${student} – ${status}.`;
+  return `
+🎤 *Interview Status Update*
+
+📝 *Enquiry No:* ${enq}
+
+Dear Parent *(${parent})*,  
+The interview for *${student}* has been updated.
+
+📌 *Status:* ${status}
+
+Thank you for your active participation.  
+We will keep you informed about further steps.`;
 }
 
+// 👉 Final Admission Decision
 function waFinalAdmission(student, parent, status, enq) {
-  return status === "YES"
-    ? `🎉 *Admission Confirmed*\nEnquiry: ${enq}\n\n${student} is admitted.`
-    : `❌ *Admission Not Approved*\nEnquiry: ${enq}\n\nThank you.`;
+  if (status === "YES") {
+    return `
+🎉 *Admission Confirmed* 🎉
+
+📝 *Enquiry No:* ${enq}
+
+Dear Parent *(${parent})*,  
+We are delighted to inform you that *${student}* has been *granted admission* to Kotak Salesian School.
+
+🎒 Welcome to our school family!  
+🙏 Kindly complete the remaining formalities at the earliest.`;
+  } else {
+    return `
+❌ *Admission Not Approved*
+
+📝 *Enquiry No:* ${enq}
+
+Dear Parent *(${parent})*,  
+We sincerely appreciate your interest in admitting *${student}* to our institution.
+
+Unfortunately, the admission could not be approved at this time.
+
+🙏 Thank you once again, and we wish your child great success ahead.`;
+  }
 }
+
+/**************************************************
+ EXCEL EXPORT FUNCTIONALITY
+**************************************************/
+
+async function exportAdmissionsExcel() {
+  // Fetch all records
+  const { data, error } = await db
+    .from("admissions")
+    .select("*")
+    .order("enquiryNo", { ascending: true });
+
+  if (error) {
+    alert("❌ Failed to load admissions data");
+    console.error(error);
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    alert("No admissions found!");
+    return;
+  }
+
+  // Prepare rows for Excel
+  const formatted = data.map(r => ({
+    "ENQUIRY NO": r.enquiryNo,
+    "STUDENT NAME": r.student,
+    "PARENT NAME": r.parent,
+    "CLASS": r.admClass,
+    "MOBILE": r.mobile,
+    "DOB": r.dob,
+    "AGE": r.age,
+    "ELIGIBLE CLASS": r.eligible,
+    "DATE": r.date,
+    "APPLICATION": r.application,
+    "ENTRANCE RESULT": r.entrance,
+    "INTERVIEW STATUS": r.interview,
+    "FINAL ADMISSION": r.finalAdmission
+  }));
+
+  // Convert to Excel
+  const sheet = XLSX.utils.json_to_sheet(formatted);
+  const book = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(book, sheet, "Admissions");
+
+  // Download file
+  XLSX.writeFile(book, "Admissions_2026-27.xlsx");
+
+  alert("📄 Excel exported successfully!");
+}
+
+// 🔥 Make function available to HTML button
+window.exportAdmissionsExcel = exportAdmissionsExcel;
 
 /**************************************************
  INIT

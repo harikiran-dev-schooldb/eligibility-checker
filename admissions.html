@@ -1,58 +1,72 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <meta charset="utf-8" />
-  <title>Admissions Dashboard – 2026-27</title>
-  <link rel="stylesheet" href="styles.css" />
-</head>
+  <head>
+    <meta charset="utf-8" />
+    <title>Admissions Dashboard – 2026-27</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
 
-<body>
+  <body>
+    <h1>Admissions 2026 – 27</h1>
 
-  <h1>Admissions 2026 – 27</h1>
+    <div class="top-bar">
+      <input
+        id="searchBox"
+        placeholder="Search student / parent / enquiry…"
+        onkeyup="applyFilters()"
+      />
 
-  <div class="top-bar">
-    <input id="searchBox" placeholder="Search student / parent / enquiry…" onkeyup="applyFilters()" />
+      <select id="filterClass" onchange="applyFilters()">
+        <option value="">All Classes</option>
+      </select>
 
-    <select id="filterClass" onchange="applyFilters()">
-      <option value="">All Classes</option>
-    </select>
+      <select id="filterApplication" onchange="applyFilters()">
+        <option value="">Application</option>
+        <option value="YES">YES</option>
+        <option value="NO">NO</option>
+      </select>
 
-    <select id="filterApplication" onchange="applyFilters()">
-      <option value="">Application</option>
-      <option value="YES">YES</option>
-      <option value="NO">NO</option>
-    </select>
+      <select id="filterEntrance" onchange="applyFilters()">
+        <option value="">Entrance</option>
+        <option value="NOT STARTED">NOT STARTED</option>
+        <option value="PASS">PASS</option>
+        <option value="FAIL">FAIL</option>
+      </select>
 
-    <select id="filterEntrance" onchange="applyFilters()">
-      <option value="">Entrance</option>
-      <option value="NOT STARTED">NOT STARTED</option>
-      <option value="PASS">PASS</option>
-      <option value="FAIL">FAIL</option>
-    </select>
+      <select id="filterInterview" onchange="applyFilters()">
+        <option value="">Interview</option>
+        <option value="PENDING">PENDING</option>
+        <option value="SELECTED">SELECTED</option>
+        <option value="REJECTED">REJECTED</option>
+      </select>
 
-    <select id="filterInterview" onchange="applyFilters()">
-      <option value="">Interview</option>
-      <option value="PENDING">PENDING</option>
-      <option value="SELECTED">SELECTED</option>
-      <option value="REJECTED">REJECTED</option>
-    </select>
+      <select id="filterFinal" onchange="applyFilters()">
+        <option value="">Final Admission</option>
+        <option value="YES">YES</option>
+        <option value="NO">NO</option>
+      </select>
 
-    <select id="filterFinal" onchange="applyFilters()">
-      <option value="">Final Admission</option>
-      <option value="YES">YES</option>
-      <option value="NO">NO</option>
-    </select>
+      <button
+        onclick="exportAdmissionsExcel()"
+        style="
+          padding: 10px 20px;
+          background: #007bff;
+          color: white;
+          border: none;
+          border-radius: 5px;
+        "
+      >
+        Export Admissions Excel
+      </button>
+    </div>
 
-    <button onclick="exportAdmissionsExcel()">⬇️ Export Excel</button>
-  </div>
+    <div id="admissionsContainer">Loading…</div>
 
-  <div id="admissionsContainer">Loading…</div>
+    <!-- Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
-  <!-- Libraries -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-
-  <!-- Main Script -->
-  <script src="admissions.js?ver=12345"></script>
-</body>
+    <!-- Main Script -->
+    <script src="admissions.js?ver=12345"></script>
+  </body>
 </html>
