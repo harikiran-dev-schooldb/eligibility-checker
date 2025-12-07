@@ -240,22 +240,31 @@ async function submitAdmission() {
   const payload = {
     enquiryNo,
     student,
-    mobile,
-    dob, // ✅ send DOB
-    age: ageText, // ✅ send formatted age
-    admClass,
-    eligibleClass,
+    parent,
+    mobile: mobileNum,
+    admClass: admClassValue,
+    dob,
+    age: ageText,
+    eligible: eligibleClass,
+    date: new Date().toISOString(),
+    application: "NO",
+    entrance: "NOT STARTED",
+    interview: "PENDING",
+    finalAdmission: "NO",
   };
 
-  const APP_URL =
-    "https://script.google.com/macros/s/AKfycbwsyYckuTjENGff6OLJ_GYN-C1VUiMB7UhqYZ8SHqxQWt93LLZzUIbtUHPDPs6f_A5DFw/exec";
+  // ---------- INSERT INTO SUPABASE ----------
+  const { error } = await db.from("admissions").insert([payload]);
+  if (error) {
+    console.error(error);
+    return alert("❌ Error saving into Supabase!");
+  }
 
-  fetch(APP_URL, {
-    method: "POST",
-    mode: "no-cors", // ✅ keep this
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-  });
+  exportAdmissionToExcel(payload);
+
+
+  // Optional - manual sync
+  saveToGoogleSheet(payload);
 
   alert("✅ Enquiry saved successfully!");
   closeModal();
