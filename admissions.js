@@ -11,11 +11,10 @@ const SUPABASE_KEY =
 const SUPA_HEADERS = {
   apikey: SUPABASE_KEY,
   Authorization: `Bearer ${SUPABASE_KEY}`,
-  "Content-Type": "application/json"
+  "Content-Type": "application/json",
 };
 
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
 
 let allRows = []; // cache
 
@@ -27,15 +26,16 @@ async function loadAdmissions() {
   container.innerHTML = "Loading…";
 
   try {
-    const res = await fetch(
-      `${SUPABASE_URL}/rest/v1/admissions?select=*`,
-      { method: "GET", headers: SUPA_HEADERS }
-    );
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/admissions?select=*`, {
+      method: "GET",
+      headers: SUPA_HEADERS,
+    });
 
     allRows = await res.json();
 
     populateClassFilter(allRows);
     renderTable(allRows);
+    updateCards(allRows);
   } catch (err) {
     container.innerHTML = "❌ Error loading data";
     console.error("Load Error:", err);
@@ -49,15 +49,24 @@ function populateClassFilter(rows) {
   const dd = document.getElementById("filterClass");
   dd.innerHTML = `<option value="">All Classes</option>`;
 
-  [...new Set(rows.map(r => r.admClass))]
+  [...new Set(rows.map((r) => r.admClass))]
     .sort()
-    .forEach(cls => (dd.innerHTML += `<option value="${cls}">${cls}</option>`));
+    .forEach(
+      (cls) => (dd.innerHTML += `<option value="${cls}">${cls}</option>`)
+    );
 }
 
 /**************************************************
  RENDER TABLE
 **************************************************/
 function renderTable(rows) {
+  // SORT BY enquiryNo (ascending)
+  rows.sort((a, b) => {
+    const numA = parseInt(a.enquiryNo.split("-")[2]);
+    const numB = parseInt(b.enquiryNo.split("-")[2]);
+    return numA - numB;
+  });
+
   let html = `
     <table class="admTable">
       <thead>
@@ -66,57 +75,90 @@ function renderTable(rows) {
           <th>Student</th>
           <th>Parent</th>
           <th>Class</th>
+          <th>Mobile</th> 
           <th>Application</th>
           <th>Entrance</th>
           <th>Interview</th>
           <th>Final Admission</th>
           <th>WhatsApp</th>
+          <th>Delete</th>
         </tr>
       </thead>
       <tbody>
   `;
 
-  rows.forEach(r => {
+  rows.forEach((r) => {
     html += `
       <tr>
         <td>${r.enquiryNo}</td>
         <td>${r.student}</td>
         <td>${r.parent}</td>
         <td>${r.admClass}</td>
+        <td>${r.mobile}</td>
+        
 
         <td>
-          <select onchange="updateStage('${r.enquiryNo}','application',this.value)">
+          <select onchange="updateStage('${
+            r.enquiryNo
+          }','application',this.value)">
             <option ${r.application === "NO" ? "selected" : ""}>NO</option>
             <option ${r.application === "YES" ? "selected" : ""}>YES</option>
           </select>
         </td>
 
         <td>
-          <select onchange="updateStage('${r.enquiryNo}','entrance',this.value)">
-            <option ${r.entrance === "NOT STARTED" ? "selected" : ""}>NOT STARTED</option>
+          <select onchange="updateStage('${
+            r.enquiryNo
+          }','entrance',this.value)">
+            <option ${
+              r.entrance === "NOT STARTED" ? "selected" : ""
+            }>NOT STARTED</option>
             <option ${r.entrance === "PASS" ? "selected" : ""}>PASS</option>
             <option ${r.entrance === "FAIL" ? "selected" : ""}>FAIL</option>
           </select>
         </td>
 
         <td>
-          <select onchange="updateStage('${r.enquiryNo}','interview',this.value)">
-            <option ${r.interview === "PENDING" ? "selected" : ""}>PENDING</option>
-            <option ${r.interview === "SELECTED" ? "selected" : ""}>SELECTED</option>
-            <option ${r.interview === "REJECTED" ? "selected" : ""}>REJECTED</option>
+          <select onchange="updateStage('${
+            r.enquiryNo
+          }','interview',this.value)">
+            <option ${
+              r.interview === "PENDING" ? "selected" : ""
+            }>PENDING</option>
+            <option ${
+              r.interview === "SELECTED" ? "selected" : ""
+            }>SELECTED</option>
+            <option ${
+              r.interview === "REJECTED" ? "selected" : ""
+            }>REJECTED</option>
           </select>
         </td>
 
         <td>
-          <select onchange="updateStage('${r.enquiryNo}','finalAdmission',this.value)">
+          <select onchange="updateStage('${
+            r.enquiryNo
+          }','finalAdmission',this.value)">
             <option ${r.finalAdmission === "NO" ? "selected" : ""}>NO</option>
             <option ${r.finalAdmission === "YES" ? "selected" : ""}>YES</option>
           </select>
         </td>
 
         <td>
-          <button onclick="sendManualWhatsApp('${r.mobile}','${r.parent}','${r.student}','${r.enquiryNo}')">
-            Send
+  <button class="waIconBtn"
+    onclick="sendManualWhatsApp('${r.mobile}','${r.parent}','${r.student}','${
+      r.enquiryNo
+    }')">
+    <svg viewBox="0 0 32 32" class="waOnlyIcon">
+      <path fill="currentColor"
+        d="M16.001 3.2c-7.064 0-12.8 5.736-12.8 12.8c0 2.256.592 4.432 1.712 6.36L3.2 28.8l6.656-1.728c1.872.992 4 1.52 6.112 1.52c7.056 0 12.8-5.736 12.8-12.8s-5.744-12.8-12.768-12.8zm7.6 17.808c-.32.896-1.872 1.744-2.56 1.84c-.656.096-1.504.16-2.416-.144c-.56-.176-1.28-.4-2.224-.784c-3.936-1.616-6.496-5.376-6.704-5.632c-.208-.256-1.6-2.128-1.6-4.064c0-1.936 1.008-2.88 1.36-3.28c.352-.4.768-.496 1.024-.496c.256 0 .512 0 1.024.032c.336.016.784-.128 1.232.944c.448 1.088 1.52 3.76 1.648 4.032c.128.272.208.592.048.928c-.16.336-.24.544-.48.832c-.24.288-.512.64-.736.864c-.24.224-.496.48-.208.944c.288.464 1.28 2.112 3.072 3.424c2.112 1.536 3.104 1.76 3.6 1.952c.496.192.784.16 1.072-.096c.288-.256 1.232-1.28 1.568-1.712c.336-.432.704-.368 1.184-.224c.48.144 3.024 1.424 3.536 1.68c.512.256.848.384.96.592c.112.208.112 1.12-.208 2.016z"/>
+    </svg>
+  </button>
+</td>
+
+        
+        <td>
+          <button onclick="deleteEnquiry('${r.enquiryNo}')" class="deleteBtn">
+            Delete
           </button>
         </td>
       </tr>
@@ -125,6 +167,25 @@ function renderTable(rows) {
 
   html += "</tbody></table>";
   document.getElementById("admissionsContainer").innerHTML = html;
+}
+
+/**************************************************
+ UPDATE DASHBOARD CARDS
+**************************************************/
+function updateCards(rows) {
+  document.getElementById("totalEnq").textContent = rows.length;
+
+  document.getElementById("totalApp").textContent = rows.filter(
+    (r) => r.application === "YES"
+  ).length;
+
+  document.getElementById("totalPass").textContent = rows.filter(
+    (r) => r.entrance === "PASS"
+  ).length;
+
+  document.getElementById("totalFinal").textContent = rows.filter(
+    (r) => r.finalAdmission === "YES"
+  ).length;
 }
 
 /**************************************************
@@ -137,22 +198,23 @@ async function updateStage(enquiryNo, field, value) {
       {
         method: "PATCH",
         headers: SUPA_HEADERS,
-        body: JSON.stringify({ [field]: value })
+        body: JSON.stringify({ [field]: value }),
       }
     );
 
     if (!res.ok) throw new Error("Update failed");
 
     // update local row
-    const row = allRows.find(r => r.enquiryNo === enquiryNo);
+    const row = allRows.find((r) => r.enquiryNo === enquiryNo);
     row[field] = value;
 
     // WhatsApp Message
     let msg = "";
     if (field === "application")
-      msg = value === "YES"
-        ? waApplicationIssued(row.student, row.parent, enquiryNo)
-        : waApplicationNotIssued(row.student, row.parent, enquiryNo);
+      msg =
+        value === "YES"
+          ? waApplicationIssued(row.student, row.parent, enquiryNo)
+          : waApplicationNotIssued(row.student, row.parent, enquiryNo);
 
     if (field === "entrance")
       msg = waEntranceResult(row.student, row.parent, value, enquiryNo);
@@ -172,39 +234,86 @@ async function updateStage(enquiryNo, field, value) {
   }
 }
 
+let deleteTarget = null;
+
+function deleteEnquiry(enquiryNo) {
+  deleteTarget = enquiryNo;
+
+  document.getElementById(
+    "deleteMsg"
+  ).innerText = `Are you sure you want to delete enquiry: ${enquiryNo}?`;
+
+  document.getElementById("deleteModal").style.display = "flex";
+
+  document.getElementById("confirmDeleteBtn").onclick = confirmDelete;
+}
+
+function closeDeleteModal() {
+  deleteTarget = null;
+  document.getElementById("deleteModal").style.display = "none";
+}
+
+async function confirmDelete() {
+  if (!deleteTarget) return;
+
+  try {
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/admissions?enquiryNo=eq.${deleteTarget}`,
+      {
+        method: "DELETE",
+        headers: SUPA_HEADERS,
+      }
+    );
+
+    if (!res.ok) throw new Error("Error deleting entry");
+
+    allRows = allRows.filter((r) => r.enquiryNo !== deleteTarget);
+
+    renderTable(allRows);
+    updateCards(allRows);
+
+    closeDeleteModal();
+    alert("✔ Enquiry deleted successfully!");
+  } catch (err) {
+    alert("❌ Failed to delete entry");
+    closeDeleteModal();
+  }
+}
+
 /**************************************************
  FILTER
 **************************************************/
 function applyFilters() {
   const q = searchBox.value.toLowerCase();
 
-  const filtered = allRows.filter(r =>
-    (r.student.toLowerCase().includes(q) ||
-     r.parent.toLowerCase().includes(q) ||
-     r.enquiryNo.toLowerCase().includes(q)) &&
-    (!filterClass.value || r.admClass === filterClass.value) &&
-    (!filterApplication.value || r.application === filterApplication.value) &&
-    (!filterEntrance.value || r.entrance === filterEntrance.value) &&
-    (!filterInterview.value || r.interview === filterInterview.value) &&
-    (!filterFinal.value || r.finalAdmission === filterFinal.value)
+  const filtered = allRows.filter(
+    (r) =>
+      (r.student.toLowerCase().includes(q) ||
+        r.parent.toLowerCase().includes(q) ||
+        r.enquiryNo.toLowerCase().includes(q)) &&
+      (!filterClass.value || r.admClass === filterClass.value) &&
+      (!filterApplication.value || r.application === filterApplication.value) &&
+      (!filterEntrance.value || r.entrance === filterEntrance.value) &&
+      (!filterInterview.value || r.interview === filterInterview.value) &&
+      (!filterFinal.value || r.finalAdmission === filterFinal.value)
   );
 
   renderTable(filtered);
 }
-
-
 
 /**************************************************
  WHATSAPP HANDLING
 **************************************************/
 function openWhatsApp(mobile, message) {
   mobile = mobile.replace(/\D/g, "").slice(-10);
-  const url = `https://web.whatsapp.com/send?phone=91${mobile}&text=${encodeURIComponent(message)}`;
+  const url = `https://web.whatsapp.com/send?phone=91${mobile}&text=${encodeURIComponent(
+    message
+  )}`;
   window.open(url, "_blank");
 }
 
 function sendManualWhatsApp(mobile, parent, student, enquiryNo) {
-  const r = allRows.find(x => x.enquiryNo === enquiryNo);
+  const r = allRows.find((x) => x.enquiryNo === enquiryNo);
 
   let msg =
     r.finalAdmission !== "NO"
@@ -351,20 +460,20 @@ async function exportAdmissionsExcel() {
   }
 
   // Prepare rows for Excel
-  const formatted = data.map(r => ({
+  const formatted = data.map((r) => ({
     "ENQUIRY NO": r.enquiryNo,
     "STUDENT NAME": r.student,
     "PARENT NAME": r.parent,
-    "CLASS": r.admClass,
-    "MOBILE": r.mobile,
-    "DOB": r.dob,
-    "AGE": r.age,
+    CLASS: r.admClass,
+    MOBILE: r.mobile,
+    DOB: r.dob,
+    AGE: r.age,
     "ELIGIBLE CLASS": r.eligible,
-    "DATE": r.date,
-    "APPLICATION": r.application,
+    DATE: r.date,
+    APPLICATION: r.application,
     "ENTRANCE RESULT": r.entrance,
     "INTERVIEW STATUS": r.interview,
-    "FINAL ADMISSION": r.finalAdmission
+    "FINAL ADMISSION": r.finalAdmission,
   }));
 
   // Convert to Excel

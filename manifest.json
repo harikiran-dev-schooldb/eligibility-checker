@@ -1,10 +1,12 @@
 {
-  "name": "Class Eligibility Checker",
-  "short_name": "Eligibility",
-  "start_url": "./index.html",
+  "name": "Kotak School – Eligibility & Admissions",
+  "short_name": "KSS App",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#1976d2",
+
   "icons": [
     {
       "src": "favicon.ico",
@@ -14,6 +16,11 @@
     {
       "src": "KOTAK_LOGO.png",
       "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "KOTAK_LOGO.png",
+      "sizes": "512x512",
       "type": "image/png"
     }
   ]

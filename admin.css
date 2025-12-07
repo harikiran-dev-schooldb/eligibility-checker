@@ -1,0 +1,208 @@
+/* ==========================================================
+   GLOBAL LAYOUT
+========================================================== */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #eef1f5;
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ==========================================================
+   SIDEBAR
+========================================================== */
+.sidebar {
+  width: 250px;
+  background: #ffffff;
+  height: 100vh;
+  padding: 25px 20px;
+  border-right: 1px solid #dcdcdc;
+  position: fixed;
+  left: 0;
+  top: 0;
+  overflow-y: auto;
+}
+
+.logo-section {
+  text-align: center;
+  margin-bottom: 35px;
+}
+
+.logo-section img {
+  width: 110px;
+}
+
+.logo-section h3 {
+  margin-top: 10px;
+  font-size: 19px;
+  font-weight: bold;
+  color: #222;
+}
+
+.sidebar nav {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sidebar nav a {
+  text-decoration: none;
+  padding: 10px 14px;
+  color: #333;
+  border-radius: 6px;
+  font-size: 16px;
+  transition: 0.2s;
+}
+
+.sidebar nav a:hover {
+  background: #e7f0ff;
+}
+
+.sidebar nav a.active {
+  background: #1976d2;
+  color: white;
+}
+
+/* ==========================================================
+   MAIN CONTENT AREA
+========================================================== */
+/* Default: Center login box */
+.content {
+  margin-left: 260px;
+  width: calc(100% - 260px);
+  height: 100vh;
+  display: flex; 
+  justify-content: center;
+  align-items: center;
+  background: #f5f7fa;
+}
+
+/* After login: use full page top area */
+.content.loaded {
+  display: block !important;
+  padding: 40px;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+
+/* ==========================================================
+   LOGIN CARD
+========================================================== */
+.login-card {
+  background: white;
+  padding: 35px;
+  width: 100%;
+  max-width: 380px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.login-card input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+}
+
+/* ==========================================================
+   COMMON WRAPPER (HEADER + TABLE have same width)
+========================================================== */
+.page-wrapper {
+  max-width: 1100px;
+  margin: auto;
+}
+
+/* ==========================================================
+   HEADER SECTION
+========================================================== */
+.top-header {
+  background: white;
+  padding: 20px 30px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  width: 100%;
+}
+
+/* ==========================================================
+   FILTER BAR
+========================================================== */
+.filter-bar {
+  width: 100%;
+  margin: 10px 0 20px 0;
+  font-size: 16px;
+}
+
+.filter-bar select {
+  padding: 6px 10px;
+  font-size: 15px;
+  border-radius: 6px;
+}
+
+/* ==========================================================
+   TABLE
+========================================================== */
+.table-card {
+  background: white;
+  padding: 25px;
+  border-radius: 10px;
+  width: 100%;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+}
+
+.admTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admTable th,
+.admTable td {
+  padding: 12px 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+.admTable input {
+  width: 120px;
+  padding: 6px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+/* ==========================================================
+   SAVE BOX
+========================================================== */
+.saveBox {
+  margin-top: 20px;
+  text-align: right;
+  padding: 10px 0;
+}
+
+
+.tokenBox {
+  width: 260px;
+  padding: 10px;
+  border: 1px solid #bbb;
+  border-radius: 6px;
+  margin-right: 10px;
+}
+
+.btn-primary {
+  background: #1976d2;
+  color: white;
+  padding: 12px 22px;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.btn-primary:hover {
+  background: #145a9b;
+}

@@ -2,71 +2,131 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>Admissions Dashboard – 2026-27</title>
-    <link rel="stylesheet" href="styles.css" />
+    <title>Admissions Dashboard – 2026–27</title>
+
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.json" />
+    <meta name="theme-color" content="#1976d2" />
+
+    <link rel="icon" href="favicon.ico" />
+    <link rel="stylesheet" href="admissions.css" />
   </head>
 
   <body>
-    <h1>Admissions 2026 – 27</h1>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="logo-section">
+        <img src="KOTAK_LOGO.png" />
+        <h3>KOTAK SCHOOL</h3>
+      </div>
 
-    <div class="top-bar">
-      <input
-        id="searchBox"
-        placeholder="Search student / parent / enquiry…"
-        onkeyup="applyFilters()"
-      />
+      <nav class="menu">
+        <a class="active">📊 Admissions Dashboard</a>
+        <a href="index.html">🧮 Eligibility Checker</a>
+        <a href="admin.html">🛠 Fee Editor</a>
+      </nav>
+    </aside>
 
-      <select id="filterClass" onchange="applyFilters()">
-        <option value="">All Classes</option>
-      </select>
+    <!-- Main Content -->
+    <main class="content">
+      <!-- Page Header -->
+      <header class="top-header">
+        <div>
+          <h2>📘 Admissions – AY 2026–27</h2>
+          <p class="subtitle">
+            Manage enquiries, applications, stages & communication
+          </p>
+        </div>
 
-      <select id="filterApplication" onchange="applyFilters()">
-        <option value="">Application</option>
-        <option value="YES">YES</option>
-        <option value="NO">NO</option>
-      </select>
+        <button class="btn-primary" onclick="exportAdmissionsExcel()">
+          ⬇ Export to Excel
+        </button>
+      </header>
 
-      <select id="filterEntrance" onchange="applyFilters()">
-        <option value="">Entrance</option>
-        <option value="NOT STARTED">NOT STARTED</option>
-        <option value="PASS">PASS</option>
-        <option value="FAIL">FAIL</option>
-      </select>
+      <!-- Stat Cards -->
+      <div class="cards">
+        <div class="card fade">
+          <h4>Total Enquiries</h4>
+          <p id="totalEnq">0</p>
+        </div>
 
-      <select id="filterInterview" onchange="applyFilters()">
-        <option value="">Interview</option>
-        <option value="PENDING">PENDING</option>
-        <option value="SELECTED">SELECTED</option>
-        <option value="REJECTED">REJECTED</option>
-      </select>
+        <div class="card fade">
+          <h4>Applications Issued</h4>
+          <p id="totalApp">0</p>
+        </div>
 
-      <select id="filterFinal" onchange="applyFilters()">
-        <option value="">Final Admission</option>
-        <option value="YES">YES</option>
-        <option value="NO">NO</option>
-      </select>
+        <div class="card fade">
+          <h4>Entrance Passed</h4>
+          <p id="totalPass">0</p>
+        </div>
 
-      <button
-        onclick="exportAdmissionsExcel()"
-        style="
-          padding: 10px 20px;
-          background: #007bff;
-          color: white;
-          border: none;
-          border-radius: 5px;
-        "
-      >
-        Export Admissions Excel
-      </button>
-    </div>
+        <div class="card fade">
+          <h4>Final Admissions</h4>
+          <p id="totalFinal">0</p>
+        </div>
+      </div>
 
-    <div id="admissionsContainer">Loading…</div>
+      <!-- Filters -->
+      <div class="filter-bar">
+        <input
+          id="searchBox"
+          class="searchBox"
+          placeholder="🔎 Search student, parent or enquiry..."
+          onkeyup="applyFilters()"
+        />
+
+        <div class="filter-group">
+          <select id="filterClass" onchange="applyFilters()"></select>
+          <select id="filterApplication" onchange="applyFilters()">
+            <option value="">Application</option>
+            <option value="YES">YES</option>
+            <option value="NO">NO</option>
+          </select>
+
+          <select id="filterEntrance" onchange="applyFilters()">
+            <option value="">Entrance</option>
+            <option value="NOT STARTED">NOT STARTED</option>
+            <option value="PASS">PASS</option>
+            <option value="FAIL">FAIL</option>
+          </select>
+
+          <select id="filterInterview" onchange="applyFilters()">
+            <option value="">Interview</option>
+            <option value="PENDING">PENDING</option>
+            <option value="SELECTED">SELECTED</option>
+            <option value="REJECTED">REJECTED</option>
+          </select>
+
+          <select id="filterFinal" onchange="applyFilters()">
+            <option value="">Final</option>
+            <option value="YES">YES</option>
+            <option value="NO">NO</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Table -->
+      <div class="table-card fade">
+        <div id="admissionsContainer">Loading…</div>
+      </div>
+    </main>
 
     <!-- Libraries -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
-    <!-- Main Script -->
     <script src="admissions.js?ver=12345"></script>
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="modal-overlay">
+      <div class="modal-box">
+        <h3>Delete Enquiry?</h3>
+        <p id="deleteMsg">Are you sure you want to delete this enquiry?</p>
+
+        <div class="modal-actions">
+          <button class="cancelBtn" onclick="closeDeleteModal()">Cancel</button>
+          <button class="deleteBtn" id="confirmDeleteBtn">Delete</button>
+        </div>
+      </div>
+    </div>
   </body>
 </html>

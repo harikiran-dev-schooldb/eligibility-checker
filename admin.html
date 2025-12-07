@@ -1,67 +1,88 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Admin Panel - Fee Editor</title>
-    <link rel="stylesheet" href="styles.css" />
-    <style>
-      .admin-container {
-        width: 80%;
-        margin: auto;
-        background: white;
-        padding: 30px;
-        border-radius: 16px;
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-        margin-top: 40px;
-      }
-      table input {
-        width: 120px;
-        padding: 6px;
-        font-size: 16px;
-        text-align: center;
-      }
-    </style>
+    <title>Admin Panel – Fee Editor</title>
+    <link rel="stylesheet" href="admin.css" />
   </head>
+
   <body>
-    <h2>🔐 Admin Login</h2>
-    <div id="loginBox">
-      <input type="text" id="user" placeholder="Username" /><br />
-      <input type="password" id="pass" placeholder="Password" /><br />
-      <button onclick="login()">Login</button>
-    </div>
 
-    <div id="adminPanel" style="display: none">
-      <h2>🛠 Fee Editor (2023–2025)</h2>
-
-      <label><b>Select Year:</b></label>
-      <select id="yearSelect" onchange="loadFeeTable()">
-        <option value="2023">2023–24</option>
-        <option value="2024">2024–25</option>
-        <option value="2025">2025–26</option>
-      </select>
-
-      <div class="admin-container">
-        <table id="feeTable">
-          <thead>
-            <tr>
-              <th>Age</th>
-              <th>Class</th>
-              <th>Fees</th>
-              <th>Term Fee</th>
-            </tr>
-          </thead>
-
-          <!-- FIXED ID -->
-          <tbody id="feeTableBody"></tbody>
-        </table>
-
-        <br />
-        <input type="password" id="token" placeholder="GitHub PAT Token" />
-        <button onclick="saveChanges()">💾 Save Changes</button>
+    <!-- ========== SIDEBAR ========== -->
+    <aside class="sidebar">
+      <div class="logo-section">
+        <img src="KOTAK_LOGO.png" alt="logo" />
+        <h3>KOTAK SCHOOL</h3>
       </div>
-    </div>
 
+      <nav>
+        <a href="admissions.html">Admissions Dashboard</a>
+        <a href="index.html">Eligibility Checker</a>
+        <a class="active" href="admin.html">Fee Editor</a>
+      </nav>
+    </aside>
+
+    <!-- ========== MAIN CONTENT ========== -->
+    <main class="content">
+
+      <!-- LOGIN FORM (Visible before login) -->
+      <div id="loginBox" class="login-card">
+        <h2>🔐 Admin Login</h2>
+
+        <input type="text" id="user" placeholder="Username" />
+        <input type="password" id="pass" placeholder="Password" />
+        <button class="btn-primary" onclick="login()">Login</button>
+      </div>
+
+      <!-- ADMIN PANEL (Visible after login) -->
+      <div id="adminPanel" style="display:none">
+
+        <div class="page-wrapper">
+
+          <!-- HEADER -->
+          <header class="top-header">
+            <h2>🛠 Fee Editor (2023–2025)</h2>
+          </header>
+
+          <!-- YEAR FILTER -->
+          <div class="filter-bar">
+            <label>Select Academic Year:</label>
+            <select id="yearSelect" onchange="loadFeeTable()">
+              <option value="2023">2023–24</option>
+              <option value="2024">2024–25</option>
+              <option value="2025">2025–26</option>
+            </select>
+          </div>
+
+          <!-- TABLE CARD -->
+          <div class="table-card">
+            <table id="feeTable" class="admTable">
+              <thead>
+                <tr>
+                  <th>Age</th>
+                  <th>Class</th>
+                  <th>Fees</th>
+                  <th>Term Fee</th>
+                </tr>
+              </thead>
+              <tbody id="feeTableBody"></tbody>
+            </table>
+          </div>
+
+          <!-- SAVE BOX -->
+          <div class="saveBox">
+            <input type="password" id="token" class="tokenBox"
+              placeholder="GitHub PAT Token" />
+            <button class="btn-primary" onclick="saveChanges()">💾 Save Changes</button>
+          </div>
+
+        </div>
+      </div>
+
+    </main>
+
+    <!-- ========== LOAD SCRIPTS ========== -->
     <script>
-      const version = Date.now(); // cache buster
+      const version = Date.now();
 
       const s1 = document.createElement("script");
       s1.src = "data.js?ver=" + version;
@@ -71,5 +92,6 @@
       s2.src = "admin.js?ver=" + version;
       document.body.appendChild(s2);
     </script>
+
   </body>
 </html>
