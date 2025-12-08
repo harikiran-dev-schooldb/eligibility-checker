@@ -112,8 +112,22 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <!-- Load data.js BEFORE app.js -->
-    <script src="data.js"></script>
-    <script src="app.js"></script>
+    <script>
+      const version = Date.now();
+
+      // Load data.js first with cache bypass
+      const dataScript = document.createElement("script");
+      dataScript.src = "data.js?v=" + version;
+
+      dataScript.onload = () => {
+        // Load app.js after data.js
+        const appScript = document.createElement("script");
+        appScript.src = "app.js?v=" + version;
+        document.body.appendChild(appScript);
+      };
+
+      document.body.appendChild(dataScript);
+    </script>
 
     <!-- Register Service Worker -->
     <script>
