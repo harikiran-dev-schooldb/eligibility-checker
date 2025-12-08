@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
+    <meta charset="UTF-8" />
     <title>Admin Panel – Fee Editor</title>
     <link rel="stylesheet" href="admin.css" />
   </head>
@@ -14,32 +15,35 @@
       </div>
 
       <nav>
-        <a class="active">📊 Admissions Dashboard</a>
+        <a href="admissions.html">📊 Admissions Dashboard</a>
         <a href="index.html">🧮 Eligibility Checker</a>
-        <a href="admin.html">🛠 Fee Editor</a>
+        <a class="active" href="admin.html">🛠 Fee Editor</a>
       </nav>
     </aside>
 
     <!-- ========== MAIN CONTENT ========== -->
     <main class="content">
-      <!-- LOGIN FORM (Visible before login) -->
+      
+      <!-- LOGIN BOX -->
       <div id="loginBox" class="login-card">
         <h2>🔐 Admin Login</h2>
 
         <input type="text" id="user" placeholder="Username" />
         <input type="password" id="pass" placeholder="Password" />
+        
         <button class="btn-primary" onclick="login()">Login</button>
       </div>
 
-      <!-- ADMIN PANEL (Visible after login) -->
-      <div id="adminPanel" style="display: none">
+      <!-- ADMIN PANEL -->
+      <div id="adminPanel" style="display: none;">
         <div class="page-wrapper">
+
           <!-- HEADER -->
           <header class="top-header">
             <h2>🛠 Fee Editor</h2>
           </header>
 
-          <!-- YEAR FILTER -->
+          <!-- YEAR SELECTOR -->
           <div class="filter-bar">
             <div class="filter-group">
               <label>Select Academic Year:</label>
@@ -51,7 +55,7 @@
             </div>
           </div>
 
-          <!-- TABLE CARD -->
+          <!-- FEE TABLE -->
           <div class="table-card">
             <table id="feeTable" class="admTable">
               <thead>
@@ -66,7 +70,7 @@
             </table>
           </div>
 
-          <!-- SAVE BOX -->
+          <!-- SAVE SECTION -->
           <div class="saveBox">
             <input
               type="password"
@@ -78,21 +82,22 @@
               💾 Save Changes
             </button>
           </div>
+
         </div>
       </div>
+
     </main>
 
-    <!-- ========== LOAD SCRIPTS ========== -->
+    <!-- ========== SCRIPT LOADER (VERSIONED) ========== -->
     <script>
       const version = Date.now();
 
-      const s1 = document.createElement("script");
-      s1.src = "data.js?ver=" + version;
-      document.body.appendChild(s1);
-
-      const s2 = document.createElement("script");
-      s2.src = "admin.js?ver=" + version;
-      document.body.appendChild(s2);
+      ["data.js", "admin.js"].forEach(file => {
+        const script = document.createElement("script");
+        script.src = file + "?v=" + version;
+        document.body.appendChild(script);
+      });
     </script>
+
   </body>
 </html>

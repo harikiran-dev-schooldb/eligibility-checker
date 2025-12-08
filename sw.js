@@ -9,25 +9,23 @@ const ASSETS_TO_CACHE = [
   "./index.html",
   "./styles.css",
   "./app.js",
-  "./data.js",
   "./favicon.ico",
   "./KOTAK_LOGO.png",
   "./manifest.json"
 ];
 
 // --------------------------------------------------
-// INSTALL → Cache essential local files
+// INSTALL
 // --------------------------------------------------
 self.addEventListener("install", (event) => {
-  self.skipWaiting(); // Activate immediately
-
+  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS_TO_CACHE))
   );
 });
 
 // --------------------------------------------------
-// ACTIVATE → Remove old caches
+// ACTIVATE
 // --------------------------------------------------
 self.addEventListener("activate", (event) => {
   event.waitUntil(
@@ -45,32 +43,46 @@ self.addEventListener("activate", (event) => {
 });
 
 // --------------------------------------------------
-// FETCH HANDLER (Single listener)
-// Network-first for local files
-// Bypass Supabase completely
+// FETCH (Final Clean Version)
 // --------------------------------------------------
 self.addEventListener("fetch", (event) => {
-  const url = event.request.url;
+  const req = event.request;
+  const url = req.url;
 
-  // -----------------------------------------------
-  // 🚫 BYPASS SUPABASE → DO NOT CACHE OR INTERCEPT
-  // -----------------------------------------------
-  if (url.includes("supabase.co")) {
-    return; // Let browser fetch normally
+  // ------------------------------------------------
+  // 🚫 1. Ignore ALL non-GET requests
+  // ------------------------------------------------
+  if (req.method !== "GET") {
+    return;
   }
 
-  // -----------------------------------------------
-  // Normal app files → NETWORK FIRST
-  // Ensures latest JS & data loads
-  // -----------------------------------------------
+  // ------------------------------------------------
+  // 🚫 2. Ignore external APIs (Supabase, GitHub API calls)
+  // ------------------------------------------------
+  if (url.includes("supabase.co") || url.includes("api.github.com")) {
+    return;
+  }
+
+  // ------------------------------------------------
+  // ⭐ 3. ALWAYS FETCH data.js FRESH FROM NETWORK
+  // ------------------------------------------------
+  if (url.includes("data.js")) {
+    event.respondWith(
+      fetch(url + "?v=" + Date.now(), { cache: "no-store" })
+    );
+    return;
+  }
+
+  // ------------------------------------------------
+  // 4. NETWORK-FIRST for local app files
+  // ------------------------------------------------
   event.respondWith(
-    fetch(event.request)
+    fetch(req)
       .then((response) => {
-        // Update cache with fresh copy
         const clone = response.clone();
-        caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+        caches.open(CACHE_NAME).then((cache) => cache.put(req, clone));
         return response;
       })
-      .catch(() => caches.match(event.request)) // Offline fallback
+      .catch(() => caches.match(req))
   );
 });

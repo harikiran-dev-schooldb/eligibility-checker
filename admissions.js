@@ -78,10 +78,10 @@ function renderTable(rows) {
           <th>Parent</th>
           <th>Class</th>
           <th>Mobile</th> 
-          <th>Application</th>
-          <th>Entrance</th>
-          <th>Interview</th>
-          <th>Final Admission</th>
+          ${admin ? "<th>Application</th>" : ""}
+          ${admin ? "<th>Entrance</th>" : ""}
+          ${admin ? "<th>Interview</th>" : ""}
+          ${admin ? "<th>Final Admission</th>" : ""}
           ${admin ? "<th>WhatsApp</th>" : ""}
           ${admin ? "<th>Delete</th>" : ""}
         </tr>
@@ -90,92 +90,64 @@ function renderTable(rows) {
   `;
 
   rows.forEach((r) => {
-    html += `
-      <tr>
-        <td>${r.enquiryNo}</td>
-        <td>${r.student}</td>
-        <td>${r.parent}</td>
-        <td>${r.admClass}</td>
-        <td>${r.mobile}</td>
-        
+  html += `
+    <tr>
+      <td>${r.enquiryNo}</td>
+      <td>${r.student}</td>
+      <td>${r.parent}</td>
+      <td>${r.admClass}</td>
+      <td>${r.mobile}</td>
+      
+      ${admin ? `
+      <td>
+        <select onchange="updateStage('${r.enquiryNo}','application',this.value)">
+          <option ${r.application === "NO" ? "selected" : ""}>NO</option>
+          <option ${r.application === "YES" ? "selected" : ""}>YES</option>
+        </select>
+      </td>
 
-        <td>
-          <select onchange="updateStage('${
-            r.enquiryNo
-          }','application',this.value)">
-            <option ${r.application === "NO" ? "selected" : ""}>NO</option>
-            <option ${r.application === "YES" ? "selected" : ""}>YES</option>
-          </select>
-        </td>
+      <td>
+        <select onchange="updateStage('${r.enquiryNo}','entrance',this.value)">
+          <option ${r.entrance === "NOT STARTED" ? "selected" : ""}>NOT STARTED</option>
+          <option ${r.entrance === "PASS" ? "selected" : ""}>PASS</option>
+          <option ${r.entrance === "FAIL" ? "selected" : ""}>FAIL</option>
+        </select>
+      </td>
 
-        <td>
-          <select onchange="updateStage('${
-            r.enquiryNo
-          }','entrance',this.value)">
-            <option ${
-              r.entrance === "NOT STARTED" ? "selected" : ""
-            }>NOT STARTED</option>
-            <option ${r.entrance === "PASS" ? "selected" : ""}>PASS</option>
-            <option ${r.entrance === "FAIL" ? "selected" : ""}>FAIL</option>
-          </select>
-        </td>
+      <td>
+        <select onchange="updateStage('${r.enquiryNo}','interview',this.value)">
+          <option ${r.interview === "PENDING" ? "selected" : ""}>PENDING</option>
+          <option ${r.interview === "SELECTED" ? "selected" : ""}>SELECTED</option>
+          <option ${r.interview === "REJECTED" ? "selected" : ""}>REJECTED</option>
+        </select>
+      </td>
 
-        <td>
-          <select onchange="updateStage('${
-            r.enquiryNo
-          }','interview',this.value)">
-            <option ${
-              r.interview === "PENDING" ? "selected" : ""
-            }>PENDING</option>
-            <option ${
-              r.interview === "SELECTED" ? "selected" : ""
-            }>SELECTED</option>
-            <option ${
-              r.interview === "REJECTED" ? "selected" : ""
-            }>REJECTED</option>
-          </select>
-        </td>
+      <td>
+        <select onchange="updateStage('${r.enquiryNo}','finalAdmission',this.value)">
+          <option ${r.finalAdmission === "NO" ? "selected" : ""}>NO</option>
+          <option ${r.finalAdmission === "YES" ? "selected" : ""}>YES</option>
+        </select>
+      </td>
+      ` : ``}
 
-        <td>
-          <select onchange="updateStage('${
-            r.enquiryNo
-          }','finalAdmission',this.value)">
-            <option ${r.finalAdmission === "NO" ? "selected" : ""}>NO</option>
-            <option ${r.finalAdmission === "YES" ? "selected" : ""}>YES</option>
-          </select>
-        </td>
-${
-          admin
-            ? `
-        <td>
-  <button class="waIconBtn"
-    onclick="sendManualWhatsApp('${r.mobile}','${r.parent}','${r.student}','${
-      r.enquiryNo
-    }')">
-    <svg viewBox="0 0 32 32" class="waOnlyIcon">
-      <path fill="currentColor"
-        d="M16.001 3.2c-7.064 0-12.8 5.736-12.8 12.8c0 2.256.592 4.432 1.712 6.36L3.2 28.8l6.656-1.728c1.872.992 4 1.52 6.112 1.52c7.056 0 12.8-5.736 12.8-12.8s-5.744-12.8-12.768-12.8zm7.6 17.808c-.32.896-1.872 1.744-2.56 1.84c-.656.096-1.504.16-2.416-.144c-.56-.176-1.28-.4-2.224-.784c-3.936-1.616-6.496-5.376-6.704-5.632c-.208-.256-1.6-2.128-1.6-4.064c0-1.936 1.008-2.88 1.36-3.28c.352-.4.768-.496 1.024-.496c.256 0 .512 0 1.024.032c.336.016.784-.128 1.232.944c.448 1.088 1.52 3.76 1.648 4.032c.128.272.208.592.048.928c-.16.336-.24.544-.48.832c-.24.288-.512.64-.736.864c-.24.224-.496.48-.208.944c.288.464 1.28 2.112 3.072 3.424c2.112 1.536 3.104 1.76 3.6 1.952c.496.192.784.16 1.072-.096c.288-.256 1.232-1.28 1.568-1.712c.336-.432.704-.368 1.184-.224c.48.144 3.024 1.424 3.536 1.68c.512.256.848.384.96.592c.112.208.112 1.12-.208 2.016z"/>
-    </svg>
-  </button>
-</td>
-`
-            : ""
-        }
+      ${admin ? `
+      <td>
+        <button class="waIconBtn"
+          onclick="sendManualWhatsApp('${r.mobile}','${r.parent}','${r.student}','${r.enquiryNo}')">
+          <svg viewBox="0 0 32 32" class="waOnlyIcon">
+            <path fill="currentColor" d="M16.001 3.2c-7.064..."></path>
+          </svg>
+        </button>
+      </td>
 
-        
-        ${
-          admin
-            ? `
-<td>
-  <button onclick="deleteEnquiry('${r.enquiryNo}')" class="deleteBtn">Delete</button>
-</td>
-`
-            : ""
-        }
+      <td>
+        <button onclick="deleteEnquiry('${r.enquiryNo}')" class="deleteBtn">Delete</button>
+      </td>
+      ` : ``}
+    </tr>
+  `;
+});
 
-      </tr>
-    `;
-  });
 
   html += "</tbody></table>";
   document.getElementById("admissionsContainer").innerHTML = html;
