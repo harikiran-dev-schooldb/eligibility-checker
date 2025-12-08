@@ -132,13 +132,14 @@ function renderTable(rows) {
 
       ${admin ? `
       <td>
-        <button class="waIconBtn"
-          onclick="sendManualWhatsApp('${r.mobile}','${r.parent}','${r.student}','${r.enquiryNo}')">
-          <svg viewBox="0 0 32 32" class="waOnlyIcon">
-            <path fill="currentColor" d="M16.001 3.2c-7.064..."></path>
-          </svg>
-        </button>
-      </td>
+  <button class="waIconBtn"
+    onclick="sendManualWhatsApp('${r.mobile}','${r.parent}','${r.student}','${r.enquiryNo}')">
+    <img src="whatsapp.png" class="waOnlyIcon" alt="WA">
+  </button>
+</td>
+
+
+
 
       <td>
         <button onclick="deleteEnquiry('${r.enquiryNo}')" class="deleteBtn">Delete</button>

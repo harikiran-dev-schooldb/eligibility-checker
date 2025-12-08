@@ -232,32 +232,31 @@ body {
   background: #fff4c2 !important;
 }
 
-/* Simple WhatsApp Icon Button */
+/* WhatsApp circular button */
 .waIconBtn {
-  background: #25d366;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
+  background: none;
   border: none;
+  padding: 0;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: 0.25s ease;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  transition: 0.2s ease;
 }
 
 .waIconBtn:hover {
-  background: #1ebe5d;
-  transform: scale(1.12);
-  box-shadow: 0 3px 10px rgba(0,0,0,0.25);
+  transform: scale(1.18);
 }
 
 .waOnlyIcon {
-  width: 17px;
-  height: 17px;
-  fill: #fff;
+  width: 28px;   /* adjust size */
+  height: 28px;
+  pointer-events: none;
 }
+
+
+
+
 
 
 
