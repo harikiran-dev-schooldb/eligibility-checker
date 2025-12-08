@@ -123,6 +123,12 @@
         // Load app.js after data.js
         const appScript = document.createElement("script");
         appScript.src = "app.js?v=" + version;
+
+        appScript.onload = () => {
+          // 🚀 Auto-load table on first page load
+          loadTable();
+        };
+
         document.body.appendChild(appScript);
       };
 
