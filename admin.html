@@ -6,7 +6,6 @@
   </head>
 
   <body>
-
     <!-- ========== SIDEBAR ========== -->
     <aside class="sidebar">
       <div class="logo-section">
@@ -15,15 +14,14 @@
       </div>
 
       <nav>
-        <a href="admissions.html">Admissions Dashboard</a>
-        <a href="index.html">Eligibility Checker</a>
-        <a class="active" href="admin.html">Fee Editor</a>
+        <a class="active">📊 Admissions Dashboard</a>
+        <a href="index.html">🧮 Eligibility Checker</a>
+        <a href="admin.html">🛠 Fee Editor</a>
       </nav>
     </aside>
 
     <!-- ========== MAIN CONTENT ========== -->
     <main class="content">
-
       <!-- LOGIN FORM (Visible before login) -->
       <div id="loginBox" class="login-card">
         <h2>🔐 Admin Login</h2>
@@ -34,23 +32,23 @@
       </div>
 
       <!-- ADMIN PANEL (Visible after login) -->
-      <div id="adminPanel" style="display:none">
-
+      <div id="adminPanel" style="display: none">
         <div class="page-wrapper">
-
           <!-- HEADER -->
           <header class="top-header">
-            <h2>🛠 Fee Editor (2023–2025)</h2>
+            <h2>🛠 Fee Editor</h2>
           </header>
 
           <!-- YEAR FILTER -->
           <div class="filter-bar">
-            <label>Select Academic Year:</label>
-            <select id="yearSelect" onchange="loadFeeTable()">
-              <option value="2023">2023–24</option>
-              <option value="2024">2024–25</option>
-              <option value="2025">2025–26</option>
-            </select>
+            <div class="filter-group">
+              <label>Select Academic Year:</label>
+              <select id="yearSelect" onchange="loadFeeTable()">
+                <option value="2023">2023–24</option>
+                <option value="2024">2024–25</option>
+                <option value="2025">2025–26</option>
+              </select>
+            </div>
           </div>
 
           <!-- TABLE CARD -->
@@ -70,14 +68,18 @@
 
           <!-- SAVE BOX -->
           <div class="saveBox">
-            <input type="password" id="token" class="tokenBox"
-              placeholder="GitHub PAT Token" />
-            <button class="btn-primary" onclick="saveChanges()">💾 Save Changes</button>
+            <input
+              type="password"
+              id="token"
+              class="tokenBox"
+              placeholder="GitHub PAT Token"
+            />
+            <button class="btn-primary" onclick="saveChanges()">
+              💾 Save Changes
+            </button>
           </div>
-
         </div>
       </div>
-
     </main>
 
     <!-- ========== LOAD SCRIPTS ========== -->
@@ -92,6 +94,5 @@
       s2.src = "admin.js?ver=" + version;
       document.body.appendChild(s2);
     </script>
-
   </body>
 </html>

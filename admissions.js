@@ -59,8 +59,10 @@ function populateClassFilter(rows) {
 /**************************************************
  RENDER TABLE
 **************************************************/
+const admin = isAdmin();
 function renderTable(rows) {
   // SORT BY enquiryNo (ascending)
+
   rows.sort((a, b) => {
     const numA = parseInt(a.enquiryNo.split("-")[2]);
     const numB = parseInt(b.enquiryNo.split("-")[2]);
@@ -80,8 +82,8 @@ function renderTable(rows) {
           <th>Entrance</th>
           <th>Interview</th>
           <th>Final Admission</th>
-          <th>WhatsApp</th>
-          <th>Delete</th>
+          ${admin ? "<th>WhatsApp</th>" : ""}
+          ${admin ? "<th>Delete</th>" : ""}
         </tr>
       </thead>
       <tbody>
@@ -142,7 +144,9 @@ function renderTable(rows) {
             <option ${r.finalAdmission === "YES" ? "selected" : ""}>YES</option>
           </select>
         </td>
-
+${
+          admin
+            ? `
         <td>
   <button class="waIconBtn"
     onclick="sendManualWhatsApp('${r.mobile}','${r.parent}','${r.student}','${
@@ -154,13 +158,21 @@ function renderTable(rows) {
     </svg>
   </button>
 </td>
+`
+            : ""
+        }
 
         
-        <td>
-          <button onclick="deleteEnquiry('${r.enquiryNo}')" class="deleteBtn">
-            Delete
-          </button>
-        </td>
+        ${
+          admin
+            ? `
+<td>
+  <button onclick="deleteEnquiry('${r.enquiryNo}')" class="deleteBtn">Delete</button>
+</td>
+`
+            : ""
+        }
+
       </tr>
     `;
   });
@@ -172,20 +184,23 @@ function renderTable(rows) {
 /**************************************************
  UPDATE DASHBOARD CARDS
 **************************************************/
-function updateCards(rows) {
-  document.getElementById("totalEnq").textContent = rows.length;
+function applyFilters() {
+  const q = searchBox.value.toLowerCase();
 
-  document.getElementById("totalApp").textContent = rows.filter(
-    (r) => r.application === "YES"
-  ).length;
+  const filtered = allRows.filter(
+    (r) =>
+      (r.student.toLowerCase().includes(q) ||
+        r.parent.toLowerCase().includes(q) ||
+        r.enquiryNo.toLowerCase().includes(q)) &&
+      (!filterClass.value || r.admClass === filterClass.value) &&
+      (!filterApplication.value || r.application === filterApplication.value) &&
+      (!filterEntrance.value || r.entrance === filterEntrance.value) &&
+      (!filterInterview.value || r.interview === filterInterview.value) &&
+      (!filterFinal.value || r.finalAdmission === filterFinal.value)
+  );
 
-  document.getElementById("totalPass").textContent = rows.filter(
-    (r) => r.entrance === "PASS"
-  ).length;
-
-  document.getElementById("totalFinal").textContent = rows.filter(
-    (r) => r.finalAdmission === "YES"
-  ).length;
+  renderTable(filtered);
+  updateCards(filtered); // <-- ADD THIS ✔
 }
 
 /**************************************************
@@ -491,6 +506,99 @@ async function exportAdmissionsExcel() {
 window.exportAdmissionsExcel = exportAdmissionsExcel;
 
 /**************************************************
+ UPDATE DASHBOARD CARDS (WITH ANIMATION)
+**************************************************/
+/**************************************************
+ UPDATE DASHBOARD CARDS (Animated)
+**************************************************/
+function updateCards(rows) {
+  const totalEnq = rows.length;
+  const totalApp = rows.filter((r) => r.application === "YES").length;
+  const totalPass = rows.filter((r) => r.entrance === "PASS").length;
+  const totalFinal = rows.filter((r) => r.finalAdmission === "YES").length;
+
+  animateNumber("totalEnq", totalEnq);
+  animateNumber("totalApp", totalApp);
+  animateNumber("totalPass", totalPass);
+  animateNumber("totalFinal", totalFinal);
+}
+
+/**************************************************
+ COUNT-UP ANIMATION FOR DASHBOARD CARDS
+**************************************************/
+/**************************************************
+ COUNT-UP ANIMATION (Smooth & Lightweight)
+**************************************************/
+function animateNumber(elementId, finalValue, duration = 700) {
+  const el = document.getElementById(elementId);
+  if (!el) return;
+
+  const startValue = 0;
+  const frameRate = 16; // ~60 FPS
+  const totalFrames = Math.round(duration / frameRate);
+  let currentFrame = 0;
+
+  const counter = setInterval(() => {
+    currentFrame++;
+    const progress = currentFrame / totalFrames;
+
+    // ease-out effect
+    const easedValue = Math.floor(finalValue * (1 - Math.pow(1 - progress, 3)));
+
+    el.textContent = easedValue;
+
+    if (currentFrame >= totalFrames) {
+      clearInterval(counter);
+      el.textContent = finalValue; // ensure exact
+    }
+  }, frameRate);
+}
+
+function adminLogin() {
+  const pwd = prompt("Enter Admin Password:");
+
+  if (pwd === "kotak@1963") {
+    alert("Admin Access Granted ✔");
+    localStorage.setItem("isAdmin", "true");
+    loadAdminButtons();
+    loadAdmissions(); // reload table with delete column
+  } else {
+    alert("❌ Wrong password");
+  }
+}
+
+function adminLogout() {
+  localStorage.removeItem("isAdmin");
+  alert("Logged out ✔");
+  loadAdminButtons();
+  loadAdmissions(); // reload without delete column
+}
+
+
+
+function isAdmin() {
+  return localStorage.getItem("isAdmin") === "true";
+}
+
+
+function loadAdminButtons() {
+  const isAdm = isAdmin();
+  const box = document.getElementById("adminButtons");
+
+  if (isAdm) {
+    box.innerHTML = `
+      <button class="btn-primary" onclick="adminLogout()">Logout</button>
+    `;
+  } else {
+    box.innerHTML = `
+      <button class="btn-primary" onclick="adminLogin()">Login</button>
+    `;
+  }
+}
+
+
+/**************************************************
  INIT
 **************************************************/
+loadAdminButtons();
 loadAdmissions();

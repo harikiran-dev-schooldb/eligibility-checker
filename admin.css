@@ -1,152 +1,128 @@
 /* ==========================================================
-   GLOBAL LAYOUT
+   GLOBAL RESET
 ========================================================== */
-body {
+* {
   margin: 0;
-  font-family: Arial, sans-serif;
-  background: #eef1f5;
-  display: flex;
-  height: 100vh;
-  overflow: hidden;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 /* ==========================================================
-   SIDEBAR
+   GLOBAL BODY
+========================================================== */
+body {
+  font-family: "Inter", Arial, sans-serif;
+  display: flex;
+  background: #f1f4f9;
+  color: #333;
+  overflow-x: hidden;
+}
+
+/* ==========================================================
+   SIDEBAR (MATCHES ADMISSIONS DASHBOARD)
 ========================================================== */
 .sidebar {
-  width: 250px;
+  width: 240px;
   background: #ffffff;
   height: 100vh;
-  padding: 25px 20px;
-  border-right: 1px solid #dcdcdc;
+  border-right: 1px solid #ddd;
   position: fixed;
-  left: 0;
-  top: 0;
+  padding: 20px 15px;
   overflow-y: auto;
 }
 
 .logo-section {
   text-align: center;
-  margin-bottom: 35px;
+  margin-bottom: 30px;
 }
 
 .logo-section img {
-  width: 110px;
+  width: 70px;
 }
 
 .logo-section h3 {
   margin-top: 10px;
-  font-size: 19px;
-  font-weight: bold;
-  color: #222;
-}
-
-.sidebar nav {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+  color: #1976d2;
+  font-size: 18px;
 }
 
 .sidebar nav a {
+  display: block;
+  padding: 12px 15px;
+  margin: 6px 0;
+  border-radius: 8px;
+  color: #444;
   text-decoration: none;
-  padding: 10px 14px;
-  color: #333;
-  border-radius: 6px;
-  font-size: 16px;
-  transition: 0.2s;
+  font-size: 15px;
+  transition: 0.25s ease;
 }
 
 .sidebar nav a:hover {
-  background: #e7f0ff;
+  background: #e8f0fe;
+  color: #1976d2;
 }
 
-.sidebar nav a.active {
+.sidebar nav .active {
   background: #1976d2;
-  color: white;
+  color: #fff;
+}
+
+/* Scrollbar for Sidebar */
+.sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+.sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.sidebar::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 10px;
 }
 
 /* ==========================================================
-   MAIN CONTENT AREA
+   MAIN CONTENT (Fee Editor)
 ========================================================== */
-/* Default: Center login box */
 .content {
-  margin-left: 260px;
-  width: calc(100% - 260px);
-  height: 100vh;
-  display: flex; 
-  justify-content: center;
-  align-items: center;
-  background: #f5f7fa;
-}
-
-/* After login: use full page top area */
-.content.loaded {
-  display: block !important;
-  padding: 40px;
-  align-items: flex-start;
-  justify-content: flex-start;
-}
-
-
-/* ==========================================================
-   LOGIN CARD
-========================================================== */
-.login-card {
-  background: white;
+  margin-left: 240px;
+  width: calc(100% - 240px);
+  min-height: 100vh;
   padding: 35px;
-  width: 100%;
-  max-width: 380px;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  text-align: center;
-}
-
-.login-card input {
-  width: 100%;
-  padding: 12px;
-  margin-bottom: 12px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  font-size: 16px;
+  overflow-y: auto;
 }
 
 /* ==========================================================
-   COMMON WRAPPER (HEADER + TABLE have same width)
-========================================================== */
-.page-wrapper {
-  max-width: 1100px;
-  margin: auto;
-}
-
-/* ==========================================================
-   HEADER SECTION
+   HEADER (Full Width)
 ========================================================== */
 .top-header {
-  background: white;
+  background: #fff;
   padding: 20px 30px;
   border-radius: 10px;
-  margin-bottom: 20px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  margin-bottom: 25px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.06);
   width: 100%;
 }
 
+.top-header h2 {
+  font-size: 24px;
+  color: #222;
+}
+
 /* ==========================================================
-   FILTER BAR
+   SELECT YEAR DROPDOWN
 ========================================================== */
 .filter-bar {
-  width: 100%;
-  margin: 10px 0 20px 0;
-  font-size: 16px;
-}
-
-.filter-bar select {
-  padding: 6px 10px;
-  font-size: 15px;
-  border-radius: 6px;
+  margin-bottom: 20px;
+  background: #fff;
+  padding: 15px 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  display: flex;
+  align-items: center;
+  gap: 15px;
 }
 
 /* ==========================================================
-   TABLE
+   TABLE WRAPPER (Full Width)
 ========================================================== */
 .table-card {
   background: white;
@@ -154,24 +130,45 @@ body {
   border-radius: 10px;
   width: 100%;
   box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+  overflow-x: auto;
 }
 
+/* ==========================================================
+   TABLE
+========================================================== */
 .admTable {
   width: 100%;
   border-collapse: collapse;
+  min-width: 900px;
 }
 
-.admTable th,
+.admTable th {
+  background: #1976d2;
+  color: white;
+  padding: 12px;
+  font-size: 15px;
+  text-align: left;
+}
+
 .admTable td {
-  padding: 12px 10px;
-  border-bottom: 1px solid #ddd;
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+}
+
+.admTable tr:nth-child(even) {
+  background: #f7faff;
+}
+
+.admTable tr:hover {
+  background: #eaf2ff;
+  transition: 0.25s ease;
 }
 
 .admTable input {
-  width: 120px;
-  padding: 6px;
+  width: 140px;
+  padding: 7px;
+  border-radius: 6px;
   border: 1px solid #ccc;
-  border-radius: 5px;
 }
 
 /* ==========================================================
@@ -179,30 +176,191 @@ body {
 ========================================================== */
 .saveBox {
   margin-top: 20px;
-  text-align: right;
-  padding: 10px 0;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
 }
-
 
 .tokenBox {
   width: 260px;
   padding: 10px;
   border: 1px solid #bbb;
   border-radius: 6px;
-  margin-right: 10px;
 }
 
 .btn-primary {
   background: #1976d2;
-  color: white;
+  color: #fff;
   padding: 12px 22px;
   border: none;
   border-radius: 6px;
-  font-size: 16px;
   cursor: pointer;
-  transition: 0.2s;
+  transition: 0.25s ease;
 }
 
 .btn-primary:hover {
-  background: #145a9b;
+  background: #0e5cac;
 }
+
+/* ==========================================================
+   DELETE MODAL (Premium UI)
+========================================================== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(4px);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.modal-box {
+  background: #fff;
+  padding: 25px 30px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 380px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.cancelBtn {
+  background: #ccc;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.deleteBtn {
+  background: #d9534f;
+  color: white;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* ==========================================================
+   RESPONSIVE
+========================================================== */
+@media (max-width: 900px) {
+  .content {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 600px) {
+  .sidebar {
+    display: none;
+  }
+  .content {
+    margin-left: 0;
+    width: 100%;
+  }
+}
+
+/* ==========================================================
+   LOGIN BOX – Modern Elegant Style
+========================================================== */
+/* ==========================================================
+   PREMIUM LOGIN CARD (matches dashboard styling)
+========================================================== */
+.login-card {
+  background: #ffffff;
+  padding: 35px 40px;
+  width: 100%;
+  max-width: 420px;
+  border-radius: 14px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+  text-align: center;
+  margin-top: 40px;
+  animation: fadeSlide 0.35s ease;
+}
+
+@keyframes fadeSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.login-card h2 {
+  font-size: 22px;
+  color: #222;
+  margin-bottom: 18px;
+  font-weight: 600;
+}
+
+.login-card input {
+  width: 100%;
+  padding: 12px 14px;
+  margin-bottom: 14px;
+  border-radius: 6px;
+  border: 1px solid #cfd6e0;
+  background: #f9fbfd;
+  font-size: 15px;
+  transition: 0.25s ease;
+}
+
+.login-card input:focus {
+  border-color: #1976d2;
+  background: #ffffff;
+  box-shadow: 0 0 5px rgba(25,118,210,0.32);
+}
+
+.login-card .btn-primary {
+  width: 100%;
+  padding: 12px;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 500;
+  margin-top: 5px;
+  transition: 0.25s ease;
+}
+
+.login-card .btn-primary:hover {
+  transform: translateY(-2px);
+}
+
+/* ==========================================================
+   FORCE LOGIN BOX TO CENTER
+========================================================== */
+
+#loginBox {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Match dropdown styling with Admissions Dashboard */
+
+.filter-group select,
+.searchBox {
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background: #fafafa;
+  font-size: 15px;
+  min-width: 180px;
+  transition: 0.2s ease;
+}
+
+.filter-group select:focus {
+  outline: none;
+  border-color: #1976d2;
+  background: #fff;
+  box-shadow: 0 0 4px rgba(25, 118, 210, 0.4);
+}
+
+
