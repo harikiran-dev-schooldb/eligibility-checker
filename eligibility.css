@@ -117,15 +117,27 @@ th {
   text-align: center;
 }
 
+/* CLEAN, FIXED INPUT STYLE */
 .modal-content input,
 .modal-content select {
-  width: 100%;
-  margin-bottom: 12px;
+  width: 100%;               /* EXACT same width as button */
   padding: 12px 14px;
+  margin-bottom: 12px;
   border-radius: 8px;
   border: 1px solid #ccc;
+  font-size: 15px;
+  box-sizing: border-box;    /* ensures true equal width */
 }
 
+
+
+/* Focus state */
+.modal-content input:focus,
+.modal-content select:focus {
+  border-color: #1976d2 !important;
+}
+
+/* Button */
 .modal-content button {
   width: 100%;
   padding: 14px;
@@ -156,3 +168,18 @@ th {
     background: #ffffff;
   }
 }
+
+
+
+.logo-link img {
+  transition: transform 0.2s ease, opacity 0.2s ease;
+  cursor: pointer;
+}
+
+.logo-link img:hover {
+  transform: scale(1.05);
+  opacity: 0.9;
+}
+
+
+

@@ -49,11 +49,27 @@ function populateClassFilter(rows) {
   const dd = document.getElementById("filterClass");
   dd.innerHTML = `<option value="">All Classes</option>`;
 
+  const classOrder = {
+    "PRE KG": 1,
+    LKG: 2,
+    UKG: 3,
+    I: 4,
+    II: 5,
+    III: 6,
+    IV: 7,
+    V: 8,
+    VI: 9,
+    VII: 10,
+    VIII: 11,
+    IX: 12,
+    X: 13,
+  };
+
   [...new Set(rows.map((r) => r.admClass))]
-    .sort()
-    .forEach(
-      (cls) => (dd.innerHTML += `<option value="${cls}">${cls}</option>`)
-    );
+    .sort((a, b) => (classOrder[a] || 999) - (classOrder[b] || 999))
+    .forEach((cls) => {
+      dd.innerHTML += `<option value="${cls}">${cls}</option>`;
+    });
 }
 
 /**************************************************
@@ -90,7 +106,7 @@ function renderTable(rows) {
   `;
 
   rows.forEach((r) => {
-  html += `
+    html += `
     <tr>
       <td>${r.enquiryNo}</td>
       <td>${r.student}</td>
@@ -98,9 +114,13 @@ function renderTable(rows) {
       <td>${r.admClass}</td>
       <td>${r.mobile}</td>
       
-      ${admin ? `
+      ${
+        admin
+          ? `
       <td>
-        <select onchange="updateStage('${r.enquiryNo}','application',this.value)">
+        <select onchange="updateStage('${
+          r.enquiryNo
+        }','application',this.value)">
           <option ${r.application === "NO" ? "selected" : ""}>NO</option>
           <option ${r.application === "YES" ? "selected" : ""}>YES</option>
         </select>
@@ -108,7 +128,9 @@ function renderTable(rows) {
 
       <td>
         <select onchange="updateStage('${r.enquiryNo}','entrance',this.value)">
-          <option ${r.entrance === "NOT STARTED" ? "selected" : ""}>NOT STARTED</option>
+          <option ${
+            r.entrance === "NOT STARTED" ? "selected" : ""
+          }>NOT STARTED</option>
           <option ${r.entrance === "PASS" ? "selected" : ""}>PASS</option>
           <option ${r.entrance === "FAIL" ? "selected" : ""}>FAIL</option>
         </select>
@@ -116,21 +138,33 @@ function renderTable(rows) {
 
       <td>
         <select onchange="updateStage('${r.enquiryNo}','interview',this.value)">
-          <option ${r.interview === "PENDING" ? "selected" : ""}>PENDING</option>
-          <option ${r.interview === "SELECTED" ? "selected" : ""}>SELECTED</option>
-          <option ${r.interview === "REJECTED" ? "selected" : ""}>REJECTED</option>
+          <option ${
+            r.interview === "PENDING" ? "selected" : ""
+          }>PENDING</option>
+          <option ${
+            r.interview === "SELECTED" ? "selected" : ""
+          }>SELECTED</option>
+          <option ${
+            r.interview === "REJECTED" ? "selected" : ""
+          }>REJECTED</option>
         </select>
       </td>
 
       <td>
-        <select onchange="updateStage('${r.enquiryNo}','finalAdmission',this.value)">
+        <select onchange="updateStage('${
+          r.enquiryNo
+        }','finalAdmission',this.value)">
           <option ${r.finalAdmission === "NO" ? "selected" : ""}>NO</option>
           <option ${r.finalAdmission === "YES" ? "selected" : ""}>YES</option>
         </select>
       </td>
-      ` : ``}
+      `
+          : ``
+      }
 
-      ${admin ? `
+      ${
+        admin
+          ? `
       <td>
   <button class="waIconBtn"
     onclick="sendManualWhatsApp('${r.mobile}','${r.parent}','${r.student}','${r.enquiryNo}')">
@@ -144,11 +178,12 @@ function renderTable(rows) {
       <td>
         <button onclick="deleteEnquiry('${r.enquiryNo}')" class="deleteBtn">Delete</button>
       </td>
-      ` : ``}
+      `
+          : ``
+      }
     </tr>
   `;
-});
-
+  });
 
   html += "</tbody></table>";
   document.getElementById("admissionsContainer").innerHTML = html;
@@ -547,12 +582,9 @@ function adminLogout() {
   loadAdmissions(); // reload without delete column
 }
 
-
-
 function isAdmin() {
   return localStorage.getItem("isAdmin") === "true";
 }
-
 
 function loadAdminButtons() {
   const isAdm = isAdmin();
@@ -568,7 +600,6 @@ function loadAdminButtons() {
     `;
   }
 }
-
 
 /**************************************************
  INIT

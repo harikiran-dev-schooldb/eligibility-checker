@@ -68,7 +68,7 @@ function checkEligibility() {
   }
 
   let msg = "";
-  if (["Pre KG", "LKG", "UKG"].includes(eligible))
+  if (["PRE KG", "LKG", "UKG"].includes(eligible))
     msg = "Welcome to Early Learning!";
   else if (["I", "II", "III", "IV", "V"].includes(eligible))
     msg = "You are ready for Primary School!";

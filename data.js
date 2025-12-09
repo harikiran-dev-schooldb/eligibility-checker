@@ -4,7 +4,7 @@ const manualFees = {
   "2023": [
     {
       "age": 3,
-      "class": "Pre KG",
+      "class": "PRE KG",
       "fees": 0,
       "term": 0
     },
@@ -84,7 +84,7 @@ const manualFees = {
   "2024": [
     {
       "age": 3,
-      "class": "Pre KG",
+      "class": "PRE KG",
       "fees": 21000,
       "term": 5250
     },
@@ -164,7 +164,7 @@ const manualFees = {
   "2025": [
     {
       "age": 3,
-      "class": "Pre KG",
+      "class": "PRE KG",
       "fees": 24000,
       "term": 6000
     },
@@ -246,7 +246,7 @@ const manualFees = {
 const eligibilityData = [
   {
     "age": 3,
-    "class": "Pre KG"
+    "class": "PRE KG"
   },
   {
     "age": 4,
