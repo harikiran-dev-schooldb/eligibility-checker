@@ -33,6 +33,13 @@ async function loadAdmissions() {
 
     allRows = await res.json();
 
+    // Default sort by Enquiry No
+    allRows.sort((a, b) => {
+      const numA = parseInt(a.enquiryNo.split("-")[2]);
+      const numB = parseInt(b.enquiryNo.split("-")[2]);
+      return numA - numB;
+    });
+
     populateClassFilter(allRows);
     renderTable(allRows);
     updateCards(allRows);
@@ -73,27 +80,90 @@ function populateClassFilter(rows) {
 }
 
 /**************************************************
+ TOGGLE SIDEBAR
+**************************************************/
+function toggleSidebar() {
+  const sidebar = document.querySelector(".sidebar");
+  const content = document.querySelector(".content");
+
+  sidebar.classList.toggle("closed");
+  content.classList.toggle("expanded");
+}
+
+/**************************************************
  RENDER TABLE
 **************************************************/
 const admin = isAdmin();
+function formatEnquiry(enq) {
+  return parseInt(enq.split("-").pop(), 10);
+}
+
+let sortState = {
+  enquiry: "asc",
+  class: "asc",
+};
+
+function sortTable(column) {
+  if (column === "enquiry") {
+    allRows.sort((a, b) => {
+      const numA = parseInt(a.enquiryNo.split("-")[2]);
+      const numB = parseInt(b.enquiryNo.split("-")[2]);
+      return sortState.enquiry === "asc" ? numA - numB : numB - numA;
+    });
+
+    sortState.enquiry = sortState.enquiry === "asc" ? "desc" : "asc";
+  }
+
+  if (column === "class") {
+    const order = {
+      "PRE KG": 1,
+      LKG: 2,
+      UKG: 3,
+      I: 4,
+      II: 5,
+      III: 6,
+      IV: 7,
+      V: 8,
+      VI: 9,
+      VII: 10,
+      VIII: 11,
+      IX: 12,
+      X: 13,
+    };
+
+    allRows.sort((a, b) => {
+      return sortState.class === "asc"
+        ? order[a.admClass] - order[b.admClass]
+        : order[b.admClass] - order[a.admClass];
+    });
+
+    sortState.class = sortState.class === "asc" ? "desc" : "asc";
+  }
+
+  renderTable(allRows);
+}
+
+function formatDateDMY(dateStr) {
+  if (!dateStr || dateStr === "null") return "";
+  const [y, m, d] = dateStr.split("-");
+  return `${d}-${m}-${y}`;
+}
+
 function renderTable(rows) {
   // SORT BY enquiryNo (ascending)
-
-  rows.sort((a, b) => {
-    const numA = parseInt(a.enquiryNo.split("-")[2]);
-    const numB = parseInt(b.enquiryNo.split("-")[2]);
-    return numA - numB;
-  });
 
   let html = `
     <table class="admTable">
       <thead>
         <tr>
-          <th>Enquiry No</th>
-          <th>Student</th>
+          <th onclick="sortTable('enquiry')">Enq No</th>
           <th>Parent</th>
-          <th>Class</th>
+          <th>Student</th>
+          <th onclick="sortTable('class')">Class</th>
           <th>Mobile</th> 
+          <th>DOB</th> 
+          <th>Age</th> 
+          <th>Eligible Class</th> 
           ${admin ? "<th>Application</th>" : ""}
           ${admin ? "<th>Entrance</th>" : ""}
           ${admin ? "<th>Interview</th>" : ""}
@@ -108,17 +178,20 @@ function renderTable(rows) {
   rows.forEach((r) => {
     html += `
     <tr>
-      <td>${r.enquiryNo}</td>
-      <td>${r.student}</td>
+      <td>${formatEnquiry(r.enquiryNo)}</td>
       <td>${r.parent}</td>
+      <td>${r.student}</td>
       <td>${r.admClass}</td>
       <td>${r.mobile}</td>
+      <td>${r.dob}</td>
+      <td>${r.age}</td>
+      <td>${r.eligible}</td>
       
       ${
         admin
           ? `
       <td>
-        <select onchange="updateStage('${
+        <select class="table-select" onchange="updateStage('${
           r.enquiryNo
         }','application',this.value)">
           <option ${r.application === "NO" ? "selected" : ""}>NO</option>
@@ -127,7 +200,9 @@ function renderTable(rows) {
       </td>
 
       <td>
-        <select onchange="updateStage('${r.enquiryNo}','entrance',this.value)">
+        <select class="table-select" onchange="updateStage('${
+          r.enquiryNo
+        }','entrance',this.value)">
           <option ${
             r.entrance === "NOT STARTED" ? "selected" : ""
           }>NOT STARTED</option>
@@ -137,7 +212,9 @@ function renderTable(rows) {
       </td>
 
       <td>
-        <select onchange="updateStage('${r.enquiryNo}','interview',this.value)">
+        <select class="table-select" onchange="updateStage('${
+          r.enquiryNo
+        }','interview',this.value)">
           <option ${
             r.interview === "PENDING" ? "selected" : ""
           }>PENDING</option>
@@ -151,7 +228,7 @@ function renderTable(rows) {
       </td>
 
       <td>
-        <select onchange="updateStage('${
+        <select class="table-select" onchange="updateStage('${
           r.enquiryNo
         }','finalAdmission',this.value)">
           <option ${r.finalAdmission === "NO" ? "selected" : ""}>NO</option>

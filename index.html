@@ -11,7 +11,7 @@
   <body>
     <div class="school-header">
       <a href="admissions.html" class="logo-link">
-        <img src="KOTAK_LOGO.png" alt="School Logo"/>
+        <img src="KOTAK_LOGO.png" alt="School Logo" />
       </a>
       <h2>KOTAK SALESIAN SCHOOL</h2>
       <p>Academic Year 2026 – 27</p>
@@ -26,33 +26,24 @@
 
     <label><b>Select Academic Year:</b></label>
     <select id="yearSelect" onchange="loadTable()">
-      <option value="2023">2023–24</option>
-      <option value="2024">2024–25</option>
-      <option value="2025">2025–26</option>
-      <option value="2026" selected>2026–27</option>
-    </select>
-
-    <select id="incrementSelect" onchange="updateIncrementView()">
-      <option value="all">View All</option>
-      <option value="8">8% Increment</option>
-      <option value="9">9% Increment</option>
-      <option value="10" selected>10% Increment</option>
+      <option value="2023-24">2023–24</option>
+      <option value="2024-25">2024–25</option>
+      <option value="2025-26">2025–26</option>
+      <option value="2026-27" selected>2026–27</option>
     </select>
 
     <button onclick="window.print()">⬇️ Download PDF</button>
 
     <table id="eligibilityTable">
       <thead>
-        <tr>
+        <tr id="tableHeader">
           <th>Age</th>
           <th>Class</th>
           <th>Term Fee</th>
-          <th>Fees</th>
-          <th>8% Increment</th>
-          <th>9% Increment</th>
-          <th>10% Increment</th>
+          <th>Total Fee</th>
         </tr>
       </thead>
+
       <tbody id="tableBody"></tbody>
     </table>
 
@@ -110,31 +101,14 @@
     </div>
 
     <!-- Load Supabase Library -->
-    <!-- Load Supabase -->
+    <!-- Load Supabase + App Script -->
+    <!-- Load Supabase once -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <!-- Load data.js BEFORE app.js -->
+    <!-- Load app.js with cache-bypass -->
     <script>
       const version = Date.now();
-
-      // Load data.js first with cache bypass
-      const dataScript = document.createElement("script");
-      dataScript.src = "data.js?v=" + version;
-
-      dataScript.onload = () => {
-        // Load app.js after data.js
-        const appScript = document.createElement("script");
-        appScript.src = "app.js?v=" + version;
-
-        appScript.onload = () => {
-          // 🚀 Auto-load table on first page load
-          loadTable();
-        };
-
-        document.body.appendChild(appScript);
-      };
-
-      document.body.appendChild(dataScript);
+      document.write(`<script src="app.js?v=${version}"><\/script>`);
     </script>
 
     <!-- Register Service Worker -->

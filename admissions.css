@@ -12,11 +12,40 @@
 ========================================================== */
 body {
   font-family: "Inter", Arial, sans-serif;
-  display: flex;
-  background: #f1f4f9;
+  background: #f4f6f8;
   color: #333;
   overflow-x: hidden;
 }
+
+/* ==========================================================
+   TABLE SELECT STYLES
+========================================================== */
+.table-select {
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background: #fafafa;
+  font-size: 14px;
+  cursor: pointer;
+  min-width: 150px;
+  appearance: none;       /* Removes default browser arrow */
+  white-space: nowrap;
+  overflow: visible; 
+}
+
+.table-select:hover {
+  border-color: #1976d2;
+}
+
+.table-select:focus {
+  outline: none;
+  border: 1px solid #1976d2;
+  background: #fff;
+}
+
+
+
+
 
 /* ==========================================================
    SIDEBAR
@@ -46,47 +75,80 @@ body {
   font-size: 18px;
 }
 
-.sidebar nav a {
-  display: block;
-  padding: 12px 15px;
-  margin: 6px 0;
-  border-radius: 8px;
-  color: #444;
-  text-decoration: none;
-  font-size: 15px;
-  transition: 0.25s ease;
+.school-header {
+  text-align: center;
+  padding: 20px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;   /* Centers the content */
+  justify-content: center;
+  width: 100%;
 }
 
-.sidebar nav a:hover {
-  background: #e8f0fe;
-  color: #1976d2;
+.school-header img {
+  height: 120px;
+  margin-bottom: 12px;
 }
 
-.sidebar nav .active {
-  background: #1976d2;
-  color: #fff;
+.school-header h2 {
+  margin: 5px 0;
+  font-size: 32px;
 }
 
-/* Scrollbar for Sidebar */
-.sidebar::-webkit-scrollbar {
-  width: 6px;
+.school-header p {
+  margin: 5px 0 20px;
+  font-size: 18px;
+  color: #555;
+  text-align: center;
+  line-height: 1.5;
+  max-width: 600px;
 }
-.sidebar::-webkit-scrollbar-track {
-  background: transparent;
+
+.school-subtitle {
+  margin: 0;
+  font-size: 16px;
+  text-align: center;
+  line-height: 1.5;
 }
-.sidebar::-webkit-scrollbar-thumb {
-  background: #ccc;
-  border-radius: 10px;
+
+.school-subtitle .bullet {
+  display: inline-block;
+  margin-right: 6px;
+  vertical-align: middle;
 }
+
+
+
+
 
 /* ==========================================================
    MAIN CONTENT
 ========================================================== */
+
 .content {
-  margin-left: 240px;
   padding: 25px;
-  width: calc(100% - 240px);
+  margin-left: 0 !important;
+  width: 100%;
 }
+
+/* ==========================================================
+   TOP LOGO
+========================================================== */
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.top-logo {
+  height: 60px;
+  width: auto;
+  object-fit: contain;
+}
+
+
+
 
 /* ==========================================================
    HEADER
@@ -194,6 +256,13 @@ body {
   width: 100%;
   border-collapse: collapse;
   min-width: 900px;
+  
+}
+
+.admTable th,
+.admTable td {
+  padding: 6px 8px;
+  white-space: nowrap;
 }
 
 .admTable th {
