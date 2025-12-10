@@ -17,6 +17,37 @@ const SUPA_HEADERS = {
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let allRows = []; // cache
+let searchBox,
+  filterClass,
+  filterApplication,
+  filterEntrance,
+  filterInterview,
+  filterFinal;
+
+let currentPage = 1;
+const rowsPerPage = 15;
+let currentRows = []; // rows after filter
+
+/**************************************************
+ INIT ELEMENT REFERENCES
+**************************************************/
+
+document.addEventListener("DOMContentLoaded", () => {
+  searchBox = document.getElementById("searchBox");
+  filterClass = document.getElementById("filterClass");
+  filterApplication = document.getElementById("filterApplication");
+  filterEntrance = document.getElementById("filterEntrance");
+  filterInterview = document.getElementById("filterInterview");
+  filterFinal = document.getElementById("filterFinal");
+
+  // Attach events ONLY after they exist
+  searchBox.addEventListener("keyup", applyFilters);
+  filterClass.addEventListener("change", applyFilters);
+  filterApplication.addEventListener("change", applyFilters);
+  filterEntrance.addEventListener("change", applyFilters);
+  filterInterview.addEventListener("change", applyFilters);
+  filterFinal.addEventListener("change", applyFilters);
+});
 
 /**************************************************
  LOAD ADMISSIONS FROM SUPABASE
@@ -34,7 +65,7 @@ async function loadAdmissions() {
     allRows = await res.json();
 
     // Default sort by Enquiry No
-    allRows.sort((a, b) => {
+    allRows.sort((b, a) => {
       const numA = parseInt(a.enquiryNo.split("-")[2]);
       const numB = parseInt(b.enquiryNo.split("-")[2]);
       return numA - numB;
@@ -72,16 +103,17 @@ function populateClassFilter(rows) {
     X: 13,
   };
 
-  const normalize = s =>
-    s.trim().toUpperCase().replace(/[-]/g, " ");
+  const normalize = (s) => s.trim().toUpperCase().replace(/[-]/g, " ");
 
-  [...new Set(rows.map(r => r.admClass))]
-    .sort((a, b) => (classOrder[normalize(a)] || 999) - (classOrder[normalize(b)] || 999))
-    .forEach(cls => {
+  [...new Set(rows.map((r) => r.admClass))]
+    .sort(
+      (a, b) =>
+        (classOrder[normalize(a)] || 999) - (classOrder[normalize(b)] || 999)
+    )
+    .forEach((cls) => {
       dd.innerHTML += `<option value="${cls}">${cls}</option>`;
     });
 }
-
 
 /**************************************************
  TOGGLE SIDEBAR
@@ -154,7 +186,10 @@ function formatDateDMY(dateStr) {
 }
 
 function renderTable(rows) {
-  // SORT BY enquiryNo (ascending)
+  currentRows = rows; // store filtered list
+  const start = (currentPage - 1) * rowsPerPage;
+  const end = start + rowsPerPage;
+  const paginatedRows = rows.slice(start, end);
 
   let html = `
     <table class="admTable">
@@ -179,7 +214,7 @@ function renderTable(rows) {
       <tbody>
   `;
 
-  rows.forEach((r) => {
+  paginatedRows.forEach((r) => {
     html += `
     <tr>
       <td>${formatEnquiry(r.enquiryNo)}</td>
@@ -204,16 +239,18 @@ function renderTable(rows) {
       </td>
 
       <td>
-        <select class="table-select" onchange="updateStage('${
-          r.enquiryNo
-        }','entrance',this.value)">
-          <option ${
-            r.entrance === "NOT STARTED" ? "selected" : ""
-          }>NOT STARTED</option>
-          <option ${r.entrance === "PASS" ? "selected" : ""}>PASS</option>
-          <option ${r.entrance === "FAIL" ? "selected" : ""}>FAIL</option>
-        </select>
-      </td>
+  <select class="table-select"
+          ${["PRE KG", "LKG"].includes(r.admClass) ? "disabled" : ""}
+          onchange="updateStage('${r.enquiryNo}','entrance',this.value)">
+    
+    <option ${
+      r.entrance === "NOT STARTED" ? "selected" : ""
+    }>NOT STARTED</option>
+    <option ${r.entrance === "PASS" ? "selected" : ""}>PASS</option>
+    <option ${r.entrance === "FAIL" ? "selected" : ""}>FAIL</option>
+  </select>
+</td>
+
 
       <td>
         <select class="table-select" onchange="updateStage('${
@@ -267,8 +304,41 @@ function renderTable(rows) {
   });
 
   html += "</tbody></table>";
+  // Attach pagination
+  html += renderPagination(rows.length);
+
   document.getElementById("admissionsContainer").innerHTML = html;
 }
+
+function renderPagination(totalRows) {
+  const totalPages = Math.ceil(totalRows / rowsPerPage);
+
+  let html = `
+    <div class="pagination">
+      <button ${currentPage === 1 ? "disabled" : ""} onclick="prevPage()">Prev</button>
+      <span>Page ${currentPage} of ${totalPages}</span>
+      <button ${currentPage === totalPages ? "disabled" : ""} onclick="nextPage()">Next</button>
+    </div>
+  `;
+
+  return html;
+}
+
+function nextPage() {
+  const totalPages = Math.ceil(currentRows.length / rowsPerPage);
+  if (currentPage < totalPages) {
+    currentPage++;
+    renderTable(currentRows);
+  }
+}
+
+function prevPage() {
+  if (currentPage > 1) {
+    currentPage--;
+    renderTable(currentRows);
+  }
+}
+
 
 /**************************************************
  UPDATE DASHBOARD CARDS
@@ -276,20 +346,24 @@ function renderTable(rows) {
 function applyFilters() {
   const q = searchBox.value.toLowerCase();
 
-  const filtered = allRows.filter(
-    (r) =>
-      (r.student.toLowerCase().includes(q) ||
-        r.parent.toLowerCase().includes(q) ||
-        r.enquiryNo.toLowerCase().includes(q)) &&
+  const filtered = allRows.filter((r) => {
+    const student = r.student ? r.student.toLowerCase() : "";
+    const parent = r.parent ? r.parent.toLowerCase() : "";
+    const enq = r.enquiryNo ? r.enquiryNo.toLowerCase() : "";
+
+    return (
+      (student.includes(q) || parent.includes(q) || enq.includes(q)) &&
       (!filterClass.value || r.admClass === filterClass.value) &&
       (!filterApplication.value || r.application === filterApplication.value) &&
       (!filterEntrance.value || r.entrance === filterEntrance.value) &&
       (!filterInterview.value || r.interview === filterInterview.value) &&
       (!filterFinal.value || r.finalAdmission === filterFinal.value)
-  );
+    );
+  });
 
+  currentPage = 1; // reset to first page
   renderTable(filtered);
-  updateCards(filtered); // <-- ADD THIS ✔
+  updateCards(filtered);
 }
 
 /**************************************************
@@ -382,27 +456,6 @@ async function confirmDelete() {
     alert("❌ Failed to delete entry");
     closeDeleteModal();
   }
-}
-
-/**************************************************
- FILTER
-**************************************************/
-function applyFilters() {
-  const q = searchBox.value.toLowerCase();
-
-  const filtered = allRows.filter(
-    (r) =>
-      (r.student.toLowerCase().includes(q) ||
-        r.parent.toLowerCase().includes(q) ||
-        r.enquiryNo.toLowerCase().includes(q)) &&
-      (!filterClass.value || r.admClass === filterClass.value) &&
-      (!filterApplication.value || r.application === filterApplication.value) &&
-      (!filterEntrance.value || r.entrance === filterEntrance.value) &&
-      (!filterInterview.value || r.interview === filterInterview.value) &&
-      (!filterFinal.value || r.finalAdmission === filterFinal.value)
-  );
-
-  renderTable(filtered);
 }
 
 /**************************************************
@@ -604,9 +657,11 @@ function updateCards(rows) {
   const totalEnq = rows.length;
   const totalApp = rows.filter((r) => r.application === "YES").length;
   const totalPass = rows.filter((r) => r.entrance === "PASS").length;
+  const totalInterview = rows.filter((r) => r.interview === "SELECTED").length;
   const totalFinal = rows.filter((r) => r.finalAdmission === "YES").length;
 
   animateNumber("totalEnq", totalEnq);
+  animateNumber("totalInterview", totalInterview);
   animateNumber("totalApp", totalApp);
   animateNumber("totalPass", totalPass);
   animateNumber("totalFinal", totalFinal);
@@ -692,7 +747,7 @@ function loadAdminButtons() {
     `;
   } else {
     box.innerHTML = `
-      <button class="btn-primary" onclick="adminLogin()">Login</button>
+      <button class="btn-login" onclick="adminLogin()">Login</button>
     `;
   }
 }

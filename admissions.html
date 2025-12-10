@@ -14,9 +14,11 @@
 
   <body>
     <div class="school-header">
-      <a href="index.html" class="logo-link">
-        <img src="KOTAK_LOGO.png" alt="School Logo" />
-      </a>
+      <div class="header-top">
+        <a href="index.html" class="logo-link">
+          <img src="KOTAK_LOGO.png" alt="School Logo" />
+        </a>
+      </div>
 
       <h2>KOTAK SALESIAN SCHOOL</h2>
       <p class="school-subtitle">
@@ -31,8 +33,6 @@
       <!-- Page Header -->
       <header class="top-header">
         <div class="header-left"></div>
-
-        <div id="adminButtons"></div>
       </header>
 
       <!-- Stat Cards -->
@@ -53,6 +53,11 @@
         </div>
 
         <div class="card fade">
+          <h4>Interview Passed</h4>
+          <p id="totalInterview">0</p>
+        </div>
+
+        <div class="card fade">
           <h4>Final Admissions</h4>
           <p id="totalFinal">0</p>
         </div>
@@ -60,45 +65,51 @@
 
       <!-- Filters -->
       <div class="filter-bar">
-        <input
-          id="searchBox"
-          class="searchBox"
-          placeholder="🔎 Search student, parent or enquiry..."
-          onkeyup="applyFilters()"
-        />
 
-        <div class="filter-group">
-          <select id="filterClass" onchange="applyFilters()"></select>
-          <select id="filterApplication" onchange="applyFilters()">
-            <option value="">Application</option>
-            <option value="YES">YES</option>
-            <option value="NO">NO</option>
-          </select>
+  <div class="filter-left">
+    <input
+      id="searchBox"
+      class="searchBox"
+      placeholder="🔎 Search student, parent or enquiry..."
+    />
 
-          <select id="filterEntrance" onchange="applyFilters()">
-            <option value="">Entrance</option>
-            <option value="NOT STARTED">NOT STARTED</option>
-            <option value="PASS">PASS</option>
-            <option value="FAIL">FAIL</option>
-          </select>
+    <select id="filterClass"></select>
+    <select id="filterApplication">
+      <option value="">Application</option>
+      <option value="YES">YES</option>
+      <option value="NO">NO</option>
+    </select>
 
-          <select id="filterInterview" onchange="applyFilters()">
-            <option value="">Interview</option>
-            <option value="PENDING">PENDING</option>
-            <option value="SELECTED">SELECTED</option>
-            <option value="REJECTED">REJECTED</option>
-          </select>
+    <select id="filterEntrance">
+      <option value="">Entrance</option>
+      <option value="NOT STARTED">NOT STARTED</option>
+      <option value="PASS">PASS</option>
+      <option value="FAIL">FAIL</option>
+    </select>
 
-          <select id="filterFinal" onchange="applyFilters()">
-            <option value="">Final</option>
-            <option value="YES">YES</option>
-            <option value="NO">NO</option>
-          </select>
-        </div>
-        <button class="btn-primary" onclick="exportAdmissionsExcel()">
-          ⬇ Export to Excel
-        </button>
-      </div>
+    <select id="filterInterview">
+      <option value="">Interview</option>
+      <option value="PENDING">PENDING</option>
+      <option value="SELECTED">SELECTED</option>
+      <option value="REJECTED">REJECTED</option>
+    </select>
+
+    <select id="filterFinal">
+      <option value="">Final</option>
+      <option value="YES">YES</option>
+      <option value="NO">NO</option>
+    </select>
+
+    <button class="btn-primary" onclick="exportAdmissionsExcel()">
+      ⬇ Export to Excel
+    </button>
+  </div>
+
+  <div class="filter-right">
+    <div id="adminButtons"></div>
+  </div>
+
+</div>
 
       <!-- Table -->
       <div class="table-card fade">
