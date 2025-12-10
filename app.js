@@ -66,6 +66,8 @@ function checkEligibility() {
   const resultDiv = document.getElementById("result");
 
   let eligible = "Not Eligible";
+
+  // Determine eligible class
   for (let i = eligibilityData.length - 1; i >= 0; i--) {
     if (ageObj.years >= eligibilityData[i].age) {
       eligible = eligibilityData[i].class;
@@ -73,8 +75,9 @@ function checkEligibility() {
     }
   }
 
+  // Determine message + animation
   let msg = "";
-  let anim = ""; // animation class to trigger
+  let anim = "";
 
   if (["PRE KG", "LKG", "UKG"].includes(eligible)) {
     msg = "Early Years Programme – a warm start to joyful learning. 🌱";
@@ -91,22 +94,41 @@ function checkEligibility() {
   } else if (eligible !== "Not Eligible") {
     msg = "Eligible and ready for the next step. ✨";
     anim = "sparkleAnim";
+  } else {
+    msg = "Currently not eligible for admission. Please check again later.";
+    anim = "focusAnim";
   }
 
+  // Render result
   resultDiv.innerHTML = `
-  Age: ${ageObj.formatted}<br><br>
-  <span class="eligible-text ${anim}">
-    Eligible Class: ${eligible}
-  </span><br><br>
-  <div class="stage-msg ${anim}">${msg}</div>
-`;
+    Age: ${ageObj.formatted}<br><br>
+    <span class="eligible-text ${anim}">
+      Eligible Class: ${eligible}
+    </span><br><br>
+    <div class="stage-msg ${anim}">${msg}</div>
+  `;
 
-  if (eligible !== "Not Eligible") showProceedButton();
+  // Proceed button only if eligible
+  showProceedButton();
 
-  // highlight selected row
+  // Highlight table row
   document.querySelectorAll("#tableBody tr").forEach((row) => {
-    row.classList.toggle("highlight", row.cells[1].innerText === eligible);
+    row.classList.toggle("highlightRow", row.cells[1].innerText === eligible);
   });
+
+  // Scroll only if eligible
+  if (eligible !== "Not Eligible") {
+    const selectedRow = [...document.querySelectorAll("#tableBody tr")].find(
+      (row) => row.cells[1].innerText === eligible
+    );
+
+    if (selectedRow) {
+      selectedRow.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    }
+  }
 }
 
 /* --------------------------------------------------
@@ -171,7 +193,7 @@ async function loadTable() {
 
     // FIX: sort before display
     rows.sort((a, b) => a.age - b.age);
-    
+
     rows.forEach((r) => {
       tbody.innerHTML += `
         <tr>

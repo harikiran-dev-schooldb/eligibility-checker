@@ -47,6 +47,8 @@ body {
 
 
 
+
+
 /* ==========================================================
    SIDEBAR
 ========================================================== */
@@ -59,6 +61,16 @@ body {
   padding: 20px 15px;
   overflow-y: auto;
 }
+
+.logo-link img {
+  transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.logo-link img:hover {
+  transform: scale(1.08);
+  filter: brightness(1.2);
+}
+
 
 .logo-section {
   text-align: center;

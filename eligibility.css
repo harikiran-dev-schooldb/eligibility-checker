@@ -1,90 +1,137 @@
+/* --------------------------------------------------
+   GLOBAL LAYOUT
+-------------------------------------------------- */
+
 body {
   font-family: Arial, sans-serif;
   margin: 40px;
-  background: #f9fafc;
+  background: linear-gradient(to bottom right, #eef3fb, #ffffff);
   text-align: center;
+  color: #333;
 }
 
+/* --------------------------------------------------
+   HEADER
+-------------------------------------------------- */
+
 .school-header img {
-  height: 120px;
-  margin-bottom: 12px;
+  height: 115px;
+  margin-bottom: 10px;
+  transition: transform 0.25s ease, opacity 0.25s ease;
+  cursor: pointer;
+}
+
+.school-header img:hover {
+  transform: scale(1.06);
+  opacity: 0.9;
 }
 
 .school-header h2 {
   margin: 0;
   font-size: 32px;
+  font-weight: 700;
 }
 
 .school-header p {
-  margin: 5px 0 20px;
-  color: #555;
+  margin: 6px 0 24px;
+  color: #666;
   font-size: 18px;
 }
 
+/* --------------------------------------------------
+   INPUTS / BUTTONS / SELECTS
+-------------------------------------------------- */
+
 input,
-button,
-select {
+select,
+button {
   padding: 12px 16px;
-  margin: 10px;
-  font-size: 18px;
+  margin: 12px 8px;
+  font-size: 17px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
 }
 
 button {
   background: #1976d2;
   color: #fff;
-  border: none;
-  border-radius: 6px;
   cursor: pointer;
+  border: none;
+  transition: background 0.25s ease;
 }
 
 button:hover {
   background: #125ca2;
 }
 
+/* Highlighted result */
 #result {
   margin-top: 20px;
-  font-size: 28px;
-  font-weight: bold;
+  font-size: 30px;
+  font-weight: 600;
+  color: #1976d2;
+  min-height: 40px;
+  animation: fadeSlide 0.5s ease-out;
 }
+
+@keyframes fadeSlide {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+
+/* --------------------------------------------------
+   TABLE
+-------------------------------------------------- */
 
 table {
   width: 85%;
-  margin: 30px auto;
+  margin: 35px auto;
   border-collapse: collapse;
   background: #ffffff;
-  font-size: 18px;
-  border-radius: 10px;
+  font-size: 17px;
+  border-radius: 14px;
   overflow: hidden;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
 }
 
 th,
 td {
-  border: 1px solid #ddd;
   padding: 14px;
   text-align: center;
+  border-bottom: 1px solid #e3e6e9;
 }
 
 th {
   background: #1976d2;
-  color: white;
+  color: #fff;
   font-size: 16px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+tr:nth-child(even) {
+  background: #f7faff;
 }
 
 .highlight {
   background: #fff59d;
-  outline: 3px solid #fbc02d;
   font-weight: bold;
+  border-left: 4px solid #fbc02d;
 }
+
+/* --------------------------------------------------
+   DOCUMENT LIST SECTIONS
+-------------------------------------------------- */
 
 .documents-container {
   background: #fff;
   border-radius: 18px;
-  padding: 30px;
+  padding: 28px;
   width: 80%;
   margin: 50px auto;
   text-align: left;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.08);
 }
 
 .document-list {
@@ -95,56 +142,55 @@ th {
 .document-list li {
   padding: 12px 0;
   border-bottom: 1px dashed #ccc;
-  font-size: 18px;
+  font-size: 17px;
 }
 
-/* Modal */
+/* --------------------------------------------------
+   MODAL
+-------------------------------------------------- */
+
 .modal {
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.4);
-  z-index: 99999;
+  background: rgba(0,0,0,0.45);
+  z-index: 9999;
 }
 
 .modal-content {
   background: #fff;
   margin: 8% auto;
-  padding: 25px;
+  padding: 25px 30px;
   width: 90%;
-  max-width: 480px;
-  border-radius: 12px;
+  max-width: 460px;
+  border-radius: 14px;
   text-align: center;
+  animation: riseFade 0.35s ease-out;
 }
 
-/* CLEAN, FIXED INPUT STYLE */
 .modal-content input,
 .modal-content select {
-  width: 100%;               /* EXACT same width as button */
+  width: 100%;
   padding: 12px 14px;
   margin-bottom: 12px;
   border-radius: 8px;
   border: 1px solid #ccc;
   font-size: 15px;
-  box-sizing: border-box;    /* ensures true equal width */
+  box-sizing: border-box;
 }
 
-
-
-/* Focus state */
 .modal-content input:focus,
 .modal-content select:focus {
-  border-color: #1976d2 !important;
+  border-color: #1976d2;
 }
 
-/* Button */
 .modal-content button {
   width: 100%;
   padding: 14px;
-  font-size: 20px;
+  font-size: 18px;
   border-radius: 10px;
   background: #1976d2;
-  color: white;
+  color: #fff;
   border: none;
 }
 
@@ -152,16 +198,26 @@ th {
   float: right;
   font-size: 24px;
   cursor: pointer;
+  color: #555;
 }
 
-/* Print */
+/* Modal animation */
+@keyframes riseFade {
+  0% { opacity: 0; transform: translateY(10px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* --------------------------------------------------
+   PRINT MODE
+-------------------------------------------------- */
+
 @media print {
   input,
-  button,
   select,
+  button,
   .modal,
   .documents-container {
-    display: none;
+    display: none !important;
   }
 
   body {
@@ -169,56 +225,268 @@ th {
   }
 }
 
+/* --------------------------------------------------
+   MICRO ANIMATIONS (Optional polish)
+-------------------------------------------------- */
 
-
-.logo-link img {
-  transition: transform 0.2s ease, opacity 0.2s ease;
-  cursor: pointer;
-}
-
-.logo-link img:hover {
-  transform: scale(1.05);
-  opacity: 0.9;
-}
-
-
-.sparkleAnim {
-  animation: sparkle 0.8s ease-out;
-}
-
+.sparkleAnim { animation: sparkle 0.8s ease-out; }
 @keyframes sparkle {
   0% { opacity: 0; transform: scale(0.8); }
   60% { opacity: 1; transform: scale(1.08); }
   100% { transform: scale(1); }
 }
 
-.riseAnim {
-  animation: rise 0.6s ease-out;
-}
-
+.riseAnim { animation: rise 0.6s ease-out; }
 @keyframes rise {
   0% { opacity: 0; transform: translateY(8px); }
   100% { opacity: 1; transform: translateY(0); }
 }
 
-.glowAnim {
-  animation: glow 1s ease-out;
-}
-
+.glowAnim { animation: glow 1s ease-out; }
 @keyframes glow {
   0% { opacity: 0; filter: brightness(0.7); }
   100% { opacity: 1; filter: brightness(1); }
 }
 
-.focusAnim {
-  animation: focus 0.7s ease-out;
-}
-
+.focusAnim { animation: focus 0.6s ease-out; }
 @keyframes focus {
   0% { opacity: 0; transform: scale(0.95); }
   100% { opacity: 1; transform: scale(1); }
 }
 
+#eligibilityTable {
+  width: 90%;
+  margin: 30px auto;
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+  animation: glow 0.8s ease-out;
+}
+
+#eligibilityTable th {
+  background: linear-gradient(to right, #1976d2, #165eb7);
+  padding: 15px;
+  font-size: 17px;
+}
+
+#eligibilityTable td {
+  padding: 14px;
+  background: #ffffff;
+}
+
+#eligibilityTable tbody tr:nth-child(even) {
+  background: #f3f7ff;
+}
+
+.highlight {
+  background: #fff4c2 !important;
+  font-weight: bold;
+  color: #b88600;
+}
+
+.documents-container {
+  animation: fadeSlide 0.7s ease-out;
+  transition: 0.25s ease;
+}
+
+.documents-container:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+}
+
+.logo-link img {
+  transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.logo-link img:hover {
+  transform: scale(1.08);
+  filter: brightness(1.2);
+}
+
+/* Premium highlight */
+.highlightRow {
+  position: relative;
+  background: linear-gradient(to right, #fff7c4, #fff2a1) !important;
+  font-weight: 600;
+  color: #725a00 !important;
+  animation: premiumGlow 0.7s ease-out;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(240, 200, 60, 0.35);
+}
+
+/* Soft pulse effect */
+@keyframes premiumGlow {
+  0% {
+    background: #ffe995;
+    box-shadow: 0 0 0 rgba(0,0,0,0);
+  }
+  100% {
+    background: #fff7c4;
+  }
+}
+
+.highlightRow {
+  background: #fff9d6 !important;
+  font-weight: 600;
+  color: #8a6d00;
+  position: relative;
+  animation: pulseRow 0.8s ease-out 1;
+  box-shadow: 0 0 14px rgba(255, 215, 0, 0.35);
+}
+
+.highlightRow td:first-child {
+  position: relative;
+}
+
+.highlightRow td:first-child::before {
+  content: "";
+  position: absolute;
+  left: -6px;
+  top: 0;
+  width: 6px;
+  height: 100%;
+  background: linear-gradient(to bottom, #f9c30b, #e0a800);
+  border-radius: 4px 0 0 4px;
+  animation: slideBar 0.4s ease-out;
+}
+
+@keyframes pulseRow {
+  0%   { background: #fff4b8; }
+  50%  { background: #ffe98c; }
+  100% { background: #fff9d6; }
+}
+
+@keyframes slideBar {
+  0% { transform: translateX(-10px); opacity: 0; }
+  100% { transform: translateX(0); opacity: 1; }
+}
 
 
 
+/* Make all cells obey the row highlight */
+.highlightRow td {
+  background: transparent !important;
+  position: relative;
+  z-index: 2;
+}
+
+.highlightRow {
+  position: relative;
+}
+
+
+
+
+#eligibilityTable tbody tr {
+  transition: background 0.25s ease, transform 0.25s ease;
+}
+
+#eligibilityTable tbody tr:hover {
+  background: #eef6ff;
+  transform: scale(1.01);
+}
+
+/* --------------------------------------------------
+   FIX SPACE BETWEEN DOB BLOCK AND YEAR SELECT
+-------------------------------------------------- */
+
+/* --------------------------------------------------
+   FIX SPACING BETWEEN DOB + YEAR ROW
+-------------------------------------------------- */
+
+/* Reduce the natural margin caused by input & button */
+.dob-wrapper input,
+.dob-wrapper button {
+  margin-bottom: 4px !important;
+}
+
+/* Reduce gap between DOB section and result text */
+#result {
+  margin-top: 12px !important;
+  margin-bottom: 8px !important;
+}
+
+/* Bring the “Select Academic Year” row closer */
+.year-row {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+/* Reduce spacing inside the year select + button block */
+.year-row select,
+.year-row button {
+  margin-top: 6px !important;
+}
+
+/* --------------------------------------------------
+   PREMIUM GLASS CARD UI
+-------------------------------------------------- */
+
+.glass-card {
+  width: 70%;
+  margin: 0 auto 25px;
+  padding: 25px 30px;
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(12px);
+  border-radius: 20px;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+  animation: fadeSlide 0.5s ease-out;
+}
+
+/* Date + Button Row */
+.dob-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.input-icon {
+  font-size: 24px;
+  margin-right: 5px;
+}
+
+/* Inputs made tighter */
+.dob-row input {
+  margin: 0 !important;
+  font-size: 18px;
+  padding: 10px 14px;
+}
+
+/* Result Glow */
+.result-glow {
+  margin-top: 10px;
+  padding: 10px 5px;
+  font-size: 22px;
+  font-weight: 600;
+  color: #1976d2;
+  animation: softGlow 0.6s ease-out;
+}
+
+@keyframes softGlow {
+  0% { opacity: 0; transform: translateY(6px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Compact Year Section */
+.compact-year {
+  margin-top: 4px !important;
+}
+
+.year-select-row {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.compact-year select,
+.compact-year button {
+  margin: 0 !important;
+  padding: 10px 14px;
+  font-size: 16px;
+}

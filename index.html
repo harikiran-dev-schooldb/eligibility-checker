@@ -1,39 +1,57 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
+    <meta charset="UTF-8" />
     <title>Class Eligibility Checker</title>
+
+    <!-- PWA -->
     <link rel="manifest" href="manifest.json" />
     <meta name="theme-color" content="#1976d2" />
+
+    <!-- Favicon + Styles -->
     <link rel="icon" href="favicon.ico" />
     <link rel="stylesheet" href="eligibility.css" />
   </head>
 
   <body>
+    <!-- HEADER -->
     <div class="school-header">
       <a href="admissions.html" class="logo-link">
         <img src="KOTAK_LOGO.png" alt="School Logo" />
       </a>
+
       <h2>KOTAK SALESIAN SCHOOL</h2>
       <p>Academic Year 2026 – 27</p>
     </div>
 
+    <!-- TITLE -->
     <h2>Class Eligibility Checker</h2>
 
-    <input type="date" id="dob" />
-    <button onclick="checkEligibility()">Check Eligibility</button>
+    <!-- ELIGIBILITY FORM -->
+    <div class="eligibility-box">
+      <div class="eligibility-card riseAnim">
+        <div class="dob-wrapper">
+          <input type="date" id="dob" placeholder="Select Date of Birth"/>
+          <button onclick="checkEligibility()">Check Eligibility</button>
+        </div>
+      </div>
 
-    <div id="result"></div>
+      <div id="result"></div>
 
-    <label><b>Select Academic Year:</b></label>
-    <select id="yearSelect" onchange="loadTable()">
-      <option value="2023-24">2023–24</option>
-      <option value="2024-25">2024–25</option>
-      <option value="2025-26">2025–26</option>
-      <option value="2026-27" selected>2026–27</option>
-    </select>
+      <div class="year-row">
+      <label><b>Select Academic Year:</b></label>
+      <select id="yearSelect" onchange="loadTable()">
+        <option value="2023-24">2023–24</option>
+        <option value="2024-25">2024–25</option>
+        <option value="2025-26">2025–26</option>
+        <option value="2026-27" selected>2026–27</option>
+      </select>
 
-    <button onclick="window.print()">⬇️ Download PDF</button>
+      <button onclick="window.print()">⬇️ Download PDF</button>
+    </div>
+    </div>
 
+    <!-- TABLE -->
     <table id="eligibilityTable">
       <thead>
         <tr id="tableHeader">
@@ -43,75 +61,50 @@
           <th>Total Fee</th>
         </tr>
       </thead>
-
       <tbody id="tableBody"></tbody>
     </table>
 
+    <!-- ADMISSION PROCESS -->
     <div class="documents-container">
       <h3>📌 Admission Process:</h3>
       <ul class="document-list">
         <li>
-          🎓 Either parent (Father or Mother) must possess a minimum Graduation
-          qualification.
+          🎓 Either parent must possess a minimum Graduation qualification.
         </li>
-        <li>
-          🏫 The student must be transferring from a Government / CBSE / ICSE /
-          Recognized school.
-        </li>
+        <li>🏫 Student must be transferring from a recognized school.</li>
         <li>💵 Application Fee: ₹500 (non-refundable).</li>
-        <li>
-          📝 Entrance examination is mandatory for admissions from UKG onwards.
-        </li>
-        <li>
-          ✅ Upon qualifying the entrance test, an Admission Fee of ₹12,000 is
-          payable.
-        </li>
-        <li>
-          📈 Annual school fees are subject to an increase of 8%–10% every
-          academic year.
-        </li>
-        <li>
-          👕 Books and uniform charges are separate and not included in the
-          school fees.
-        </li>
+        <li>📝 Entrance exam mandatory from UKG onwards.</li>
+        <li>✅ Admission Fee of ₹12,000 after qualifying entrance.</li>
+        <li>📈 Annual fee increases by 8%–10% every year.</li>
+        <li>👕 Books & uniform charges are separate.</li>
       </ul>
     </div>
 
+    <!-- DOCUMENTS REQUIRED -->
     <div class="documents-container">
       <h3>📄 Documents to be Submitted:</h3>
       <ul class="document-list">
-        <li>📸 Three (3) recent passport-size photographs of the student.</li>
-        <li>🧾 Copy of the student’s Birth Certificate.</li>
-        <li>
-          🏫 Original Transfer Certificate from the previous school (mandatory
-          from UKG onwards).
-        </li>
-        <li>📘 Copy of the Report Card of the last attended class.</li>
-        <li>
-          🏠 Residence Proof of either parent (Rent Agreement / Voter ID /
-          Electricity Bill, etc.).
-        </li>
-        <li>🪪 Aadhaar Card copies of the Student, Father, and Mother.</li>
-        <li>👨‍👩‍👧 Three (3) passport-size photographs of Father and Mother.</li>
-        <li>
-          📜 Caste Certificate of either the Student or the Father (where
-          applicable).
-        </li>
+        <li>📸 Three recent passport-size photos of the student.</li>
+        <li>🧾 Birth Certificate copy.</li>
+        <li>🏫 Original Transfer Certificate (from UKG onwards).</li>
+        <li>📘 Last class Report Card.</li>
+        <li>🏠 Residence Proof of parent.</li>
+        <li>🪪 Aadhaar Card of Student, Father, Mother.</li>
+        <li>👨‍👩‍👧 Passport-size photos of Father & Mother.</li>
+        <li>📜 Caste Certificate (if applicable).</li>
       </ul>
     </div>
 
-    <!-- Load Supabase Library -->
-    <!-- Load Supabase + App Script -->
-    <!-- Load Supabase once -->
+    <!-- LIBRARIES -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <!-- Load app.js with cache-bypass -->
+    <!-- Load app.js with cache bypass -->
     <script>
       const version = Date.now();
       document.write(`<script src="app.js?v=${version}"><\/script>`);
     </script>
 
-    <!-- Register Service Worker -->
+    <!-- SERVICE WORKER -->
     <script>
       if ("serviceWorker" in navigator) {
         navigator.serviceWorker.register("sw.js").then(() => {
@@ -120,7 +113,7 @@
       }
     </script>
 
-    <!-- Admission Modal -->
+    <!-- ADMISSION MODAL -->
     <div id="admissionModal" class="modal">
       <div class="modal-content">
         <span class="close" onclick="closeModal()">&times;</span>
@@ -130,6 +123,7 @@
         <input id="parentName" type="text" placeholder="Parent Name" />
         <input id="studentName" type="text" placeholder="Student Name" />
         <input id="mobile" type="tel" placeholder="Mobile Number" />
+
         <select id="admClass">
           <option value="">Select Admission Class</option>
           <option value="PRE KG">PRE KG</option>
