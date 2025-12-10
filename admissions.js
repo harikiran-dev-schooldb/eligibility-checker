@@ -72,12 +72,16 @@ function populateClassFilter(rows) {
     X: 13,
   };
 
-  [...new Set(rows.map((r) => r.admClass))]
-    .sort((a, b) => (classOrder[a] || 999) - (classOrder[b] || 999))
-    .forEach((cls) => {
+  const normalize = s =>
+    s.trim().toUpperCase().replace(/[-]/g, " ");
+
+  [...new Set(rows.map(r => r.admClass))]
+    .sort((a, b) => (classOrder[normalize(a)] || 999) - (classOrder[normalize(b)] || 999))
+    .forEach(cls => {
       dd.innerHTML += `<option value="${cls}">${cls}</option>`;
     });
 }
+
 
 /**************************************************
  TOGGLE SIDEBAR
@@ -640,23 +644,39 @@ function animateNumber(elementId, finalValue, duration = 700) {
 }
 
 function adminLogin() {
-  const pwd = prompt("Enter Admin Password:");
+  document.getElementById("adminModal").style.display = "flex";
+}
+
+function closeAdminModal() {
+  document.getElementById("adminModal").style.display = "none";
+  document.getElementById("adminPwd").value = "";
+}
+
+function submitAdminLogin() {
+  const pwd = document.getElementById("adminPwd").value.trim();
 
   if (pwd === "kotak@1963") {
-    alert("Admin Access Granted ✔");
     localStorage.setItem("isAdmin", "true");
+    closeAdminModal();
     loadAdminButtons();
-    loadAdmissions(); // reload table with delete column
+    loadAdmissions();
+    location.reload();
   } else {
     alert("❌ Wrong password");
   }
 }
 
 function adminLogout() {
+  document.getElementById("logoutModal").style.display = "flex";
+}
+
+function closeLogoutModal() {
+  document.getElementById("logoutModal").style.display = "none";
+}
+function confirmLogout() {
   localStorage.removeItem("isAdmin");
-  alert("Logged out ✔");
-  loadAdminButtons();
-  loadAdmissions(); // reload without delete column
+  closeLogoutModal();
+  location.reload();
 }
 
 function isAdmin() {
@@ -664,12 +684,11 @@ function isAdmin() {
 }
 
 function loadAdminButtons() {
-  const isAdm = isAdmin();
   const box = document.getElementById("adminButtons");
 
-  if (isAdm) {
+  if (isAdmin()) {
     box.innerHTML = `
-      <button class="btn-primary" onclick="adminLogout()">Logout</button>
+      <button class="btn-logout" onclick="adminLogout()">Logout</button>
     `;
   } else {
     box.innerHTML = `

@@ -123,5 +123,37 @@
         </div>
       </div>
     </div>
+
+    <div id="adminModal" class="modal-overlay">
+      <div class="modal-box">
+        <h3>Admin Login</h3>
+
+        <input
+          id="adminPwd"
+          type="password"
+          class="admin-input"
+          placeholder="Enter Password"
+        />
+
+        <div class="modal-actions">
+          <button class="cancelBtn" onclick="closeAdminModal()">Cancel</button>
+          <button class="deleteBtn" onclick="submitAdminLogin()">Login</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- LOGOUT CONFIRM MODAL -->
+    <div id="logoutModal" class="modal-overlay">
+      <div class="modal-box">
+        <h3>Logout Admin?</h3>
+
+        <p>Are you sure you want to logout?</p>
+
+        <div class="modal-actions">
+          <button class="cancelBtn" onclick="closeLogoutModal()">Cancel</button>
+          <button class="deleteBtn" onclick="confirmLogout()">Logout</button>
+        </div>
+      </div>
+    </div>
   </body>
 </html>

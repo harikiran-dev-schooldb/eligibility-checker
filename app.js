@@ -168,6 +168,10 @@ async function loadTable() {
       <th>Term Fee</th>
       <th>Total Fee</th>
     `;
+
+    // FIX: sort before display
+    rows.sort((a, b) => a.age - b.age);
+    
     rows.forEach((r) => {
       tbody.innerHTML += `
         <tr>
@@ -181,23 +185,25 @@ async function loadTable() {
   }
 
   /* 2026–27 — USE VALUES AS-IS FROM DATABASE */
-header.innerHTML = `
+  header.innerHTML = `
   <th>Age</th>
   <th>Class</th>
   <th>Term Fee</th>
   <th>Total Fee</th>
 `;
 
-rows.forEach((r) => {
-  tbody.innerHTML += `
+  // FIX: sort before display
+  rows.sort((a, b) => a.age - b.age);
+
+  rows.forEach((r) => {
+    tbody.innerHTML += `
     <tr>
       <td>${r.age}</td>
       <td>${r.class}</td>
       <td>${r.term}</td>
       <td>${r.annualFees}</td>
     </tr>`;
-});
-
+  });
 }
 
 /* --------------------------------------------------
@@ -271,7 +277,7 @@ async function submitAdmission() {
     parent,
     mobile: mobileNum,
     admClass: admClassValue,
-    dob,
+    dob: formatDateDDMMYYYY(dob),
     age: ageText,
     eligible: eligibleClass,
     date: formatDateDDMMYYYY(new Date()),
