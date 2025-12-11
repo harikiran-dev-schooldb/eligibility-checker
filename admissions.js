@@ -25,7 +25,7 @@ let searchBox,
   filterFinal;
 
 let currentPage = 1;
-const rowsPerPage = 15;
+const rowsPerPage = 20;
 let currentRows = []; // rows after filter
 
 /**************************************************
