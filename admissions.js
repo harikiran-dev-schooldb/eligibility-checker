@@ -350,9 +350,13 @@ function applyFilters() {
     const student = r.student ? r.student.toLowerCase() : "";
     const parent = r.parent ? r.parent.toLowerCase() : "";
     const enq = r.enquiryNo ? r.enquiryNo.toLowerCase() : "";
-
+    const phone = r.mobile ? r.mobile.toLowerCase() : "";
+    
     return (
-      (student.includes(q) || parent.includes(q) || enq.includes(q)) &&
+      (student.includes(q) ||
+       parent.includes(q) ||
+       enq.includes(q) ||
+       phone.includes(q)) &&
       (!filterClass.value || r.admClass === filterClass.value) &&
       (!filterApplication.value || r.application === filterApplication.value) &&
       (!filterEntrance.value || r.entrance === filterEntrance.value) &&
@@ -361,10 +365,11 @@ function applyFilters() {
     );
   });
 
-  currentPage = 1; // reset to first page
+  currentPage = 1;
   renderTable(filtered);
   updateCards(filtered);
 }
+
 
 /**************************************************
  UPDATE SUPABASE VALUES
