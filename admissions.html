@@ -65,51 +65,56 @@
 
       <!-- Filters -->
       <div class="filter-bar">
+        <div class="filter-left">
+          <input
+            id="searchBox"
+            class="searchBox"
+            placeholder="🔎 Search student, mobile, parent or enquiry..."
+          />
 
-  <div class="filter-left">
-    <input
-      id="searchBox"
-      class="searchBox"
-      placeholder="🔎 Search student, mobile, parent or enquiry..."
-    />
+          <select id="filterClass"></select>
 
-    <select id="filterClass"></select>
-    <select id="filterApplication">
-      <option value="">Application</option>
-      <option value="YES">YES</option>
-      <option value="NO">NO</option>
-    </select>
+          <select id="filterEligibility">
+            <option value="">Eligibility</option>
+            <option value="YES">YES</option>
+            <option value="NO">NO</option>
+          </select>
 
-    <select id="filterEntrance">
-      <option value="">Entrance</option>
-      <option value="NOT STARTED">NOT STARTED</option>
-      <option value="PASS">PASS</option>
-      <option value="FAIL">FAIL</option>
-    </select>
+          <select id="filterApplication">
+            <option value="">Application</option>
+            <option value="YES">YES</option>
+            <option value="NO">NO</option>
+          </select>
 
-    <select id="filterInterview">
-      <option value="">Interview</option>
-      <option value="PENDING">PENDING</option>
-      <option value="SELECTED">SELECTED</option>
-      <option value="REJECTED">REJECTED</option>
-    </select>
+          <select id="filterEntrance">
+            <option value="">Entrance</option>
+            <option value="NOT STARTED">NOT STARTED</option>
+            <option value="PASS">PASS</option>
+            <option value="FAIL">FAIL</option>
+          </select>
 
-    <select id="filterFinal">
-      <option value="">Final</option>
-      <option value="YES">YES</option>
-      <option value="NO">NO</option>
-    </select>
+          <select id="filterInterview">
+            <option value="">Interview</option>
+            <option value="PENDING">PENDING</option>
+            <option value="SELECTED">SELECTED</option>
+            <option value="REJECTED">REJECTED</option>
+          </select>
 
-    <button class="btn-primary" onclick="exportAdmissionsExcel()">
-      ⬇ Export to Excel
-    </button>
-  </div>
+          <select id="filterFinal">
+            <option value="">Final</option>
+            <option value="YES">YES</option>
+            <option value="NO">NO</option>
+          </select>
 
-  <div class="filter-right">
-    <div id="adminButtons"></div>
-  </div>
+          <button class="btn-primary" onclick="exportAdmissionsExcel()">
+            ⬇ Export to Excel
+          </button>
+        </div>
 
-</div>
+        <div class="filter-right">
+          <div id="adminButtons"></div>
+        </div>
+      </div>
 
       <!-- Table -->
       <div class="table-card fade">

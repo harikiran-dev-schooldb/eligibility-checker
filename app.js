@@ -101,19 +101,27 @@ function checkEligibility() {
 
   // Render result
   resultDiv.innerHTML = `
-    Age: ${ageObj.formatted}<br><br>
-    <span class="eligible-text ${anim}">
-      Eligible Class: ${eligible}
-    </span><br><br>
-    <div class="stage-msg ${anim}">${msg}</div>
-  `;
+  <div class="age-line">Age: ${ageObj.formatted}</div>
+  <div class="eligible-line ${anim}">Eligible Class: ${eligible}</div>
+  <div class="stage-msg ${anim}">${msg}</div>
+`;
 
   // Proceed button only if eligible
   showProceedButton();
 
-  // Highlight table row
   document.querySelectorAll("#tableBody tr").forEach((row) => {
-    row.classList.toggle("highlightRow", row.cells[1].innerText === eligible);
+    const isMatch = row.cells[1].innerText === eligible;
+
+    // Remove old highlight to allow re-animation
+    row.classList.remove("highlightRow");
+
+    if (isMatch) {
+      // Force browser reflow to restart animation
+      void row.offsetWidth;
+
+      // Add highlightRow class
+      row.classList.add("highlightRow");
+    }
   });
 
   // Scroll only if eligible
@@ -273,10 +281,10 @@ async function submitAdmission() {
     .innerHTML.match(/Age:([^<]+)/);
   const ageText = ageMatch ? ageMatch[1].trim() : "";
 
-  const eligibleClass =
-    document
-      .querySelector("#result span")
-      ?.innerText.replace("Eligible Class: ", "") || admClassValue;
+  const eligibleClass = document
+    .querySelector(".eligible-line")
+    ?.innerText.replace("Eligible Class: ", "")
+    .trim();
 
   // ---------- GET NEXT ENQUIRY NUMBER ----------
   let enquiryNo = "";

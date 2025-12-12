@@ -10,15 +10,37 @@ body {
   color: #333;
 }
 
+/* Remove blinking cursor anywhere in the glass card */
+.glass-card * {
+  user-select: none;
+  caret-color: transparent !important;
+}
+
+/* Remove invisible elements that create caret insertion points */
+.glass-card br,
+.glass-card p:empty {
+  display: none !important;
+}
+
+#eligibilityTable, 
+#eligibilityTable * {
+  user-select: none !important;
+  caret-color: transparent !important;
+}
+
+
+
+
 /* --------------------------------------------------
-   HEADER
+   HEADER (Clean + Balanced)
 -------------------------------------------------- */
 
+/* Logo */
 .school-header img {
   height: 115px;
   margin-bottom: 10px;
-  transition: transform 0.25s ease, opacity 0.25s ease;
   cursor: pointer;
+  transition: transform 0.25s ease, opacity 0.25s ease;
 }
 
 .school-header img:hover {
@@ -26,17 +48,32 @@ body {
   opacity: 0.9;
 }
 
+/* School Name */
 .school-header h2 {
   margin: 0;
   font-size: 32px;
   font-weight: 700;
 }
 
+/* Academic Year */
 .school-header p {
-  margin: 6px 0 24px;
+  margin: 6px 0 20px;
   color: #666;
   font-size: 18px;
 }
+
+/* Reduce space between page title and glass-card */
+.school-header + h2 {
+  margin-top: 0 !important;
+  margin-bottom: 6px !important; /* was ~25px default */
+}
+
+/* Ensure the glass card sits tight under the title */
+.glass-card {
+  margin-top: 0 !important;
+  padding-top: 10px !important;
+}
+
 
 /* --------------------------------------------------
    INPUTS / BUTTONS / SELECTS
@@ -121,29 +158,66 @@ tr:nth-child(even) {
 }
 
 /* --------------------------------------------------
-   DOCUMENT LIST SECTIONS
+   PREMIUM DOCUMENT CARD UI
 -------------------------------------------------- */
 
 .documents-container {
-  background: #fff;
-  border-radius: 18px;
-  padding: 28px;
   width: 80%;
-  margin: 50px auto;
-  text-align: left;
-  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.08);
+  margin: 40px auto;
+  padding: 32px 38px;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  border-radius: 20px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.10);
+  border: 1px solid rgba(220, 220, 220, 0.5);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
+/* Subtle hover lift */
+.documents-container:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 38px rgba(0, 0, 0, 0.12);
+}
+
+/* Section Titles */
+.documents-container h3 {
+  margin: 0 0 18px 0;
+  font-size: 22px;
+  font-weight: 700;
+  color: #1a237e;
+  padding-bottom: 10px;
+  border-bottom: 2px solid rgba(0, 0, 0, 0.08);
+  letter-spacing: 0.3px;
+}
+
+/* Document list */
 .document-list {
   list-style: none;
   padding: 0;
+  margin: 0;
 }
 
 .document-list li {
-  padding: 12px 0;
-  border-bottom: 1px dashed #ccc;
+  padding: 14px 4px;
   font-size: 17px;
+  border-bottom: 1px dashed rgba(150, 150, 150, 0.35);
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
+
+/* Remove last divider */
+.document-list li:last-child {
+  border-bottom: none;
+}
+
+/* Disable text selection + caret blink fix */
+.documents-container,
+.documents-container * {
+  user-select: none !important;
+  caret-color: transparent !important;
+}
+
 
 /* --------------------------------------------------
    MODAL
@@ -484,9 +558,99 @@ tr:nth-child(even) {
   margin-top: 4px;
 }
 
+.result-section {
+  margin-top: 10px;
+  margin-bottom: 18px;
+  padding: 10px 0;
+  min-height: 40px;
+}
+
+
+#result .eligible-line {
+  color: #1976d2;
+}
+
+#result .age-line,
+#result .eligible-line {
+  display: block;
+  font-size: 28px;
+  font-weight: 600;
+  color: #1976d2;
+  margin: 10px 0 !important;   /* forces spacing */
+  line-height: 1.4 !important; /* prevents squeezing */
+}
+
+.stage-msg {
+  margin-top: 6px;
+  margin-bottom: 14px;   /* This creates the line gap you want */
+  display: block;
+}
+
+
+.primary-level-msg {
+  margin-bottom: 14px !important;
+  display: block;
+}
+
+
+
 .compact-year select,
 .compact-year button {
   margin: 0 !important;
   padding: 10px 14px;
   font-size: 16px;
 }
+
+.glass-card {
+  padding-top: 6px !important;
+  padding-bottom: 18px !important;
+}
+
+.dob-row {
+  margin-bottom: 6px !important;
+}
+
+.result-section,
+#result {
+  margin-top: 6px !important;
+  padding-top: 0 !important;
+}
+
+
+.year-select-row {
+  margin-top: 10px !important;
+}
+
+/* Tighten overall card height */
+.glass-card {
+  padding-top: 8px !important;
+  padding-bottom: 18px !important;
+}
+
+/* Bring DOB row closer to top */
+.dob-row {
+  margin-top: 0 !important;
+  margin-bottom: 6px !important;
+}
+
+/* Remove excess space above Age/Eligible text */
+#result {
+  margin-top: 4px !important;
+  padding-top: 0 !important;
+}
+
+/* Pull Year selector upward */
+.compact-year {
+  margin-top: 6px !important;
+}
+
+.year-select-row {
+  margin-top: 4px !important;
+}
+
+/* Reduce built-in margin created by <p>, <br>, animations inside result */
+#result * {
+  margin-top: 2px !important;
+  margin-bottom: 2px !important;
+}
+

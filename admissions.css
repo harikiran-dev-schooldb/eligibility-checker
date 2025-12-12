@@ -43,6 +43,31 @@ body {
   background: #fff;
 }
 
+.mismatch {
+  color: #d00000 !important;
+  font-weight: 700;
+  border-radius: 4px;
+}
+
+.eligible-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+}
+
+.eligible-class-text {
+  font-weight: 600;
+  color: #1976d2;
+}
+
+.eligible-dropdown {
+  padding: 6px 10px;
+  font-size: 14px;
+}
+
+
+
 
 
 

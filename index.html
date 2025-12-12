@@ -27,28 +27,31 @@
     <!-- TITLE -->
     <h2>Class Eligibility Checker</h2>
 
-    <!-- ELIGIBILITY FORM -->
-    <div class="eligibility-box">
-      <div class="eligibility-card riseAnim">
-        <div class="dob-wrapper">
-          <input type="date" id="dob" placeholder="Select Date of Birth"/>
-          <button onclick="checkEligibility()">Check Eligibility</button>
-        </div>
+    <div class="glass-card">
+      <!-- DATE + BUTTON -->
+      <div class="dob-row">
+        <input type="date" id="dob" />
+        <button onclick="checkEligibility()">Check Eligibility</button>
       </div>
 
-      <div id="result"></div>
+      <!-- RESULT SECTION (FULL BLOCK) -->
+      <div id="result" class="result-section"></div>
 
-      <div class="year-row">
-      <label><b>Select Academic Year:</b></label>
-      <select id="yearSelect" onchange="loadTable()">
-        <option value="2023-24">2023–24</option>
-        <option value="2024-25">2024–25</option>
-        <option value="2025-26">2025–26</option>
-        <option value="2026-27" selected>2026–27</option>
-      </select>
+      <!-- YEAR SELECT -->
+      <div class="compact-year">
+        <div class="year-select-row">
+          <label><b>Select Year:</b></label>
 
-      <button onclick="window.print()">⬇️ Download PDF</button>
-    </div>
+          <select id="yearSelect" onchange="loadTable()">
+            <option value="2023-24">2023–24</option>
+            <option value="2024-25">2024–25</option>
+            <option value="2025-26">2025–26</option>
+            <option value="2026-27" selected>2026–27</option>
+          </select>
+
+          <button onclick="window.print()">⬇️ PDF</button>
+        </div>
+      </div>
     </div>
 
     <!-- TABLE -->
@@ -66,31 +69,37 @@
 
     <!-- ADMISSION PROCESS -->
     <div class="documents-container">
-      <h3>📌 Admission Process:</h3>
+      <h3>📌 Admission Process</h3>
       <ul class="document-list">
         <li>
-          🎓 Either parent must possess a minimum Graduation qualification.
+          🎓 At least one parent must hold a minimum Graduate-level
+          qualification.
         </li>
-        <li>🏫 Student must be transferring from a recognized school.</li>
+        <li>🏫 The student must be transferring from a recognised school.</li>
         <li>💵 Application Fee: ₹500 (non-refundable).</li>
-        <li>📝 Entrance exam mandatory from UKG onwards.</li>
-        <li>✅ Admission Fee of ₹12,000 after qualifying entrance.</li>
-        <li>📈 Annual fee increases by 8%–10% every year.</li>
-        <li>👕 Books & uniform charges are separate.</li>
+        <li>📝 Entrance examination is mandatory from UKG onwards.</li>
+        <li>
+          ✅ Admission Fee of ₹12,000 is applicable upon qualifying in the
+          entrance test.
+        </li>
+        <li>
+          📈 Annual tuition fees are revised every year by approximately 8%–10%.
+        </li>
+        <li>👕 Charges for books and uniforms are separate.</li>
       </ul>
     </div>
 
     <!-- DOCUMENTS REQUIRED -->
     <div class="documents-container">
-      <h3>📄 Documents to be Submitted:</h3>
+      <h3>📄 Documents to be Submitted</h3>
       <ul class="document-list">
-        <li>📸 Three recent passport-size photos of the student.</li>
-        <li>🧾 Birth Certificate copy.</li>
-        <li>🏫 Original Transfer Certificate (from UKG onwards).</li>
-        <li>📘 Last class Report Card.</li>
-        <li>🏠 Residence Proof of parent.</li>
-        <li>🪪 Aadhaar Card of Student, Father, Mother.</li>
-        <li>👨‍👩‍👧 Passport-size photos of Father & Mother.</li>
+        <li>📸 Three recent passport-size photographs of the student.</li>
+        <li>🧾 Copy of the Birth Certificate.</li>
+        <li>🏫 Original Transfer Certificate (mandatory from UKG onwards).</li>
+        <li>📘 Report Card of the last attended class.</li>
+        <li>🏠 Residential proof of the parent/guardian.</li>
+        <li>🪪 Aadhaar Card of the student and both parents.</li>
+        <li>👨‍👩‍👧 Passport-size photographs of Father and Mother.</li>
         <li>📜 Caste Certificate (if applicable).</li>
       </ul>
     </div>

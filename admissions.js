@@ -22,7 +22,8 @@ let searchBox,
   filterApplication,
   filterEntrance,
   filterInterview,
-  filterFinal;
+  filterFinal,
+  filterEligibility;
 
 let currentPage = 1;
 const rowsPerPage = 20;
@@ -39,6 +40,7 @@ document.addEventListener("DOMContentLoaded", () => {
   filterEntrance = document.getElementById("filterEntrance");
   filterInterview = document.getElementById("filterInterview");
   filterFinal = document.getElementById("filterFinal");
+  filterEligibility = document.getElementById("filterEligibility");
 
   // Attach events ONLY after they exist
   searchBox.addEventListener("keyup", applyFilters);
@@ -47,6 +49,7 @@ document.addEventListener("DOMContentLoaded", () => {
   filterEntrance.addEventListener("change", applyFilters);
   filterInterview.addEventListener("change", applyFilters);
   filterFinal.addEventListener("change", applyFilters);
+  filterEligibility.addEventListener("change", applyFilters);
 });
 
 /**************************************************
@@ -208,7 +211,6 @@ function renderTable(rows) {
           ${admin ? "<th>Interview</th>" : ""}
           ${admin ? "<th>Final Admission</th>" : ""}
           ${admin ? "<th>WhatsApp</th>" : ""}
-          ${admin ? "<th>Delete</th>" : ""}
         </tr>
       </thead>
       <tbody>
@@ -225,6 +227,8 @@ function renderTable(rows) {
       <td>${r.dob}</td>
       <td>${r.age}</td>
       <td>${r.eligible}</td>
+
+
       
       ${
         admin
@@ -288,15 +292,7 @@ function renderTable(rows) {
     onclick="sendManualWhatsApp('${r.mobile}','${r.parent}','${r.student}','${r.enquiryNo}')">
     <img src="whatsapp.png" class="waOnlyIcon" alt="WA">
   </button>
-</td>
-
-
-
-
-      <td>
-        <button onclick="deleteEnquiry('${r.enquiryNo}')" class="deleteBtn">Delete</button>
-      </td>
-      `
+</td>`
           : ``
       }
     </tr>
@@ -315,9 +311,13 @@ function renderPagination(totalRows) {
 
   let html = `
     <div class="pagination">
-      <button ${currentPage === 1 ? "disabled" : ""} onclick="prevPage()">Prev</button>
+      <button ${
+        currentPage === 1 ? "disabled" : ""
+      } onclick="prevPage()">Prev</button>
       <span>Page ${currentPage} of ${totalPages}</span>
-      <button ${currentPage === totalPages ? "disabled" : ""} onclick="nextPage()">Next</button>
+      <button ${
+        currentPage === totalPages ? "disabled" : ""
+      } onclick="nextPage()">Next</button>
     </div>
   `;
 
@@ -339,7 +339,6 @@ function prevPage() {
   }
 }
 
-
 /**************************************************
  UPDATE DASHBOARD CARDS
 **************************************************/
@@ -351,17 +350,20 @@ function applyFilters() {
     const parent = r.parent ? r.parent.toLowerCase() : "";
     const enq = r.enquiryNo ? r.enquiryNo.toLowerCase() : "";
     const phone = r.mobile ? r.mobile.toLowerCase() : "";
-    
+
     return (
       (student.includes(q) ||
-       parent.includes(q) ||
-       enq.includes(q) ||
-       phone.includes(q)) &&
+        parent.includes(q) ||
+        enq.includes(q) ||
+        phone.includes(q)) &&
+
       (!filterClass.value || r.admClass === filterClass.value) &&
       (!filterApplication.value || r.application === filterApplication.value) &&
       (!filterEntrance.value || r.entrance === filterEntrance.value) &&
       (!filterInterview.value || r.interview === filterInterview.value) &&
-      (!filterFinal.value || r.finalAdmission === filterFinal.value)
+      (!filterFinal.value || r.finalAdmission === filterFinal.value) &&
+      (!filterEligibility.value ||
+        r.eligiblestatus === filterEligibility.value)
     );
   });
 
@@ -715,7 +717,7 @@ function closeAdminModal() {
 function submitAdminLogin() {
   const pwd = document.getElementById("adminPwd").value.trim();
 
-  if (pwd === "kotak@1963") {
+  if (pwd === "admin") {
     localStorage.setItem("isAdmin", "true");
     closeAdminModal();
     loadAdminButtons();
