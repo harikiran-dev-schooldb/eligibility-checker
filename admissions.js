@@ -1,9 +1,11 @@
 /**************************************************
- ADMISSIONS DASHBOARD – SUPABASE BACKEND (v3 FINAL)
- Clean, optimized & production-ready
+ ADMISSIONS DASHBOARD (Tailwind + Supabase REST)
+ Clean, structured, production-ready version
 **************************************************/
 
-// ---------- SUPABASE CONFIG ----------
+/* ------------------------------------------------
+   SUPABASE CONFIG
+--------------------------------------------------*/
 const SUPABASE_URL = "https://osrqmmsimjjkqsiwaiby.supabase.co";
 const SUPABASE_KEY =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9zcnFtbXNpbWpqa3FzaXdhaWJ5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUwNzM3ODUsImV4cCI6MjA4MDY0OTc4NX0.gh-DzLvmw5wsXkp8z_ot5SuLbusGShi9xZUKFpETE4A";
@@ -14,489 +16,437 @@ const SUPA_HEADERS = {
   "Content-Type": "application/json",
 };
 
-const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-let allRows = []; // cache
-let searchBox,
-  filterClass,
-  filterApplication,
-  filterEntrance,
-  filterInterview,
-  filterFinal,
-  filterEligibility;
-
+/* ------------------------------------------------
+   GLOBAL STATE
+--------------------------------------------------*/
+const PAGE_SIZE = 25;
+let allData = [];
+let filtered = [];
 let currentPage = 1;
-const rowsPerPage = 20;
-let currentRows = []; // rows after filter
+
+/* ------------------------------------------------
+   DOM ELEMENTS
+--------------------------------------------------*/
+const tableBody = document.getElementById("tableBody");
+const searchInput = document.getElementById("searchInput");
+const filterClass = document.getElementById("filterClass");
+const filterEligibility = document.getElementById("filterEligibility");
+const filterStage = document.getElementById("filterStage");
+const resetFilters = document.getElementById("resetFilters");
+const exportBtn = document.getElementById("exportBtn");
+
+// KPI Elements
+const kpiEnquiries = document.getElementById("kpi-enquiries");
+const kpiApps = document.getElementById("kpi-apps");
+const kpiEntrance = document.getElementById("kpi-entrance");
+const kpiInterview = document.getElementById("kpi-interview");
+const kpiFinal = document.getElementById("kpi-final");
 
 /**************************************************
- INIT ELEMENT REFERENCES
+ AGE CALCULATION
 **************************************************/
+function getAgeString(dobStr) {
+  if (!dobStr) return "";
 
-document.addEventListener("DOMContentLoaded", () => {
-  searchBox = document.getElementById("searchBox");
-  filterClass = document.getElementById("filterClass");
-  filterApplication = document.getElementById("filterApplication");
-  filterEntrance = document.getElementById("filterEntrance");
-  filterInterview = document.getElementById("filterInterview");
-  filterFinal = document.getElementById("filterFinal");
-  filterEligibility = document.getElementById("filterEligibility");
+  const parts = dobStr.split("-");
+  let dob;
 
-  // Attach events ONLY after they exist
-  searchBox.addEventListener("keyup", applyFilters);
-  filterClass.addEventListener("change", applyFilters);
-  filterApplication.addEventListener("change", applyFilters);
-  filterEntrance.addEventListener("change", applyFilters);
-  filterInterview.addEventListener("change", applyFilters);
-  filterFinal.addEventListener("change", applyFilters);
-  filterEligibility.addEventListener("change", applyFilters);
-});
-
-/**************************************************
- LOAD ADMISSIONS FROM SUPABASE
-**************************************************/
-async function loadAdmissions() {
-  const container = document.getElementById("admissionsContainer");
-  container.innerHTML = "Loading…";
-
-  try {
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/admissions?select=*`, {
-      method: "GET",
-      headers: SUPA_HEADERS,
-    });
-
-    allRows = await res.json();
-
-    // Default sort by Enquiry No
-    allRows.sort((b, a) => {
-      const numA = parseInt(a.enquiryNo.split("-")[2]);
-      const numB = parseInt(b.enquiryNo.split("-")[2]);
-      return numA - numB;
-    });
-
-    populateClassFilter(allRows);
-    renderTable(allRows);
-    updateCards(allRows);
-  } catch (err) {
-    container.innerHTML = "❌ Error loading data";
-    console.error("Load Error:", err);
+  // Try both YYYY-MM-DD and DD-MM-YYYY
+  if (parts[0].length === 4) {
+    dob = new Date(dobStr);
+  } else {
+    dob = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
   }
+
+  if (isNaN(dob)) return "";
+
+  const now = new Date();
+  let years = now.getFullYear() - dob.getFullYear();
+  let months = now.getMonth() - dob.getMonth();
+  let days = now.getDate() - dob.getDate();
+
+  if (days < 0) {
+    months--;
+    days += new Date(now.getFullYear(), now.getMonth(), 0).getDate();
+  }
+  if (months < 0) {
+    years--;
+    months += 12;
+  }
+
+  return `${years} years, ${months} months, ${days} day(s)`;
+}
+
+/**************************************************
+ KPI RENDERING
+**************************************************/
+function renderKPIs(data) {
+  kpiEnquiries.textContent = data.length;
+  kpiApps.textContent = data.filter((r) => r.application === "YES").length;
+  kpiEntrance.textContent = data.filter((r) => r.entrance === "PASS").length;
+  kpiInterview.textContent = data.filter(
+    (r) => r.interview === "SELECTED"
+  ).length;
+  kpiFinal.textContent = data.filter((r) => r.finalAdmission === "YES").length;
 }
 
 /**************************************************
  POPULATE CLASS DROPDOWN
 **************************************************/
-function populateClassFilter(rows) {
-  const dd = document.getElementById("filterClass");
-  dd.innerHTML = `<option value="">All Classes</option>`;
-
-  const classOrder = {
-    "PRE KG": 1,
-    LKG: 2,
-    UKG: 3,
-    I: 4,
-    II: 5,
-    III: 6,
-    IV: 7,
-    V: 8,
-    VI: 9,
-    VII: 10,
-    VIII: 11,
-    IX: 12,
-    X: 13,
-  };
-
-  const normalize = (s) => s.trim().toUpperCase().replace(/[-]/g, " ");
-
-  [...new Set(rows.map((r) => r.admClass))]
-    .sort(
-      (a, b) =>
-        (classOrder[normalize(a)] || 999) - (classOrder[normalize(b)] || 999)
-    )
-    .forEach((cls) => {
-      dd.innerHTML += `<option value="${cls}">${cls}</option>`;
-    });
+function populateClassFilter(data) {
+  const classes = [
+    ...new Set(data.map((d) => d.admClass).filter(Boolean)),
+  ].sort();
+  filterClass.innerHTML = `<option value="">All Classes</option>`;
+  classes.forEach((c) => {
+    filterClass.innerHTML += `<option value="${c}">${c}</option>`;
+  });
 }
 
 /**************************************************
- TOGGLE SIDEBAR
+ TABLE RENDERING (With Admin Actions)
 **************************************************/
-function toggleSidebar() {
-  const sidebar = document.querySelector(".sidebar");
-  const content = document.querySelector(".content");
+function renderTable(page = 1) {
+  tableBody.innerHTML = "";
 
-  sidebar.classList.toggle("closed");
-  content.classList.toggle("expanded");
-}
+  const start = (page - 1) * PAGE_SIZE;
+  const pageRows = filtered.slice(start, start + PAGE_SIZE);
 
-/**************************************************
- RENDER TABLE
-**************************************************/
-const admin = isAdmin();
-function formatEnquiry(enq) {
-  return parseInt(enq.split("-").pop(), 10);
-}
-
-let sortState = {
-  enquiry: "asc",
-  class: "asc",
-};
-
-function sortTable(column) {
-  if (column === "enquiry") {
-    allRows.sort((a, b) => {
-      const numA = parseInt(a.enquiryNo.split("-")[2]);
-      const numB = parseInt(b.enquiryNo.split("-")[2]);
-      return sortState.enquiry === "asc" ? numA - numB : numB - numA;
-    });
-
-    sortState.enquiry = sortState.enquiry === "asc" ? "desc" : "asc";
+  if (pageRows.length === 0) {
+    tableBody.innerHTML = `<tr><td class="p-3 text-center text-gray-500" colspan="12">No records found</td></tr>`;
+    return;
   }
 
-  if (column === "class") {
-    const order = {
-      "PRE KG": 1,
-      LKG: 2,
-      UKG: 3,
-      I: 4,
-      II: 5,
-      III: 6,
-      IV: 7,
-      V: 8,
-      VI: 9,
-      VII: 10,
-      VIII: 11,
-      IX: 12,
-      X: 13,
-    };
+  pageRows.forEach((r) => {
+    const tr = document.createElement("tr");
+    tr.className = "hover:bg-gray-50";
+    tr.className = "hover:bg-gray-50 cursor-pointer";
+    tr.onclick = () => openDetailModal(r);
 
-    allRows.sort((a, b) => {
-      return sortState.class === "asc"
-        ? order[a.admClass] - order[b.admClass]
-        : order[b.admClass] - order[a.admClass];
-    });
+    tr.innerHTML = `
+      <td class="p-3">${r.enquiryNo?.split("-").pop() || ""}</td>
+      <td class="p-3">${r.parent || ""}</td>
+      <td class="p-3">${r.student || ""}</td>
+      <td class="p-3">${r.admClass || ""}</td>
+      <td class="p-3">${r.mobile || ""}</td>
+      <td class="p-3">${r.dob || ""}</td>
+      <td class="p-3">${r.age || getAgeString(r.dob)}</td>
+      <td class="p-3">
+        <span class="inline-block px-3 py-1 rounded-full bg-sky-100 text-sky-700 text-xs font-medium">
+          ${r.eligible || ""}
+        </span>
+      </td>
 
-    sortState.class = sortState.class === "asc" ? "desc" : "asc";
-  }
-
-  renderTable(allRows);
-}
-
-function formatDateDMY(dateStr) {
-  if (!dateStr || dateStr === "null") return "";
-  const [y, m, d] = dateStr.split("-");
-  return `${d}-${m}-${y}`;
-}
-
-function renderTable(rows) {
-  currentRows = rows; // store filtered list
-  const start = (currentPage - 1) * rowsPerPage;
-  const end = start + rowsPerPage;
-  const paginatedRows = rows.slice(start, end);
-
-  let html = `
-    <table class="admTable">
-      <thead>
-        <tr>
-          <th onclick="sortTable('enquiry')">Enq No</th>
-          <th>Parent</th>
-          <th>Student</th>
-          <th onclick="sortTable('class')">Class</th>
-          <th>Mobile</th> 
-          <th>DOB</th> 
-          <th>Age</th> 
-          <th>Eligible Class</th> 
-          ${admin ? "<th>Application</th>" : ""}
-          ${admin ? "<th>Entrance</th>" : ""}
-          ${admin ? "<th>Interview</th>" : ""}
-          ${admin ? "<th>Final Admission</th>" : ""}
-          ${admin ? "<th>WhatsApp</th>" : ""}
-        </tr>
-      </thead>
-      <tbody>
-  `;
-
-  paginatedRows.forEach((r) => {
-    html += `
-    <tr>
-      <td>${formatEnquiry(r.enquiryNo)}</td>
-      <td>${r.parent}</td>
-      <td>${r.student}</td>
-      <td>${r.admClass}</td>
-      <td>${r.mobile}</td>
-      <td>${r.dob}</td>
-      <td>${r.age}</td>
-      <td>${r.eligible}</td>
-
-
-      
       ${
-        admin
+        isAdmin()
           ? `
-      <td>
-        <select class="table-select" onchange="updateStage('${
-          r.enquiryNo
-        }','application',this.value)">
-          <option ${r.application === "NO" ? "selected" : ""}>NO</option>
-          <option ${r.application === "YES" ? "selected" : ""}>YES</option>
-        </select>
-      </td>
+        <td class="p-3">
+          <select class="border px-2 py-1 rounded"
+                  onchange="updateStage('${
+                    r.enquiryNo
+                  }','application',this.value)">
+            <option ${r.application === "NO" ? "selected" : ""}>NO</option>
+            <option ${r.application === "YES" ? "selected" : ""}>YES</option>
+          </select>
+        </td>
 
-      <td>
-  <select class="table-select"
-          ${["PRE KG", "LKG"].includes(r.admClass) ? "disabled" : ""}
-          onchange="updateStage('${r.enquiryNo}','entrance',this.value)">
-    
-    <option ${
-      r.entrance === "NOT STARTED" ? "selected" : ""
-    }>NOT STARTED</option>
-    <option ${r.entrance === "PASS" ? "selected" : ""}>PASS</option>
-    <option ${r.entrance === "FAIL" ? "selected" : ""}>FAIL</option>
-  </select>
-</td>
+        <td class="p-3">
+          <select class="border px-2 py-1 rounded"
+                  onchange="updateStage('${
+                    r.enquiryNo
+                  }','entrance',this.value)">
+            <option ${
+              r.entrance === "NOT STARTED" ? "selected" : ""
+            }>NOT STARTED</option>
+            <option ${r.entrance === "PASS" ? "selected" : ""}>PASS</option>
+            <option ${r.entrance === "FAIL" ? "selected" : ""}>FAIL</option>
+          </select>
+        </td>
 
+        <td class="p-3">
+          <select class="border px-2 py-1 rounded"
+                  onchange="updateStage('${
+                    r.enquiryNo
+                  }','interview',this.value)">
+            <option ${
+              r.interview === "PENDING" ? "selected" : ""
+            }>PENDING</option>
+            <option ${
+              r.interview === "SELECTED" ? "selected" : ""
+            }>SELECTED</option>
+            <option ${
+              r.interview === "REJECTED" ? "selected" : ""
+            }>REJECTED</option>
+          </select>
+        </td>
 
-      <td>
-        <select class="table-select" onchange="updateStage('${
-          r.enquiryNo
-        }','interview',this.value)">
-          <option ${
-            r.interview === "PENDING" ? "selected" : ""
-          }>PENDING</option>
-          <option ${
-            r.interview === "SELECTED" ? "selected" : ""
-          }>SELECTED</option>
-          <option ${
-            r.interview === "REJECTED" ? "selected" : ""
-          }>REJECTED</option>
-        </select>
-      </td>
-
-      <td>
-        <select class="table-select" onchange="updateStage('${
-          r.enquiryNo
-        }','finalAdmission',this.value)">
-          <option ${r.finalAdmission === "NO" ? "selected" : ""}>NO</option>
-          <option ${r.finalAdmission === "YES" ? "selected" : ""}>YES</option>
-        </select>
-      </td>
+        <td class="p-3">
+          <select class="border px-2 py-1 rounded"
+                  onchange="updateStage('${
+                    r.enquiryNo
+                  }','finalAdmission',this.value)">
+            <option ${r.finalAdmission === "NO" ? "selected" : ""}>NO</option>
+            <option ${r.finalAdmission === "YES" ? "selected" : ""}>YES</option>
+          </select>
+        </td>
       `
-          : ``
+          : ""
       }
+    `;
 
-      ${
-        admin
-          ? `
-      <td>
-  <button class="waIconBtn"
-    onclick="sendManualWhatsApp('${r.mobile}','${r.parent}','${r.student}','${r.enquiryNo}')">
-    <img src="whatsapp.png" class="waOnlyIcon" alt="WA">
-  </button>
-</td>`
-          : ``
-      }
-    </tr>
-  `;
+    tableBody.appendChild(tr);
   });
 
-  html += "</tbody></table>";
-  // Attach pagination
-  html += renderPagination(rows.length);
+  // Pagination Info
+  currentPage = page;
+  document.getElementById("currentPage").textContent = `Page ${page}`;
+  document.getElementById("prevPage").disabled = page === 1;
+  document.getElementById("nextPage").disabled =
+    start + PAGE_SIZE >= filtered.length;
 
-  document.getElementById("admissionsContainer").innerHTML = html;
-}
-
-function renderPagination(totalRows) {
-  const totalPages = Math.ceil(totalRows / rowsPerPage);
-
-  let html = `
-    <div class="pagination">
-      <button ${
-        currentPage === 1 ? "disabled" : ""
-      } onclick="prevPage()">Prev</button>
-      <span>Page ${currentPage} of ${totalPages}</span>
-      <button ${
-        currentPage === totalPages ? "disabled" : ""
-      } onclick="nextPage()">Next</button>
-    </div>
-  `;
-
-  return html;
-}
-
-function nextPage() {
-  const totalPages = Math.ceil(currentRows.length / rowsPerPage);
-  if (currentPage < totalPages) {
-    currentPage++;
-    renderTable(currentRows);
-  }
-}
-
-function prevPage() {
-  if (currentPage > 1) {
-    currentPage--;
-    renderTable(currentRows);
-  }
+  document.getElementById("showingInfo").textContent = `Showing ${
+    start + 1
+  } to ${start + pageRows.length} of ${filtered.length} records`;
 }
 
 /**************************************************
- UPDATE DASHBOARD CARDS
+ FILTERING ENGINE
 **************************************************/
 function applyFilters() {
-  const q = searchBox.value.toLowerCase();
+  const q = searchInput.value.trim().toLowerCase();
+  const cls = filterClass.value;
+  const eligibility = filterEligibility.value;
+  const stage = filterStage.value;
 
-  const filtered = allRows.filter((r) => {
-    const student = r.student ? r.student.toLowerCase() : "";
-    const parent = r.parent ? r.parent.toLowerCase() : "";
-    const enq = r.enquiryNo ? r.enquiryNo.toLowerCase() : "";
-    const phone = r.mobile ? r.mobile.toLowerCase() : "";
+  filtered = allData.filter((d) => {
+    if (cls && d.admClass !== cls) return false;
 
-    return (
-      (student.includes(q) ||
-        parent.includes(q) ||
-        enq.includes(q) ||
-        phone.includes(q)) &&
+    if (eligibility) {
+      const actual = String(d.eligiblestatus || d.eligible || "").toUpperCase();
+      if (eligibility !== actual) return false;
+    }
 
-      (!filterClass.value || r.admClass === filterClass.value) &&
-      (!filterApplication.value || r.application === filterApplication.value) &&
-      (!filterEntrance.value || r.entrance === filterEntrance.value) &&
-      (!filterInterview.value || r.interview === filterInterview.value) &&
-      (!filterFinal.value || r.finalAdmission === filterFinal.value) &&
-      (!filterEligibility.value ||
-        r.eligiblestatus === filterEligibility.value)
-    );
+    if (stage) {
+      if (stage === "application" && d.application !== "YES") return false;
+      if (stage === "entrance" && d.entrance !== "PASS") return false;
+      if (stage === "interview" && d.interview !== "SELECTED") return false;
+      if (stage === "final" && d.finalAdmission !== "YES") return false;
+    }
+
+    if (!q) return true;
+
+    return `${d.student} ${d.parent} ${d.mobile} ${d.enquiryNo}`
+      .toLowerCase()
+      .includes(q);
   });
 
-  currentPage = 1;
-  renderTable(filtered);
-  updateCards(filtered);
+  renderTable(1);
+  renderKPIs(filtered);
+}
+
+/**************************************************
+ EVENT LISTENERS
+**************************************************/
+searchInput.addEventListener("input", () => {
+  clearTimeout(window._searchDebounce);
+  window._searchDebounce = setTimeout(applyFilters, 300);
+});
+
+[filterClass, filterEligibility, filterStage].forEach((el) =>
+  el.addEventListener("change", applyFilters)
+);
+
+resetFilters.addEventListener("click", () => {
+  searchInput.value = "";
+  filterClass.value = "";
+  filterEligibility.value = "";
+  filterStage.value = "";
+  applyFilters();
+});
+
+/**************************************************
+ EXCEL EXPORT
+**************************************************/
+exportBtn.addEventListener("click", () => {
+  const rows = filtered.map((r) => ({
+    EnquiryNo: r.enquiryNo,
+    Parent: r.parent,
+    Student: r.student,
+    Class: r.admClass,
+    Mobile: r.mobile,
+    DOB: r.dob,
+    Age: r.age || getAgeString(r.dob),
+    Eligible: r.eligible,
+    Application: r.application,
+    Entrance: r.entrance,
+    Interview: r.interview,
+    FinalAdmission: r.finalAdmission,
+  }));
+
+  const ws = XLSX.utils.json_to_sheet(rows);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Admissions");
+  XLSX.writeFile(wb, "admissions_export.xlsx");
+});
+
+/**************************************************
+ LOAD DATA FROM SUPABASE
+**************************************************/
+async function loadData() {
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/admissions?select=*`, {
+      headers: SUPA_HEADERS,
+    });
+
+    const data = await res.json();
+
+    allData = data.sort((a, b) => {
+      const na = parseInt(a.enquiryNo?.split("-").pop());
+      const nb = parseInt(b.enquiryNo?.split("-").pop());
+      return nb - na;
+    });
+
+    filtered = [...allData];
+
+    populateClassFilter(allData);
+    renderKPIs(allData);
+    renderTable(1);
+  } catch (err) {
+    console.error("Load Error:", err);
+  }
+}
+
+/**************************************************
+ ADMIN LOGIN / LOGOUT SYSTEM
+**************************************************/
+function submitAdminLogin() {
+  const pwd = document.getElementById("adminPwd").value.trim();
+  if (pwd === "admin") {
+    localStorage.setItem("isAdmin", "true");
+    closeAdminModal();
+    loadAdminButtons();
+    location.reload();
+  } else {
+    alert("❌ Wrong password");
+  }
+}
+
+function adminLogin() {
+  document.getElementById("adminModal").style.display = "flex";
+}
+
+function closeAdminModal() {
+  document.getElementById("adminModal").style.display = "none";
+  document.getElementById("adminPwd").value = "";
+}
+
+function adminLogout() {
+  document.getElementById("logoutModal").style.display = "flex";
+}
+
+function closeLogoutModal() {
+  document.getElementById("logoutModal").style.display = "none";
+}
+
+function confirmLogout() {
+  localStorage.removeItem("isAdmin");
+  closeLogoutModal();
+  location.reload();
+}
+
+function isAdmin() {
+  return localStorage.getItem("isAdmin") === "true";
+}
+
+function loadAdminButtons() {
+  const box = document.getElementById("adminButtons");
+
+  if (isAdmin()) {
+    box.innerHTML = `
+      <button class="px-4 py-2 bg-red-600 text-white rounded-md shadow-sm"
+              onclick="adminLogout()">
+        Logout
+      </button>
+    `;
+
+    // SHOW ADMIN COLUMNS
+    document.getElementById("th-application").style.display = "";
+    document.getElementById("th-entrance").style.display = "";
+    document.getElementById("th-interview").style.display = "";
+    document.getElementById("th-final").style.display = "";
+
+  } else {
+    box.innerHTML = `
+      <button class="px-4 py-2 bg-blue-600 text-white rounded-md shadow-sm"
+              onclick="adminLogin()">
+        Login
+      </button>
+    `;
+
+    // HIDE ADMIN COLUMNS
+    document.getElementById("th-application").style.display = "none";
+    document.getElementById("th-entrance").style.display = "none";
+    document.getElementById("th-interview").style.display = "none";
+    document.getElementById("th-final").style.display = "none";
+  }
 }
 
 
 /**************************************************
- UPDATE SUPABASE VALUES
+ UPDATE STAGE (PATCH to Supabase)
 **************************************************/
 async function updateStage(enquiryNo, field, value) {
   try {
-    const res = await fetch(
-      `${SUPABASE_URL}/rest/v1/admissions?enquiryNo=eq.${enquiryNo}`,
-      {
-        method: "PATCH",
-        headers: SUPA_HEADERS,
-        body: JSON.stringify({ [field]: value }),
-      }
-    );
+    const url = `${SUPABASE_URL}/rest/v1/admissions?enquiryNo=eq.${enquiryNo}`;
+
+    const res = await fetch(url, {
+      method: "PATCH",
+      headers: SUPA_HEADERS,
+      body: JSON.stringify({ [field]: value }),
+    });
 
     if (!res.ok) throw new Error("Update failed");
 
-    // update local row
-    const row = allRows.find((r) => r.enquiryNo === enquiryNo);
-    row[field] = value;
+    const r = allData.find((x) => x.enquiryNo === enquiryNo);
+    r[field] = value;
 
-    // WhatsApp Message
     let msg = "";
-    if (field === "application")
+
+    if (field === "application") {
       msg =
         value === "YES"
-          ? waApplicationIssued(row.student, row.parent, enquiryNo)
-          : waApplicationNotIssued(row.student, row.parent, enquiryNo);
+          ? waApplicationIssued(r.student, r.parent, enquiryNo)
+          : waApplicationNotIssued(r.student, r.parent, enquiryNo);
+    }
 
-    if (field === "entrance")
-      msg = waEntranceResult(row.student, row.parent, value, enquiryNo);
+    if (field === "entrance") {
+      msg = waEntranceResult(r.student, r.parent, value, enquiryNo);
+    }
 
-    if (field === "interview")
-      msg = waInterviewResult(row.student, row.parent, value, enquiryNo);
+    if (field === "interview") {
+      msg = waInterviewResult(r.student, r.parent, value, enquiryNo);
+    }
 
-    if (field === "finalAdmission")
-      msg = waFinalAdmission(row.student, row.parent, value, enquiryNo);
+    if (field === "finalAdmission") {
+      msg = waFinalAdmission(r.student, r.parent, value, enquiryNo);
+    }
 
-    if (msg) openWhatsApp(row.mobile, msg);
+    if (msg) openWhatsApp(r.mobile, msg);
 
-    alert("✔ Updated successfully!");
+    alert("Stage updated successfully!");
   } catch (err) {
-    alert("❌ Update failed");
     console.error(err);
+    alert("Error updating stage");
   }
 }
 
-let deleteTarget = null;
-
-function deleteEnquiry(enquiryNo) {
-  deleteTarget = enquiryNo;
-
-  document.getElementById(
-    "deleteMsg"
-  ).innerText = `Are you sure you want to delete enquiry: ${enquiryNo}?`;
-
-  document.getElementById("deleteModal").style.display = "flex";
-
-  document.getElementById("confirmDeleteBtn").onclick = confirmDelete;
-}
-
-function closeDeleteModal() {
-  deleteTarget = null;
-  document.getElementById("deleteModal").style.display = "none";
-}
-
-async function confirmDelete() {
-  if (!deleteTarget) return;
-
-  try {
-    const res = await fetch(
-      `${SUPABASE_URL}/rest/v1/admissions?enquiryNo=eq.${deleteTarget}`,
-      {
-        method: "DELETE",
-        headers: SUPA_HEADERS,
-      }
-    );
-
-    if (!res.ok) throw new Error("Error deleting entry");
-
-    allRows = allRows.filter((r) => r.enquiryNo !== deleteTarget);
-
-    renderTable(allRows);
-    updateCards(allRows);
-
-    closeDeleteModal();
-    alert("✔ Enquiry deleted successfully!");
-  } catch (err) {
-    alert("❌ Failed to delete entry");
-    closeDeleteModal();
-  }
-}
-
-/**************************************************
- WHATSAPP HANDLING
-**************************************************/
 function openWhatsApp(mobile, message) {
-  mobile = mobile.replace(/\D/g, "").slice(-10);
+  mobile = (mobile || "").replace(/\D/g, "").slice(-10);
   const url = `https://web.whatsapp.com/send?phone=91${mobile}&text=${encodeURIComponent(
     message
   )}`;
   window.open(url, "_blank");
 }
-
-function sendManualWhatsApp(mobile, parent, student, enquiryNo) {
-  const r = allRows.find((x) => x.enquiryNo === enquiryNo);
-
-  let msg =
-    r.finalAdmission !== "NO"
-      ? waFinalAdmission(student, parent, r.finalAdmission, enquiryNo)
-      : r.interview !== "PENDING"
-      ? waInterviewResult(student, parent, r.interview, enquiryNo)
-      : r.entrance !== "NOT STARTED"
-      ? waEntranceResult(student, parent, r.entrance, enquiryNo)
-      : r.application === "YES"
-      ? waApplicationIssued(student, parent, enquiryNo)
-      : waApplicationNotIssued(student, parent, enquiryNo);
-
-  openWhatsApp(mobile, msg);
-}
-
-/**************************************************
- WHATSAPP MESSAGE TEMPLATES – PREMIUM VERSION
- Clean, Attractive, Parent-Friendly Messages
-**************************************************/
 
 // 👉 Application Issued
 function waApplicationIssued(student, parent, enq) {
@@ -601,166 +551,35 @@ Unfortunately, the admission could not be approved at this time.
   }
 }
 
-/**************************************************
- EXCEL EXPORT FUNCTIONALITY
-**************************************************/
+function openDetailModal(row) {
+  const html = `
+    <p><strong>Enquiry No:</strong> ${row.enquiryNo}</p>
+    <p><strong>Parent:</strong> ${row.parent}</p>
+    <p><strong>Student:</strong> ${row.student}</p>
+    <p><strong>Class:</strong> ${row.admClass}</p>
+    <p><strong>Mobile:</strong> ${row.mobile}</p>
+    <p><strong>DOB:</strong> ${row.dob}</p>
+    <p><strong>Age:</strong> ${row.age || getAgeString(row.dob)}</p>
+    <p><strong>Eligible Class:</strong> ${row.eligible}</p>
+    <hr>
+    <p><strong>Application:</strong> ${row.application}</p>
+    <p><strong>Entrance:</strong> ${row.entrance}</p>
+    <p><strong>Interview:</strong> ${row.interview}</p>
+    <p><strong>Final Admission:</strong> ${row.finalAdmission}</p>
+  `;
 
-async function exportAdmissionsExcel() {
-  // Fetch all records
-  const { data, error } = await db
-    .from("admissions")
-    .select("*")
-    .order("enquiryNo", { ascending: true });
-
-  if (error) {
-    alert("❌ Failed to load admissions data");
-    console.error(error);
-    return;
-  }
-
-  if (!data || data.length === 0) {
-    alert("No admissions found!");
-    return;
-  }
-
-  // Prepare rows for Excel
-  const formatted = data.map((r) => ({
-    "ENQUIRY NO": r.enquiryNo,
-    "STUDENT NAME": r.student,
-    "PARENT NAME": r.parent,
-    CLASS: r.admClass,
-    MOBILE: r.mobile,
-    DOB: r.dob,
-    AGE: r.age,
-    "ELIGIBLE CLASS": r.eligible,
-    DATE: r.date,
-    APPLICATION: r.application,
-    "ENTRANCE RESULT": r.entrance,
-    "INTERVIEW STATUS": r.interview,
-    "FINAL ADMISSION": r.finalAdmission,
-  }));
-
-  // Convert to Excel
-  const sheet = XLSX.utils.json_to_sheet(formatted);
-  const book = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(book, sheet, "Admissions");
-
-  // Download file
-  XLSX.writeFile(book, "Admissions_2026-27.xlsx");
-
-  alert("📄 Excel exported successfully!");
+  document.getElementById("detailContent").innerHTML = html;
+  document.getElementById("detailModal").style.display = "flex";
 }
 
-// 🔥 Make function available to HTML button
-window.exportAdmissionsExcel = exportAdmissionsExcel;
-
-/**************************************************
- UPDATE DASHBOARD CARDS (WITH ANIMATION)
-**************************************************/
-/**************************************************
- UPDATE DASHBOARD CARDS (Animated)
-**************************************************/
-function updateCards(rows) {
-  const totalEnq = rows.length;
-  const totalApp = rows.filter((r) => r.application === "YES").length;
-  const totalPass = rows.filter((r) => r.entrance === "PASS").length;
-  const totalInterview = rows.filter((r) => r.interview === "SELECTED").length;
-  const totalFinal = rows.filter((r) => r.finalAdmission === "YES").length;
-
-  animateNumber("totalEnq", totalEnq);
-  animateNumber("totalInterview", totalInterview);
-  animateNumber("totalApp", totalApp);
-  animateNumber("totalPass", totalPass);
-  animateNumber("totalFinal", totalFinal);
-}
-
-/**************************************************
- COUNT-UP ANIMATION FOR DASHBOARD CARDS
-**************************************************/
-/**************************************************
- COUNT-UP ANIMATION (Smooth & Lightweight)
-**************************************************/
-function animateNumber(elementId, finalValue, duration = 700) {
-  const el = document.getElementById(elementId);
-  if (!el) return;
-
-  const startValue = 0;
-  const frameRate = 16; // ~60 FPS
-  const totalFrames = Math.round(duration / frameRate);
-  let currentFrame = 0;
-
-  const counter = setInterval(() => {
-    currentFrame++;
-    const progress = currentFrame / totalFrames;
-
-    // ease-out effect
-    const easedValue = Math.floor(finalValue * (1 - Math.pow(1 - progress, 3)));
-
-    el.textContent = easedValue;
-
-    if (currentFrame >= totalFrames) {
-      clearInterval(counter);
-      el.textContent = finalValue; // ensure exact
-    }
-  }, frameRate);
-}
-
-function adminLogin() {
-  document.getElementById("adminModal").style.display = "flex";
-}
-
-function closeAdminModal() {
-  document.getElementById("adminModal").style.display = "none";
-  document.getElementById("adminPwd").value = "";
-}
-
-function submitAdminLogin() {
-  const pwd = document.getElementById("adminPwd").value.trim();
-
-  if (pwd === "admin") {
-    localStorage.setItem("isAdmin", "true");
-    closeAdminModal();
-    loadAdminButtons();
-    loadAdmissions();
-    location.reload();
-  } else {
-    alert("❌ Wrong password");
-  }
-}
-
-function adminLogout() {
-  document.getElementById("logoutModal").style.display = "flex";
-}
-
-function closeLogoutModal() {
-  document.getElementById("logoutModal").style.display = "none";
-}
-function confirmLogout() {
-  localStorage.removeItem("isAdmin");
-  closeLogoutModal();
-  location.reload();
-}
-
-function isAdmin() {
-  return localStorage.getItem("isAdmin") === "true";
-}
-
-function loadAdminButtons() {
-  const box = document.getElementById("adminButtons");
-
-  if (isAdmin()) {
-    box.innerHTML = `
-      <button class="btn-logout" onclick="adminLogout()">Logout</button>
-    `;
-  } else {
-    box.innerHTML = `
-      <button class="btn-login" onclick="adminLogin()">Login</button>
-    `;
-  }
+function closeDetailModal() {
+  document.getElementById("detailModal").style.display = "none";
 }
 
 /**************************************************
  INIT
 **************************************************/
-loadAdminButtons();
-loadAdmissions();
+document.addEventListener("DOMContentLoaded", () => {
+  loadAdminButtons();
+  loadData();
+});
