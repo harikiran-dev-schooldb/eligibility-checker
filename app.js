@@ -169,30 +169,6 @@ async function loadTable() {
   console.log("Year selected:", year);
   console.log("Filtered rows:", rows);
 
-  /* STATIC YEARS */
-  if (year !== "2026-27") {
-    header.innerHTML = `
-      <th>Age</th>
-      <th>Class</th>
-      <th>Term Fee</th>
-      <th>Total Fee</th>
-    `;
-
-    // FIX: sort before display
-    rows.sort((a, b) => a.age - b.age);
-
-    rows.forEach((r) => {
-      tbody.innerHTML += `
-        <tr>
-          <td>${r.age}</td>
-          <td>${r.class}</td>
-          <td>${r.term}</td>
-          <td>${r.annualFees}</td>
-        </tr>`;
-    });
-    return;
-  }
-
   // FIX: sort before display
   rows.sort((a, b) => a.age - b.age);
 
@@ -286,6 +262,7 @@ async function submitAdmission() {
     entrance: "NOT STARTED",
     interview: "PENDING",
     finalAdmission: "NO",
+    timestamp: new Date().toISOString(),
   };
 
   // ---------- INSERT INTO SUPABASE ----------

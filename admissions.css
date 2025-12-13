@@ -687,3 +687,14 @@ body {
     box-shadow: 0 0 0 rgba(59, 130, 246, 0.0);
   }
 }
+
+.compact td {
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+  font-size: 0.75rem;
+}
+.compact th {
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+  font-size: 0.75rem;
+}

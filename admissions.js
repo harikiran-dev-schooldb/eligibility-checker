@@ -23,6 +23,13 @@ const PAGE_SIZE = 25;
 let allData = [];
 let filtered = [];
 let currentPage = 1;
+let activeKpi = null;
+let pendingStage = {
+  enquiryNo: null,
+  field: null,
+};
+const OVERRIDE_PASSWORD = "KSS@2026";
+let pendingOverride = null;
 
 /* ------------------------------------------------
    DOM ELEMENTS
@@ -31,7 +38,7 @@ const tableBody = document.getElementById("tableBody");
 const searchInput = document.getElementById("searchInput");
 const filterClass = document.getElementById("filterClass");
 const filterEligibility = document.getElementById("filterEligibility");
-const filterStage = document.getElementById("filterStage");
+const filterStage = { value: "" }; // dummy placeholder
 const resetFilters = document.getElementById("resetFilters");
 const exportBtn = document.getElementById("exportBtn");
 
@@ -78,12 +85,6 @@ function getAgeString(dobStr) {
 }
 
 /**************************************************
- KPI COUNT ANIMATION
-**************************************************/
-/**************************************************
- KPI COUNT ANIMATION – SLOW & SMOOTH
-**************************************************/
-/**************************************************
  KPI COUNT ANIMATION – SLOW + PULSE GLOW
 **************************************************/
 function animateCount(el, target, duration = 2500) {
@@ -114,12 +115,202 @@ function animateCount(el, target, duration = 2500) {
   requestAnimationFrame(update);
 }
 
-
-
-
 /**************************************************
  KPI RENDERING
 **************************************************/
+function adminControlsHTML(r) {
+  const noEntrance = ["PRE KG", "LKG"].includes(
+    (r.admClass || "").toUpperCase()
+  );
+
+  const canEntrance = r.application === "YES" && !noEntrance;
+
+  const canInterview =
+    r.application === "YES" && (noEntrance || r.entrance === "PASS");
+
+  const canFinal = r.interview === "SELECTED" || r.entrance === "FAIL";
+
+  return `
+    <td class="p-3">
+      ${statusPill(r.application, "application", r.enquiryNo, true)}
+    </td>
+
+    <td class="p-3">
+      ${
+        noEntrance
+          ? `<span class="px-3 py-1 text-xs rounded-full bg-gray-200 text-gray-600">N/A</span>`
+          : statusPill(
+              r.entrance || "NOT STARTED",
+              "entrance",
+              r.enquiryNo,
+              canEntrance
+            )
+      }
+    </td>
+
+    <td class="p-3">
+      ${statusPill(
+        r.interview || "NOT STARTED",
+        "interview",
+        r.enquiryNo,
+        canInterview
+      )}
+    </td>
+
+    <td class="p-3">
+      ${statusPill(
+        r.finalAdmission || "—",
+        "finalAdmission",
+        r.enquiryNo,
+        canFinal
+      )}
+    </td>
+  `;
+}
+
+function statusPill(value, field, enquiryNo, enabled = true) {
+  const map = {
+    YES: "bg-green-600 text-white",
+    NO: "bg-red-500 text-white",
+    PASS: "bg-green-600 text-white",
+    FAIL: "bg-red-500 text-white",
+    SELECTED: "bg-green-600 text-white",
+    REJECTED: "bg-red-500 text-white",
+    "NOT STARTED": "bg-gray-300 text-gray-700",
+    PENDING: "bg-gray-300 text-gray-700",
+  };
+
+  const cls = map[value] || "bg-gray-300 text-gray-700";
+  const disabled = !enabled ? "opacity-50 pointer-events-none" : "";
+
+  return `
+    <button
+      class="px-3 py-1 text-xs rounded-full font-medium ${cls} ${disabled}"
+      onclick="handleStageClick('${field}', '${enquiryNo}', '${value}')"
+    >
+      ${value}
+    </button>
+  `;
+}
+
+function handleStageClick(field, enquiryNo, currentValue) {
+  const row = allData.find((r) => r.enquiryNo === enquiryNo);
+  if (!row) return;
+
+  const noEntrance = ["PRE KG", "LKG"].includes(
+    (row.admClass || "").toUpperCase()
+  );
+
+  /* ------------------------------------------------
+     APPLICATION → direct toggle
+  --------------------------------------------------*/
+  if (field === "application") {
+    const next = currentValue === "YES" ? "NO" : "YES";
+    updateStage(enquiryNo, field, next);
+    return;
+  }
+
+  /* ------------------------------------------------
+     ENTRANCE → only if Application = YES
+  --------------------------------------------------*/
+  if (field === "entrance") {
+    if (row.application !== "YES") {
+      alert("⚠️ Application must be issued before Entrance.");
+      return;
+    }
+
+    openStageModal(
+      "Confirm Entrance Result",
+      "Please select the entrance exam result.",
+      enquiryNo,
+      "entrance",
+      [
+        { label: "PASS", value: "PASS", cls: "bg-green-600" },
+        { label: "FAIL", value: "FAIL", cls: "bg-red-600" },
+      ]
+    );
+    return;
+  }
+
+  /* ------------------------------------------------
+     INTERVIEW → PASS / OVERRIDE / SKIP ENTRANCE
+  --------------------------------------------------*/
+  if (field === "interview") {
+    if (!noEntrance && row.entrance === "FAIL") {
+      pendingOverride = { field, enquiryNo };
+      openOverrideModal();
+      return;
+    }
+
+    if (!noEntrance && row.entrance !== "PASS") {
+      alert("⚠️ Entrance must be PASS before Interview.");
+      return;
+    }
+
+    openStageModal(
+      "Confirm Interview Result",
+      "Please select the interview decision.",
+      enquiryNo,
+      "interview",
+      [
+        { label: "SELECTED", value: "SELECTED", cls: "bg-green-600" },
+        { label: "REJECTED", value: "REJECTED", cls: "bg-red-600" },
+      ]
+    );
+    return;
+  }
+
+  /* ------------------------------------------------
+     FINAL ADMISSION → SELECTED / OVERRIDE / SKIP ENTRANCE
+  --------------------------------------------------*/
+  if (field === "finalAdmission") {
+    if (!noEntrance && row.entrance === "FAIL") {
+      pendingOverride = { field, enquiryNo };
+      openOverrideModal();
+      return;
+    }
+
+    if (row.interview !== "SELECTED") {
+      alert("⚠️ Interview must be SELECTED before Final Admission.");
+      return;
+    }
+
+    openStageModal(
+      "Confirm Final Admission",
+      "Please confirm the final admission decision.",
+      enquiryNo,
+      "finalAdmission",
+      [
+        { label: "YES", value: "YES", cls: "bg-green-600" },
+        { label: "NO", value: "NO", cls: "bg-red-600" },
+      ]
+    );
+    return;
+  }
+}
+
+function nextValue(field, value) {
+  const flow = {
+    application: ["YES", "NO"],
+    entrance: ["PASS", "FAIL"],
+    interview: ["SELECTED", "REJECTED"],
+    finalAdmission: ["YES", "NO"],
+  };
+
+  const arr = flow[field];
+  if (!arr) return value;
+
+  const idx = arr.indexOf(value);
+  return arr[(idx + 1) % arr.length];
+}
+
+function confirmStage(enquiryNo, field, value) {
+  if (value === "YES") {
+    if (!confirm("Are you sure you want to CONFIRM FINAL ADMISSION?")) return;
+  }
+  updateStage(enquiryNo, field, value);
+}
+
 /**************************************************
  KPI RENDERING (Animated)
 **************************************************/
@@ -137,6 +328,51 @@ function renderKPIs(data) {
   animateCount(kpiFinal, finalAdm);
 }
 
+/**************************************************
+ POPULATE CLASS DROPDOWN
+**************************************************/
+function applyKpiFilter(type) {
+  // If same KPI clicked again → RESET
+  if (activeKpi === type) {
+    activeKpi = null;
+    clearKpiHighlight();
+
+    // Reset filters
+    filterStage.value = "";
+    filterClass.value = "";
+    filterEligibility.value = "";
+    searchInput.value = "";
+
+    applyFilters();
+    return;
+  }
+
+  // New KPI selected
+  activeKpi = type;
+  highlightActiveKpi(type);
+
+  filterStage.value = "";
+  if (type === "APPLICATION") filterStage.value = "application";
+  if (type === "ENTRANCE") filterStage.value = "entrance";
+  if (type === "INTERVIEW") filterStage.value = "interview";
+  if (type === "FINAL") filterStage.value = "final";
+
+  applyFilters();
+}
+
+function clearKpiHighlight() {
+  document
+    .querySelectorAll(".kpi-card")
+    .forEach((el) => el.classList.remove("ring-2", "ring-offset-2"));
+}
+
+function highlightActiveKpi(type) {
+  clearKpiHighlight();
+  const el = document.querySelector(`[data-kpi="${type}"]`);
+  if (el) {
+    el.classList.add("ring-2", "ring-offset-2");
+  }
+}
 
 /**************************************************
  POPULATE CLASS DROPDOWN
@@ -176,10 +412,20 @@ function renderTable(page = currentPage) {
   pageRows.forEach((r) => {
     const tr = document.createElement("tr");
     tr.className = "hover:bg-gray-50 cursor-pointer";
-    tr.onclick = () => openDetailModal(r);
 
     tr.innerHTML = `
-      <td class="p-3">${r.enquiryNo?.split("-").pop() || ""}</td>
+      <td class="p-3">
+  <button
+    class="text-sky-600 hover:underline font-medium"
+    onclick="openDetailModalFromClick(event, ${JSON.stringify(r).replace(
+      /"/g,
+      "&quot;"
+    )})"
+  >
+    ${r.enquiryNo?.split("-").pop() || ""}
+  </button>
+</td>
+
       <td class="p-3">${r.parent || ""}</td>
       <td class="p-3">${r.student || ""}</td>
       <td class="p-3">${r.admClass || ""}</td>
@@ -204,10 +450,15 @@ function renderTable(page = currentPage) {
   document.getElementById("nextPage").disabled =
     currentPage * PAGE_SIZE >= filtered.length;
 
-  document.getElementById("showingInfo").textContent =
-    `Showing ${start + 1} to ${start + pageRows.length} of ${filtered.length} records`;
+  document.getElementById("showingInfo").textContent = `Showing ${
+    start + 1
+  } to ${start + pageRows.length} of ${filtered.length} records`;
 }
 
+function openDetailModalFromClick(event, row) {
+  event.stopPropagation(); // ⛔ prevent row / other handlers
+  openDetailModal(row);
+}
 
 /**************************************************
  FILTERING ENGINE
@@ -252,7 +503,7 @@ searchInput.addEventListener("input", () => {
   window._searchDebounce = setTimeout(applyFilters, 300);
 });
 
-[filterClass, filterEligibility, filterStage].forEach((el) =>
+[filterClass, filterEligibility].forEach((el) =>
   el.addEventListener("change", applyFilters)
 );
 
@@ -280,7 +531,6 @@ document.getElementById("prevPage").addEventListener("click", () => {
     renderTable();
   }
 });
-
 
 /**************************************************
  EXCEL EXPORT – MERGED, CENTERED, BORDERED
@@ -387,7 +637,6 @@ exportBtn.addEventListener("click", () => {
   XLSX.writeFile(wb, "Admissions_Enquiries_2026-27.xlsx");
 });
 
-
 /**************************************************
  LOAD DATA FROM SUPABASE
 **************************************************/
@@ -473,7 +722,6 @@ function loadAdminButtons() {
     document.getElementById("th-entrance").style.display = "";
     document.getElementById("th-interview").style.display = "";
     document.getElementById("th-final").style.display = "";
-
   } else {
     box.innerHTML = `
       <button class="px-4 py-2 bg-blue-600 text-white rounded-md shadow-sm"
@@ -490,7 +738,6 @@ function loadAdminButtons() {
   }
 }
 
-
 /**************************************************
  UPDATE STAGE (PATCH to Supabase)
 **************************************************/
@@ -502,12 +749,14 @@ async function updateStage(enquiryNo, field, value) {
       method: "PATCH",
       headers: SUPA_HEADERS,
       body: JSON.stringify({ [field]: value }),
+      timestamp: new Date().toISOString(),
     });
 
     if (!res.ok) throw new Error("Update failed");
 
     const r = allData.find((x) => x.enquiryNo === enquiryNo);
     r[field] = value;
+    r.timestamp = new Date().toISOString();
 
     let msg = "";
 
@@ -530,13 +779,27 @@ async function updateStage(enquiryNo, field, value) {
       msg = waFinalAdmission(r.student, r.parent, value, enquiryNo);
     }
 
-    if (msg) openWhatsApp(r.mobile, msg);
+    if (msg && value !== "" && value !== "NOT STARTED") {
+      openWhatsApp(r.mobile, msg);
+    }
 
-    alert("Stage updated successfully!");
+    // Refresh UI immediately
+    applyFilters(); // re-filter + re-render table
+    renderKPIs(filtered); // update KPI counts
   } catch (err) {
     console.error(err);
     alert("Error updating stage");
   }
+}
+
+function confirmFinal(enquiryNo, value) {
+  if (value === "YES") {
+    if (!confirm("Are you sure you want to CONFIRM FINAL ADMISSION?")) {
+      renderTable(currentPage);
+      return;
+    }
+  }
+  updateStage(enquiryNo, "finalAdmission", value);
 }
 
 function openWhatsApp(mobile, message) {
@@ -673,6 +936,118 @@ function openDetailModal(row) {
 
 function closeDetailModal() {
   document.getElementById("detailModal").style.display = "none";
+}
+
+function openStageModal(title, text, enquiryNo, field, buttons) {
+  pendingStage.enquiryNo = enquiryNo;
+  pendingStage.field = field;
+
+  document.getElementById("stageModalTitle").textContent = title;
+  document.getElementById("stageModalText").textContent = text;
+
+  const btnBox = document.getElementById("stageModalButtons");
+  btnBox.innerHTML = `
+    <button
+      onclick="closeStageModal()"
+      class="px-4 py-2 border rounded-md"
+    >
+      Cancel
+    </button>
+  `;
+
+  buttons.forEach((b) => {
+    btnBox.innerHTML += `
+      <button
+        class="px-4 py-2 text-white rounded-md ${b.cls}"
+        onclick="confirmStageAction('${b.value}')"
+      >
+        ${b.label}
+      </button>
+    `;
+  });
+
+  const modal = document.getElementById("stageModal");
+  modal.classList.remove("hidden");
+  modal.classList.add("flex");
+}
+
+function closeStageModal() {
+  const modal = document.getElementById("stageModal");
+  modal.classList.add("hidden");
+  modal.classList.remove("flex");
+
+  pendingStage.enquiryNo = null;
+  pendingStage.field = null;
+}
+
+function confirmStageAction(value) {
+  if (!pendingStage.enquiryNo || !pendingStage.field) return;
+
+  updateStage(pendingStage.enquiryNo, pendingStage.field, value);
+
+  closeStageModal();
+}
+
+function openOverrideModal() {
+  const modal = document.getElementById("overrideModal");
+  if (!modal) {
+    console.error("overrideModal not found");
+    return;
+  }
+  modal.classList.remove("hidden");
+  modal.classList.add("flex");
+}
+
+function closeOverrideModal() {
+  const modal = document.getElementById("overrideModal");
+  modal.classList.add("hidden");
+  modal.classList.remove("flex");
+}
+
+function confirmOverride() {
+  const pwd = document.getElementById("overridePwd").value.trim();
+
+  if (pwd !== OVERRIDE_PASSWORD) {
+    alert("❌ Invalid override password");
+    return;
+  }
+
+  if (!pendingOverride) return;
+
+  const { field, enquiryNo } = pendingOverride;
+
+  closeOverrideModal(); // close ONLY UI
+
+  // 👉 NOW open correct stage modal
+  if (field === "interview") {
+    openStageModal(
+      "Confirm Interview Result",
+      "Please select the interview decision.",
+      enquiryNo,
+      "interview",
+      [
+        { label: "SELECTED", value: "SELECTED", cls: "bg-green-600" },
+        { label: "REJECTED", value: "REJECTED", cls: "bg-red-600" },
+      ]
+    );
+  }
+
+  if (field === "finalAdmission") {
+    openStageModal(
+      "Confirm Final Admission",
+      "Please confirm the final admission decision.",
+      enquiryNo,
+      "finalAdmission",
+      [
+        { label: "YES", value: "YES", cls: "bg-green-600" },
+        { label: "NO", value: "NO", cls: "bg-red-600" },
+      ]
+    );
+  }
+
+  // ✅ clear ONLY after use
+  pendingOverride = null;
+  document.getElementById("overridePwd").value = "";
 }
 
 /**************************************************

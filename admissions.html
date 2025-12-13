@@ -47,33 +47,53 @@
     <div class="w-full p-6">
       <!-- KPI CARDS -->
       <section class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
-        <div class="bg-white rounded-lg p-4 shadow-sm">
+        <div
+          class="kpi-card bg-white rounded-lg p-4 shadow-sm cursor-pointer hover:ring-2 hover:ring-blue-400 transition"
+          data-kpi="ALL"
+          onclick="applyFilters()"
+        >
           <div class="text-xs text-gray-500">Total Enquiries</div>
           <div id="kpi-enquiries" class="text-2xl font-bold text-blue-600">
             —
           </div>
         </div>
 
-        <div class="bg-white rounded-lg p-4 shadow-sm">
+        <div
+          class="kpi-card bg-white rounded-lg p-4 shadow-sm cursor-pointer hover:ring-2 hover:ring-yellow-400 transition"
+          data-kpi="APPLICATION"
+          onclick="applyKpiFilter('APPLICATION')"
+        >
           <div class="text-xs text-gray-500">Applications Issued</div>
           <div id="kpi-apps" class="text-2xl font-bold text-yellow-500">—</div>
         </div>
 
-        <div class="bg-white rounded-lg p-4 shadow-sm">
+        <div
+          class="kpi-card bg-white rounded-lg p-4 shadow-sm cursor-pointer hover:ring-2 hover:ring-green-400 transition"
+          data-kpi="ENTRANCE"
+          onclick="applyKpiFilter('ENTRANCE')"
+        >
           <div class="text-xs text-gray-500">Entrance Passed</div>
           <div id="kpi-entrance" class="text-2xl font-bold text-green-600">
             —
           </div>
         </div>
 
-        <div class="bg-white rounded-lg p-4 shadow-sm">
+        <div
+          class="kpi-card bg-white rounded-lg p-4 shadow-sm cursor-pointer hover:ring-2 hover:ring-indigo-400 transition"
+          data-kpi="INTERVIEW"
+          onclick="applyKpiFilter('INTERVIEW')"
+        >
           <div class="text-xs text-gray-500">Interview Passed</div>
           <div id="kpi-interview" class="text-2xl font-bold text-indigo-600">
             —
           </div>
         </div>
 
-        <div class="bg-white rounded-lg p-4 shadow-sm">
+        <div
+          class="kpi-card bg-white rounded-lg p-4 shadow-sm cursor-pointer hover:ring-2 hover:ring-sky-400 transition"
+          data-kpi="FINAL"
+          onclick="applyKpiFilter('FINAL')"
+        >
           <div class="text-xs text-gray-500">Final Admissions</div>
           <div id="kpi-final" class="text-2xl font-bold text-sky-700">—</div>
         </div>
@@ -102,13 +122,6 @@
               <option value="NO">NO</option>
             </select>
 
-            <select id="filterStage" class="rounded-md border px-3 py-2">
-              <option value="">Any Stage</option>
-              <option value="application">Application</option>
-              <option value="entrance">Entrance</option>
-              <option value="interview">Interview</option>
-              <option value="final">Final</option>
-            </select>
 
             <button
               id="resetFilters"
@@ -184,9 +197,9 @@
         </div>
       </section>
 
-      <footer class="text-xs text-gray-500 mt-4">
-        Prototype — Tailwind + Supabase. Replace placeholders with your Supabase
-        credentials.
+      <footer class="mt-8 py-4 text-center text-xs text-gray-500 border-t">
+        © Kotak Salesian School · Established 1963 ·
+        <span class="font-medium">Aspire to Achieve</span>
       </footer>
     </div>
     <!-- ================= END MAIN WRAPPER ================= -->
@@ -264,6 +277,64 @@
             class="px-4 py-2 bg-blue-600 text-white rounded"
           >
             Close
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= STAGE CONFIRM MODAL ================= -->
+    <div
+      id="stageModal"
+      class="fixed inset-0 hidden items-center justify-center bg-black/40 backdrop-blur-sm z-50"
+    >
+      <div class="bg-white w-96 p-6 rounded-lg shadow-lg">
+        <h2
+          id="stageModalTitle"
+          class="text-lg font-semibold mb-2 text-sky-600"
+        >
+          Confirm Action
+        </h2>
+
+        <p id="stageModalText" class="text-sm text-gray-600 mb-4"></p>
+
+        <div id="stageModalButtons" class="flex justify-end gap-3"></div>
+      </div>
+    </div>
+
+    <!-- ================= OVERRIDE MODAL ================= -->
+    <div
+      id="overrideModal"
+      class="fixed inset-0 hidden items-center justify-center bg-black/40 backdrop-blur-sm z-50"
+    >
+      <div class="bg-white w-96 p-6 rounded-lg shadow-lg">
+        <h2 class="text-lg font-semibold text-red-600 mb-2">
+          Restricted Action
+        </h2>
+
+        <p class="text-sm text-gray-600 mb-4">
+          Entrance is marked as <strong>FAIL</strong>.<br />
+          Enter override password to continue.
+        </p>
+
+        <input
+          id="overridePwd"
+          type="password"
+          placeholder="Enter override password"
+          class="w-full border rounded-md px-3 py-2 mb-4"
+        />
+
+        <div class="flex justify-end gap-2">
+          <button
+            onclick="closeOverrideModal()"
+            class="px-3 py-2 border rounded-md"
+          >
+            Cancel
+          </button>
+          <button
+            onclick="confirmOverride()"
+            class="px-3 py-2 bg-red-600 text-white rounded-md"
+          >
+            Continue
           </button>
         </div>
       </div>
