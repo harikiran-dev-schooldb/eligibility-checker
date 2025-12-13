@@ -78,17 +78,65 @@ function getAgeString(dobStr) {
 }
 
 /**************************************************
+ KPI COUNT ANIMATION
+**************************************************/
+/**************************************************
+ KPI COUNT ANIMATION – SLOW & SMOOTH
+**************************************************/
+/**************************************************
+ KPI COUNT ANIMATION – SLOW + PULSE GLOW
+**************************************************/
+function animateCount(el, target, duration = 2500) {
+  const startTime = performance.now();
+
+  // Add pulse glow
+  el.classList.add("kpi-pulse");
+
+  function easeOutCubic(t) {
+    return 1 - Math.pow(1 - t, 3);
+  }
+
+  function update(now) {
+    const progress = Math.min((now - startTime) / duration, 1);
+    const eased = easeOutCubic(progress);
+    const value = Math.floor(eased * target);
+
+    el.textContent = value.toLocaleString();
+
+    if (progress < 1) {
+      requestAnimationFrame(update);
+    } else {
+      el.textContent = target.toLocaleString();
+      el.classList.remove("kpi-pulse"); // stop glow
+    }
+  }
+
+  requestAnimationFrame(update);
+}
+
+
+
+
+/**************************************************
  KPI RENDERING
 **************************************************/
+/**************************************************
+ KPI RENDERING (Animated)
+**************************************************/
 function renderKPIs(data) {
-  kpiEnquiries.textContent = data.length;
-  kpiApps.textContent = data.filter((r) => r.application === "YES").length;
-  kpiEntrance.textContent = data.filter((r) => r.entrance === "PASS").length;
-  kpiInterview.textContent = data.filter(
-    (r) => r.interview === "SELECTED"
-  ).length;
-  kpiFinal.textContent = data.filter((r) => r.finalAdmission === "YES").length;
+  const total = data.length;
+  const apps = data.filter((r) => r.application === "YES").length;
+  const entrance = data.filter((r) => r.entrance === "PASS").length;
+  const interview = data.filter((r) => r.interview === "SELECTED").length;
+  const finalAdm = data.filter((r) => r.finalAdmission === "YES").length;
+
+  animateCount(kpiEnquiries, total);
+  animateCount(kpiApps, apps);
+  animateCount(kpiEntrance, entrance);
+  animateCount(kpiInterview, interview);
+  animateCount(kpiFinal, finalAdm);
 }
+
 
 /**************************************************
  POPULATE CLASS DROPDOWN
@@ -106,20 +154,27 @@ function populateClassFilter(data) {
 /**************************************************
  TABLE RENDERING (With Admin Actions)
 **************************************************/
-function renderTable(page = 1) {
+/**************************************************
+ TABLE RENDERING (With Admin Actions)
+**************************************************/
+function renderTable(page = currentPage) {
   tableBody.innerHTML = "";
 
   const start = (page - 1) * PAGE_SIZE;
   const pageRows = filtered.slice(start, start + PAGE_SIZE);
 
   if (pageRows.length === 0) {
-    tableBody.innerHTML = `<tr><td class="p-3 text-center text-gray-500" colspan="12">No records found</td></tr>`;
+    tableBody.innerHTML = `
+      <tr>
+        <td colspan="12" class="p-3 text-center text-gray-500">
+          No records found
+        </td>
+      </tr>`;
     return;
   }
 
   pageRows.forEach((r) => {
     const tr = document.createElement("tr");
-    tr.className = "hover:bg-gray-50";
     tr.className = "hover:bg-gray-50 cursor-pointer";
     tr.onclick = () => openDetailModal(r);
 
@@ -136,78 +191,23 @@ function renderTable(page = 1) {
           ${r.eligible || ""}
         </span>
       </td>
-
-      ${
-        isAdmin()
-          ? `
-        <td class="p-3">
-          <select class="border px-2 py-1 rounded"
-                  onchange="updateStage('${
-                    r.enquiryNo
-                  }','application',this.value)">
-            <option ${r.application === "NO" ? "selected" : ""}>NO</option>
-            <option ${r.application === "YES" ? "selected" : ""}>YES</option>
-          </select>
-        </td>
-
-        <td class="p-3">
-          <select class="border px-2 py-1 rounded"
-                  onchange="updateStage('${
-                    r.enquiryNo
-                  }','entrance',this.value)">
-            <option ${
-              r.entrance === "NOT STARTED" ? "selected" : ""
-            }>NOT STARTED</option>
-            <option ${r.entrance === "PASS" ? "selected" : ""}>PASS</option>
-            <option ${r.entrance === "FAIL" ? "selected" : ""}>FAIL</option>
-          </select>
-        </td>
-
-        <td class="p-3">
-          <select class="border px-2 py-1 rounded"
-                  onchange="updateStage('${
-                    r.enquiryNo
-                  }','interview',this.value)">
-            <option ${
-              r.interview === "PENDING" ? "selected" : ""
-            }>PENDING</option>
-            <option ${
-              r.interview === "SELECTED" ? "selected" : ""
-            }>SELECTED</option>
-            <option ${
-              r.interview === "REJECTED" ? "selected" : ""
-            }>REJECTED</option>
-          </select>
-        </td>
-
-        <td class="p-3">
-          <select class="border px-2 py-1 rounded"
-                  onchange="updateStage('${
-                    r.enquiryNo
-                  }','finalAdmission',this.value)">
-            <option ${r.finalAdmission === "NO" ? "selected" : ""}>NO</option>
-            <option ${r.finalAdmission === "YES" ? "selected" : ""}>YES</option>
-          </select>
-        </td>
-      `
-          : ""
-      }
+      ${isAdmin() ? adminControlsHTML(r) : ""}
     `;
 
     tableBody.appendChild(tr);
   });
 
-  // Pagination Info
   currentPage = page;
-  document.getElementById("currentPage").textContent = `Page ${page}`;
-  document.getElementById("prevPage").disabled = page === 1;
-  document.getElementById("nextPage").disabled =
-    start + PAGE_SIZE >= filtered.length;
 
-  document.getElementById("showingInfo").textContent = `Showing ${
-    start + 1
-  } to ${start + pageRows.length} of ${filtered.length} records`;
+  document.getElementById("currentPage").textContent = `Page ${currentPage}`;
+  document.getElementById("prevPage").disabled = currentPage === 1;
+  document.getElementById("nextPage").disabled =
+    currentPage * PAGE_SIZE >= filtered.length;
+
+  document.getElementById("showingInfo").textContent =
+    `Showing ${start + 1} to ${start + pageRows.length} of ${filtered.length} records`;
 }
+
 
 /**************************************************
  FILTERING ENGINE
@@ -265,10 +265,28 @@ resetFilters.addEventListener("click", () => {
 });
 
 /**************************************************
- EXCEL EXPORT
+ PAGINATION CONTROLS
+**************************************************/
+document.getElementById("nextPage").addEventListener("click", () => {
+  if (currentPage * PAGE_SIZE < filtered.length) {
+    currentPage++;
+    renderTable();
+  }
+});
+
+document.getElementById("prevPage").addEventListener("click", () => {
+  if (currentPage > 1) {
+    currentPage--;
+    renderTable();
+  }
+});
+
+
+/**************************************************
+ EXCEL EXPORT – MERGED, CENTERED, BORDERED
 **************************************************/
 exportBtn.addEventListener("click", () => {
-  const rows = filtered.map((r) => ({
+  const dataRows = filtered.map((r) => ({
     EnquiryNo: r.enquiryNo,
     Parent: r.parent,
     Student: r.student,
@@ -283,11 +301,92 @@ exportBtn.addEventListener("click", () => {
     FinalAdmission: r.finalAdmission,
   }));
 
-  const ws = XLSX.utils.json_to_sheet(rows);
+  const headers = Object.keys(dataRows[0]);
+  const totalCols = headers.length;
+
+  // Create sheet with headers at row 3
+  const ws = XLSX.utils.json_to_sheet(dataRows, { origin: "A3" });
+
+  // ---------------- TITLES ----------------
+  ws["A1"] = {
+    v: "KOTAK SALESIAN SCHOOL",
+    t: "s",
+    s: {
+      font: { bold: true, sz: 16 },
+      alignment: { horizontal: "center", vertical: "center" },
+    },
+  };
+
+  ws["A2"] = {
+    v: "ADMISSION ENQUIRIES 2026–27",
+    t: "s",
+    s: {
+      font: { bold: true, sz: 12 },
+      alignment: { horizontal: "center", vertical: "center" },
+    },
+  };
+
+  // Merge title rows
+  ws["!merges"] = [
+    { s: { r: 0, c: 0 }, e: { r: 0, c: totalCols - 1 } },
+    { s: { r: 1, c: 0 }, e: { r: 1, c: totalCols - 1 } },
+  ];
+
+  // ---------------- STYLES ----------------
+  const borderStyle = {
+    top: { style: "thin" },
+    bottom: { style: "thin" },
+    left: { style: "thin" },
+    right: { style: "thin" },
+  };
+
+  // Header row (Row 3)
+  headers.forEach((h, i) => {
+    const cellRef = XLSX.utils.encode_cell({ r: 2, c: i });
+    ws[cellRef].s = {
+      font: { bold: true },
+      alignment: { horizontal: "center", vertical: "center" },
+      border: borderStyle,
+    };
+  });
+
+  // Data cells (from Row 4)
+  dataRows.forEach((row, rIdx) => {
+    headers.forEach((_, cIdx) => {
+      const cellRef = XLSX.utils.encode_cell({
+        r: rIdx + 3,
+        c: cIdx,
+      });
+
+      if (!ws[cellRef]) return;
+
+      ws[cellRef].s = {
+        alignment: { vertical: "center" },
+        border: borderStyle,
+      };
+    });
+  });
+
+  // ---------------- AUTO WIDTH ----------------
+  const colWidths = [];
+  const allRows = [headers, ...dataRows.map(Object.values)];
+
+  allRows.forEach((row) => {
+    row.forEach((val, i) => {
+      const len = val ? val.toString().length : 10;
+      colWidths[i] = Math.max(colWidths[i] || 10, len + 2);
+    });
+  });
+
+  ws["!cols"] = colWidths.map((w) => ({ wch: w }));
+
+  // ---------------- WORKBOOK ----------------
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, "Admissions");
-  XLSX.writeFile(wb, "admissions_export.xlsx");
+
+  XLSX.writeFile(wb, "Admissions_Enquiries_2026-27.xlsx");
 });
+
 
 /**************************************************
  LOAD DATA FROM SUPABASE

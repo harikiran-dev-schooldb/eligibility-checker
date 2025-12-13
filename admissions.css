@@ -668,3 +668,22 @@ body {
 }
 
 
+/* KPI Pulse Glow Animation */
+.kpi-pulse {
+  animation: kpiPulse 1.2s ease-in-out infinite;
+}
+
+@keyframes kpiPulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 rgba(59, 130, 246, 0.0);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 18px rgba(59, 130, 246, 0.35);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 rgba(59, 130, 246, 0.0);
+  }
+}
