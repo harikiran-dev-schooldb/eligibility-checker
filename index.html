@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Class Eligibility Checker</title>
+    <title>Kotak Salesian School – Class Eligibility</title>
 
     <!-- PWA -->
     <link rel="manifest" href="manifest.json" />
@@ -14,115 +14,106 @@
   </head>
 
   <body>
-    <!-- HEADER -->
-    <div class="school-header">
-      <a href="admissions.html" class="logo-link">
-        <img src="KOTAK_LOGO.png" alt="School Logo" />
-      </a>
-
-      <h2>KOTAK SALESIAN SCHOOL</h2>
-      <p>Academic Year 2026 – 27</p>
-    </div>
-
-    <!-- TITLE -->
-    <h2>Class Eligibility Checker</h2>
-
-    <div class="glass-card">
-      <!-- DATE + BUTTON -->
-      <div class="dob-row">
-        <input type="date" id="dob" />
-        <button onclick="checkEligibility()">Check Eligibility</button>
-      </div>
-
-      <!-- RESULT SECTION (FULL BLOCK) -->
-      <div id="result" class="result-section"></div>
-
-      <!-- YEAR SELECT -->
-      <div class="compact-year">
-        <div class="year-select-row">
-          <label><b>Select Year:</b></label>
-
-          <select id="yearSelect" onchange="loadTable()">
-            <option value="2023-24">2023–24</option>
-            <option value="2024-25">2024–25</option>
-            <option value="2025-26">2025–26</option>
-            <option value="2026-27" selected>2026–27</option>
-          </select>
-
-          <button onclick="window.print()">⬇️ PDF</button>
+    <!-- ================= HEADER ================= -->
+    <header class="app-header">
+      <div class="header-inner">
+        <a href="admissions.html">
+          <img src="KOTAK_LOGO.png" alt="Kotak Salesian School" class="school-logo" />
+        </a>
+        <div class="header-text">
+          <h1>Kotak Salesian School</h1>
+          <p>Academic Year 2026 – 27</p>
         </div>
       </div>
-    </div>
+    </header>
 
-    <!-- TABLE -->
-    <table id="eligibilityTable">
-      <thead>
-        <tr id="tableHeader">
-          <th>Age</th>
-          <th>Class</th>
-          <th>Term Fee</th>
-          <th>Total Fee</th>
-        </tr>
-      </thead>
-      <tbody id="tableBody"></tbody>
-    </table>
+    <!-- ================= MAIN ================= -->
+    <main class="container">
 
-    <!-- ADMISSION PROCESS -->
-    <div class="documents-container">
-      <h3>📌 Admission Process</h3>
-      <ul class="document-list">
-        <li>
-          🎓 At least one parent must hold a minimum Graduate-level
-          qualification.
-        </li>
-        <li>🏫 The student must be transferring from a recognised school.</li>
-        <li>💵 Application Fee: ₹500 (non-refundable).</li>
-        <li>📝 Entrance examination is mandatory from UKG onwards.</li>
-        <li>
-          ✅ Admission Fee of ₹12,000 is applicable upon qualifying in the
-          entrance test.
-        </li>
-        <li>
-          📈 Annual tuition fees are revised every year by approximately 8%–10%.
-        </li>
-        <li>👕 Charges for books and uniforms are separate.</li>
-      </ul>
-    </div>
+      <!-- ===== ELIGIBILITY CHECKER ===== -->
+      <section class="card hero-card">
+        <h2>🎓 Class Eligibility Checker</h2>
 
-    <!-- DOCUMENTS REQUIRED -->
-    <div class="documents-container">
-      <h3>📄 Documents to be Submitted</h3>
-      <ul class="document-list">
-        <li>📸 Three recent passport-size photographs of the student.</li>
-        <li>🧾 Copy of the Birth Certificate.</li>
-        <li>🏫 Original Transfer Certificate (mandatory from UKG onwards).</li>
-        <li>📘 Report Card of the last attended class.</li>
-        <li>🏠 Residential proof of the parent/guardian.</li>
-        <li>🪪 Aadhaar Card of the student and both parents.</li>
-        <li>👨‍👩‍👧 Passport-size photographs of Father and Mother.</li>
-        <li>📜 Caste Certificate (if applicable).</li>
-      </ul>
-    </div>
+        <div class="dob-row">
+          <input type="date" id="dob" />
+          <button class="primary-btn" onclick="checkEligibility()">
+            Check Eligibility
+          </button>
+        </div>
 
-    <!-- LIBRARIES -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+        <!-- RESULT -->
+        <div id="result" class="result-section"></div>
+      </section>
 
-    <!-- Load app.js with cache bypass -->
-    <script>
-      const version = Date.now();
-      document.write(`<script src="app.js?v=${version}"><\/script>`);
-    </script>
+      <!-- ===== FEE STRUCTURE ===== -->
+      <section class="card">
+        <div class="card-header">
+          <h3>💰 Fee Structure</h3>
 
-    <!-- SERVICE WORKER -->
-    <script>
-      if ("serviceWorker" in navigator) {
-        navigator.serviceWorker.register("sw.js").then(() => {
-          console.log("Service Worker Registered");
-        });
-      }
-    </script>
+          <div class="fee-controls">
+            <label>Select Year</label>
+            <select id="yearSelect" onchange="loadTable()">
+              <option value="2023-24">2023–24</option>
+              <option value="2024-25">2024–25</option>
+              <option value="2025-26">2025–26</option>
+              <option value="2026-27" selected>2026–27</option>
+            </select>
 
-    <!-- ADMISSION MODAL -->
+            <button class="secondary-btn" onclick="window.print()">
+              ⬇ Download PDF
+            </button>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table id="eligibilityTable">
+            <thead>
+              <tr>
+                <th>Age</th>
+                <th>Class</th>
+                <th>Term Fee</th>
+                <th>Total Fee</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ===== INFO SECTION ===== -->
+      <section class="info-grid">
+        <!-- Admission Process -->
+        <div class="card">
+          <h3>📌 Admission Process</h3>
+          <ul class="info-list">
+            <li>Graduate qualification required for at least one parent</li>
+            <li>Transfer from a recognised school</li>
+            <li>Application fee ₹500 (non-refundable)</li>
+            <li>Entrance test mandatory from UKG onwards</li>
+            <li>Admission fee ₹12,000 after qualification</li>
+            <li>Annual fee revision of approx. 8–10%</li>
+            <li>Books & uniforms charged separately</li>
+          </ul>
+        </div>
+
+        <!-- Documents -->
+        <div class="card">
+          <h3>📄 Documents Required</h3>
+          <ul class="info-list">
+            <li>Birth Certificate (copy)</li>
+            <li>Transfer Certificate (UKG onwards)</li>
+            <li>Previous class Report Card</li>
+            <li>Aadhaar – Student & Parents</li>
+            <li>Residential proof</li>
+            <li>Passport size photographs</li>
+            <li>Caste Certificate (if applicable)</li>
+          </ul>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- ================= ADMISSION MODAL ================= -->
     <div id="admissionModal" class="modal">
       <div class="modal-content">
         <span class="close" onclick="closeModal()">&times;</span>
@@ -135,23 +126,39 @@
 
         <select id="admClass">
           <option value="">Select Admission Class</option>
-          <option value="PRE KG">PRE KG</option>
-          <option value="LKG">LKG</option>
-          <option value="UKG">UKG</option>
-          <option value="I">I</option>
-          <option value="II">II</option>
-          <option value="III">III</option>
-          <option value="IV">IV</option>
-          <option value="V">V</option>
-          <option value="VI">VI</option>
-          <option value="VII">VII</option>
-          <option value="VIII">VIII</option>
-          <option value="IX">IX</option>
-          <option value="X">X</option>
+          <option>PRE KG</option>
+          <option>LKG</option>
+          <option>UKG</option>
+          <option>I</option>
+          <option>II</option>
+          <option>III</option>
+          <option>IV</option>
+          <option>V</option>
+          <option>VI</option>
+          <option>VII</option>
+          <option>VIII</option>
+          <option>IX</option>
+          <option>X</option>
         </select>
 
-        <button onclick="submitAdmission()">Submit Application</button>
+        <button class="primary-btn" onclick="submitAdmission()">
+          Submit Application
+        </button>
       </div>
     </div>
+
+    <!-- ================= SCRIPTS ================= -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script>
+      const version = Date.now();
+      document.write(`<script src="app.js?v=${version}"><\/script>`);
+    </script>
+
+    <script>
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("sw.js");
+      }
+    </script>
   </body>
 </html>

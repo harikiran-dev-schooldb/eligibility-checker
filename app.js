@@ -75,35 +75,15 @@ function checkEligibility() {
     }
   }
 
-  // Determine message + animation
-  let msg = "";
-  let anim = "";
-
-  if (["PRE KG", "LKG", "UKG"].includes(eligible)) {
-    msg = "Early Years Programme – a warm start to joyful learning. 🌱";
-    anim = "sparkleAnim";
-  } else if (["I", "II", "III", "IV", "V"].includes(eligible)) {
-    msg = "Primary Level – ready for strong foundational growth. 📘";
-    anim = "riseAnim";
-  } else if (["VI", "VII", "VIII"].includes(eligible)) {
-    msg = "Middle School – stepping into confident learning. 📚";
-    anim = "glowAnim";
-  } else if (["IX", "X"].includes(eligible)) {
-    msg = "Senior Level – entering a key academic milestone. 🎓";
-    anim = "focusAnim";
-  } else if (eligible !== "Not Eligible") {
-    msg = "Eligible and ready for the next step. ✨";
-    anim = "sparkleAnim";
-  } else {
-    msg = "Currently not eligible for admission. Please check again later.";
-    anim = "focusAnim";
-  }
-
-  // Render result
+  // Render result (clean & minimal)
   resultDiv.innerHTML = `
-  <div class="age-line">Age: ${ageObj.formatted}</div>
-  <div class="eligible-line ${anim}">Eligible Class: ${eligible}</div>
-  <div class="stage-msg ${anim}">${msg}</div>
+  <div class="age-line">
+    Age as on 1 June 2026: <strong>${ageObj.formatted}</strong>
+  </div>
+
+  <div class="eligible-line">
+    Eligible Class: <strong>${eligible}</strong>
+  </div>
 `;
 
   // Proceed button only if eligible
@@ -162,7 +142,6 @@ function roundToHundred(value) {
 async function loadTable() {
   const year = document.getElementById("yearSelect").value;
   const tbody = document.getElementById("tableBody");
-  const header = document.getElementById("tableHeader");
   tbody.innerHTML = "";
 
   // Load only once
@@ -213,14 +192,6 @@ async function loadTable() {
     });
     return;
   }
-
-  /* 2026–27 — USE VALUES AS-IS FROM DATABASE */
-  header.innerHTML = `
-  <th>Age</th>
-  <th>Class</th>
-  <th>Term Fee</th>
-  <th>Total Fee</th>
-`;
 
   // FIX: sort before display
   rows.sort((a, b) => a.age - b.age);
