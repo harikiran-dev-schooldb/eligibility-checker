@@ -184,6 +184,10 @@ function openDetailModal(row) {
     <p><strong>DOB:</strong> ${row.dob}</p>
     <p><strong>Age:</strong> ${ageVal}</p>
     <p><strong>Eligible Class:</strong> ${row.eligible}</p>
+     <p><strong>Application:</strong> ${row.application}</p>
+    <p><strong>Entrance:</strong> ${row.entrance}</p>
+    <p><strong>Interview:</strong> ${row.interview}</p>
+    <p><strong>Final Admission:</strong> ${row.finalAdmission}</p>
 
     <hr style="margin:16px 0">
 
