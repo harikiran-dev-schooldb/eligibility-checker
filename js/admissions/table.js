@@ -164,7 +164,6 @@ document.getElementById("prevPage").onclick = () => {
   }
 };
 
-
 /* ==================================================
    DETAIL MODAL
 ================================================== */
@@ -174,6 +173,8 @@ function openDetailModalFromClick(event, row) {
 }
 
 function openDetailModal(row) {
+  const ageVal = row.age || getAgeString(row.dob);
+
   const html = `
     <p><strong>Enquiry No:</strong> ${row.enquiryNo}</p>
     <p><strong>Parent:</strong> ${row.parent}</p>
@@ -181,13 +182,41 @@ function openDetailModal(row) {
     <p><strong>Class:</strong> ${row.admClass}</p>
     <p><strong>Mobile:</strong> ${row.mobile}</p>
     <p><strong>DOB:</strong> ${row.dob}</p>
-    <p><strong>Age:</strong> ${row.age || getAgeString(row.dob)}</p>
+    <p><strong>Age:</strong> ${ageVal}</p>
     <p><strong>Eligible Class:</strong> ${row.eligible}</p>
-    <hr>
-    <p><strong>Application:</strong> ${row.application}</p>
-    <p><strong>Entrance:</strong> ${row.entrance}</p>
-    <p><strong>Interview:</strong> ${row.interview}</p>
-    <p><strong>Final Admission:</strong> ${row.finalAdmission}</p>
+
+    <hr style="margin:16px 0">
+
+    <div style="text-align:center">
+      <button
+        onclick="sendWhatsApp(
+          '${row.mobile}',
+          '${row.parent}',
+          '${row.student}',
+          '${row.dob}',
+          '${ageVal}',
+          '${row.admClass}'
+        )"
+        style="
+          display:flex;
+          align-items:center;
+          gap:10px;
+          padding:12px 18px;
+          color:#fff;
+          border:none;
+          border-radius:8px;
+          cursor:pointer;
+          font-size:14px;
+          margin:auto;
+        "
+      >
+        <img
+          src="whatsapp.png"
+          alt="WhatsApp"
+          style="width:28px;height:28px;display:block"
+        />
+      </button>
+    </div>
   `;
 
   document.getElementById("detailContent").innerHTML = html;

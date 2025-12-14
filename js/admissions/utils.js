@@ -29,7 +29,7 @@ function getAgeString(dobStr) {
   return `${y} years, ${m} months, ${d} day(s)`;
 }
 
-function animateCount(el, target, duration = 2500) {
+function animateCount(el, target, duration = 2000) {
   const start = performance.now();
   el.classList.add("kpi-pulse");
 

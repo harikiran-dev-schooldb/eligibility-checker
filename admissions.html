@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Kotak Salesian School — Admissions (Redesign)</title>
+    <title>Admissions Dashboard</title>
 
     <!-- TailwindCSS -->
     <link rel="stylesheet" href="css/admissions.css" />
@@ -23,7 +23,7 @@
     <header
       class="flex items-center justify-between px-6 py-4 bg-white shadow-sm"
     >
-      <div class="flex items-center gap-4">
+      <div class="text-lg md:text-xl font-semibold tracking-tight">
         <a href="index.html" class="logo-link">
           <img src="KOTAK_LOGO.png" alt="Kotak Logo" class="w-16 h-16 rounded-md" />
         </a>
@@ -103,28 +103,28 @@
               id="searchInput"
               type="search"
               placeholder="Search student, parent, mobile..."
-              class="w-full rounded-md border px-3 py-2 focus:ring-2 focus:ring-sky-400"
+              class="h-10 w-full rounded-md border px-3 py-2 focus:ring-2 focus:ring-sky-400"
             />
           </div>
 
           <div class="flex items-center gap-2">
-            <select id="filterClass" class="rounded-md border px-3 py-2">
+            <select id="filterClass" class="h-10 rounded-md border px-3 py-2">
               <option value="">All Classes</option>
             </select>
 
-            <select id="filterEligibility" class="rounded-md border px-3 py-2">
+            <select id="filterEligibility" class="h-10 rounded-md border px-3 py-2">
               <option value="">Eligibility</option>
               <option value="YES">YES</option>
               <option value="NO">NO</option>
             </select>
 
-            <button id="resetFilters" class="rounded-md border px-3 py-2">
+            <!-- <button id="resetFilters" class="h-10 rounded-md border px-3 py-2">
               Reset
-            </button>
+            </button> -->
 
             <button
               id="exportBtn"
-              class="px-3 py-2 bg-sky-600 text-white rounded-md"
+              class="h-10 px-3 py-2 bg-sky-600 text-white rounded-md"
             >
               Export
             </button>
@@ -135,7 +135,7 @@
       <!-- TABLE -->
       <section class="bg-white rounded-lg shadow-sm overflow-hidden">
         <div class="overflow-x-auto">
-          <table id="enquiryTable" class="min-w-full text-sm">
+          <table id="enquiryTable" class="min-w-full text-xs md:text-sm">
             <thead class="bg-sky-600 text-white sticky top-0">
               <tr class="text-left">
                 <th class="p-3">Enq No</th>

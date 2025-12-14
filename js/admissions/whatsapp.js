@@ -10,16 +10,6 @@ function sendWhatsApp(mobile, parent, student, dob, age, admClass) {
   mobile = mobile.replace(/\D/g, "").slice(-10);
   if (mobile.length !== 10) return alert("Invalid Mobile Number");
 
-  function formatDate(d) {
-    const dt = new Date(d);
-    const day = String(dt.getDate()).padStart(2, "0");
-    const month = String(dt.getMonth() + 1).padStart(2, "0");
-    const year = dt.getFullYear();
-    return `${day}-${month}-${year}`;
-  }
-
-  const formattedDOB = formatDate(dob);
-
   const message = `
 🌟 *Kotak Salesian School – Visakhapatnam* 🌟
 
@@ -31,7 +21,7 @@ Thank you for your enquiry regarding the admission of *${student}*.
 Please find the initial details below:
 
 👶 *Student Name:* ${student}  
-🎂 *Date of Birth:* ${formattedDOB}  
+🎂 *Date of Birth:* ${dob}  
 📅 *Age:* ${age}  
 🏫 *Eligible / Seeking Class:* ${admClass}
 
