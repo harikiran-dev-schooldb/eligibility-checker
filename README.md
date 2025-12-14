@@ -190,22 +190,26 @@ Improves parent communication & response time.
 
 # 📁 Project Structure
 
+## 📁 Project Structure
+
+```text
 eligibility-checker/
-│
 ├── index.html          → Class Eligibility Checker
 ├── admissions.html     → Admissions Dashboard
 ├── admin.html          → Fee Admin Panel
-│
+├──
 ├── app.js              → Eligibility Logic
 ├── admissions.js       → Admissions Logic (Supabase)
 ├── admin.js            → Admin Logic + GitHub API
-│
+├──
 ├── styles.css          → Global Styles
 ├── sw.js               → Service Worker (PWA)
 ├── manifest.json       → PWA Configuration
-│
+├──
 ├── favicon.ico
 └── KOTAK_LOGO.png
+```
+
 
 
 
