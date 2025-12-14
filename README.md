@@ -1,8 +1,15 @@
 # 🎓 Kotak Salesian School
 
-## **Class Eligibility Checker & Fee Management System**
+## **Eligibility Checker, Admissions & Fee Management System**
 
-A complete web-based solution for age eligibility validation, academic fee management, and secure admin fee editing.
+A complete **school admissions automation platform** that covers:
+
+✔ Student **Age Eligibility Checking**  
+✔ **Admissions Registration & Tracking**  
+✔ **Dynamic Fee Management**  
+✔ **Admin Dashboard with Filters & Analytics**  
+✔ **WhatsApp Communication**  
+✔ **PWA Offline Support**
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/harikiran-dev-schooldb/eligibility-checker/main/KOTAK_LOGO.png" width="150">
@@ -14,231 +21,261 @@ A complete web-based solution for age eligibility validation, academic fee manag
 
 # 📌 Overview
 
-This project provides a **smart age eligibility calculator** along with a **dynamic fee table** for academic years 2023–2026.
-It also includes a **secure admin panel** that allows authorized users to modify annual fees and term fees directly from a browser.
+This project is a **full-fledged school admission management system** designed for **office staff usage**.
 
-The system updates and stores data in **GitHub**, allowing the school to maintain an always-updated, centralized fee management system without needing a database or server.
+It replaces manual registers and Excel sheets with a **browser-based, secure, fast, and offline-capable system** that handles:
 
----
-
-# 🔗 Live Website
-
-👉 **[https://harikiran-dev-schooldb.github.io/eligibility-checker/](https://harikiran-dev-schooldb.github.io/eligibility-checker/)**
-
-Works on:
-✔ Mobile
-✔ Tablets
-✔ Desktop
-✔ Offline (PWA enabled)
+- Class eligibility determination based on DOB
+- Student enquiry & admission workflow
+- Fee structure management (multi-year)
+- Centralized admissions dashboard
+- Parent communication via WhatsApp
+- Cloud-backed storage using **Supabase**
+- No traditional backend server required
 
 ---
 
-# ⭐ Features
+# 🔗 Live Applications
 
-## 1️⃣ **Eligibility Checker**
+### 🔹 Eligibility Checker  
+👉 https://harikiran-dev-schooldb.github.io/eligibility-checker/
 
-* Takes student **Date of Birth**
-* Calculates:
+### 🔹 Admissions Dashboard  
+👉 https://harikiran-dev-schooldb.github.io/eligibility-checker/admissions
 
-  * Years
-  * Months
-  * Days
-* Matches age with applicable class (Pre KG → X)
-* Highlights the eligible class row
-* Real-time result display
+✔ Mobile  
+✔ Tablet  
+✔ Desktop  
+✔ Offline (PWA)
 
 ---
 
-## 2️⃣ **Fee Table (Multi-Year)**
+# ⭐ Core Modules & Features
 
-### Supports academic years:
+---
+
+## 1️⃣ **Class Eligibility Checker**
+
+* Input **Student Date of Birth**
+* Calculates exact age:
+  - Years
+  - Months
+  - Days
+* Matches DOB with eligibility rules
+* Displays eligible class (Pre KG → X)
+* Animated, color-coded eligibility result
+* “Proceed to Admission” button auto-appears
+
+➡ Seamlessly connects eligibility → admission entry
+
+---
+
+## 2️⃣ **Admissions Management System (Supabase Powered)**
+
+### Key Capabilities:
+
+✔ Register new admissions  
+✔ Auto-generate **Enquiry Numbers (ENQ-YYYY-XXXX)**  
+✔ Store student & parent details  
+✔ Track admission stages:
+- Application
+- Entrance Test
+- Interview
+- Final Admission
+
+✔ Pagination, search & live filters  
+✔ Real-time updates from Supabase  
+✔ Secure API-based backend (no exposed DB credentials)
+
+---
+
+## 3️⃣ **Admissions Dashboard**
+
+### Dashboard Features:
+
+* Search by:
+  - Student name
+  - Parent name
+  - Enquiry number
+  - Mobile number
+* Filter by:
+  - Class
+  - Application status
+  - Entrance status
+  - Interview status
+  - Final admission status
+  - Eligibility status (YES / NO)
+* Summary cards:
+  - Total enquiries
+  - Eligible students
+  - Confirmed admissions
+* Responsive & optimized UI
+
+---
+
+## 4️⃣ **Fee Management System (Multi-Year)**
+
+### Supported Academic Years:
 
 * **2023–24**
 * **2024–25**
 * **2025–26**
 * **2026–27 (Auto Increment Mode)**
 
-### For 2026–27:
+### Auto Increment Logic (2026–27):
 
-* Uses previous year (2025–26) data
-* Calculates 8%, 9%, and 10% increments dynamically
-* User can switch increment columns via dropdown
+* Uses 2025–26 as base
+* Calculates:
+  - 8%
+  - 9%
+  - 10%
+* User-selectable increment dropdown
+* Real-time fee recalculation
 
 ---
 
-## 3️⃣ **Admin Panel (Option C – Fees + Term Fees Editable)**
-
-Secure login system for administrative updates:
+## 5️⃣ **Admin Panel – Fee Editor**
 
 ### Editable Fields:
 
-| Field       | Editable? |
-| ----------- | --------- |
-| Annual Fees | ✔ YES     |
-| Term Fees   | ✔ YES     |
-| Age         | ❌ NO      |
-| Class Name  | ❌ NO      |
+| Field       | Editable |
+|------------|----------|
+| Annual Fee | ✔ YES |
+| Term Fee   | ✔ YES |
+| Age        | ❌ NO |
+| Class Name | ❌ NO |
 
-### Features:
+### Admin Capabilities:
 
-* Dropdown to select year (2023–25)
-* Real-time table updates
-* One-click save to GitHub
-* GitHub API integration
-* Uses PAT token securely (client-side)
-* No backend server required
-
----
-
-## 4️⃣ **PWA – Installable Web App**
-
-This project supports:
-
-✔ Offline Access
-✔ Home Screen Installation
-✔ Cached Files
-✔ Lightning-fast performance
-
-### Service Worker Features:
-
-* Auto-versioning (`v11 + timestamp`)
-* Automatic cache refresh when new version detected
-* Pre-caches all main assets
-* Solves “old data loading” problem
-* Works seamlessly on mobile & desktop
+✔ Secure login  
+✔ GitHub API integration  
+✔ One-click save  
+✔ Updates stored directly in GitHub  
+✔ No server or database required  
+✔ Changes instantly reflected across the app
 
 ---
 
-# 📁 Project Directory Structure
+## 6️⃣ **WhatsApp Communication Integration**
 
-```
+* One-click WhatsApp icon per student
+* Pre-filled message includes:
+  - Parent name
+  - Student name
+  - Enquiry number
+* Supports:
+  - Manual follow-ups
+  - Fee reminders
+  - Admission updates
+
+Improves parent communication & response time.
+
+---
+
+## 7️⃣ **Progressive Web App (PWA)**
+
+✔ Installable on mobile & desktop  
+✔ Offline-first architecture  
+✔ Cached assets  
+✔ Fast loading even on slow networks  
+
+### Service Worker Highlights:
+
+* Auto-versioning with timestamp
+* Cache invalidation on new deployments
+* Prevents stale data issues
+* Zero manual cache clearing required
+
+---
+
+# 📁 Project Structure
+
 eligibility-checker/
-│── index.html               → Main Eligibility Checker
-│── admin.html               → Admin Editor (Protected)
-│── app.js                   → Frontend Logic
-│── admin.js                 → Admin Logic + GitHub API
-│── data.js                  → Fetches data.json into JS
-│── styles.css               → Styling file
-│── sw.js                    → Service Worker (PWA)
-│── manifest.json            → PWA Config
+│── index.html → Eligibility Checker
+│── admissions.html → Admissions Dashboard
+│── admin.html → Fee Admin Panel
+│── app.js → Eligibility Logic
+│── admissions.js → Admissions Logic (Supabase)
+│── admin.js → Admin + GitHub API
+│── styles.css → Global Styles
+│── sw.js → Service Worker
+│── manifest.json → PWA Config
 │── favicon.ico
 └── KOTAK_LOGO.png
-```
+
 
 ---
 
-# 🔧 How Fee Editing Works (Technical Flow)
+# 🔧 Technical Architecture
 
-### Step-by-Step Flow:
+### Backend:
+- **Supabase (PostgreSQL + Auth + REST API)**
 
-1. Admin logs in → username + password
-2. Admin enters GitHub PAT token
-3. `admin.js` fetches **data.js** metadata from GitHub
-4. Admin edits fees
-5. On *Save*:
+### Frontend:
+- Vanilla JavaScript
+- HTML5 + CSS3
+- Tailwind-inspired utility styles
 
-   * Updates JS in memory
-   * Encodes as Base64
-   * Sends PUT request to GitHub API
-6. GitHub commits update to repository
-7. All visitors instantly get updated fees due to versioned caching
+### Hosting:
+- GitHub Pages
+
+### Storage:
+- Supabase for admissions data
+- GitHub repository for fee configuration
 
 ---
 
 # 🔐 Security Notes
 
-### Important:
-
-* PAT Token is **never stored**
-* Admin must paste token each session
-* Username/password stored in frontend (editable)
-* PAT must have:
-
-  ```
-  repo  
-  public_repo  
-  metadata
-  ```
-* Recommended: Use a **fine-grained token** restricted to this repo only
-* Do NOT commit PAT token anywhere
+* Supabase keys scoped to required tables only
+* PAT token:
+  - Never stored
+  - Entered per session
+  - Fine-grained & repo-specific recommended
+* No sensitive credentials committed to repo
 
 ---
 
-# 📦 Data File Format (data.js)
+# 🚫 Known Issues & Fixes
 
-```json
-{
-  const manualFees = {
-  "2023": [
-    {
-      "age": 3,
-      "class": "Pre KG",
-      "fees": 0,
-      "term": 0
-    },
-    {
-      "age": 4,
-      "class": "LKG",
-      "fees": 22000,
-      "term": 5500
-    },
-}
-```
+### Old data visible?
+✔ Auto-fixed using versioned service worker
 
-Editing through admin.html updates only:
+### Admin save not reflecting?
+✔ Ensure PAT token permissions:
 
-✔ Fees
-✔ Term Fees
+repo
+public_repo
+metadata
 
-All other fields must be edited manually in data.json if needed.
+
+### Mobile cache mismatch?
+✔ Reinstall PWA or refresh twice
 
 ---
 
-# 🚫 Common Issues + Fixes
+# 🚀 Roadmap
 
-### ❌ Website shows old version
+Planned / Optional Enhancements:
 
-**Fix:**
-Clear cache OR refresh twice
-or
-Enable auto-refresh cache via PWA versioning (already added).
-
-### ❌ Admin changes not visible
-
-**Fix:**
-🔸 Ensure GitHub Token has:
-
-* repo
-* public_repo
-* metadata
-
-🔸 Data stored in `main/data.js`
-
-### ❌ Mobile shows old data but incognito shows correct
-
-**Reason:**
-Old service worker cached version.
-
-**Fix:**
-Refresh 3× or reinstall PWA (new version auto-updates now).
+- Admission analytics charts
+- PDF / Excel export
+- Role-based admin access
+- OTP-based admin login
+- Student document uploads
+- Fee payment status tracking
+- Parent notification history
+- Audit log for fee changes
 
 ---
 
-# 🚀 Future Roadmap (Optional Enhancements)
+# 🙌 Developed & Maintained By
 
-You may add these if needed:
-
-* Dark/Light Mode
-* Export Fees to PDF/Excel
-* Staff Login + Multi-Admin Access
-* Student Admission Registration Form
-* OTP-based login for admin
-* Automatic DOB → Class Eligibility API
-* Version history log (fee changes)
-
----
-
-# 🙌 Developed With Care
-
-Designed & developed by **Harikiran**
+**Harikiran**  
+Data Admin & System Developer  
 Kotak Salesian School
+
+---
+
+📌 *This system is actively used, maintained, and extended as a real-world school DBMS project.*
+
