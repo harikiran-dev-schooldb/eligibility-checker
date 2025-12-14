@@ -32,10 +32,15 @@ async function submitAdmission() {
   const mobileNum = mobile.value.trim();
   const admClassValue = admClass.value;
   const dob = document.getElementById("dob").value;
-  const age = getAgeString(dob);
 
   if (!parent || !student || !mobileNum || !admClassValue || !dob)
     return alert("Please fill all required fields");
+
+  // ✅ SAFETY CHECK
+  if (!lastCalculatedAge || !lastEligibleClass) {
+    alert("Please check eligibility before submitting");
+    return;
+  }
 
   const { data: enquiryNo } = await db.rpc("get_next_enquiry_no");
 
@@ -46,6 +51,8 @@ async function submitAdmission() {
     mobile: mobileNum,
     admClass: admClassValue,
     dob: formatDateDDMMYYYY(dob),
+    age: lastCalculatedAge, // ✅ FIXED
+    eligible: lastEligibleClass, // ✅ FIXED
     date: formatDateDDMMYYYY(new Date()),
     application: "NO",
     entrance: "NOT STARTED",
@@ -58,7 +65,14 @@ async function submitAdmission() {
   if (error) return alert("Error saving admission");
 
   closeModal();
-  sendWhatsApp(mobileNum, parent, student, dob, age, admClassValue);
+  sendWhatsApp(
+    mobileNum,
+    parent,
+    student,
+    dob,
+    lastCalculatedAge,
+    admClassValue
+  );
 }
 
 /**************************************************

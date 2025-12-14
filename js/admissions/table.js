@@ -189,7 +189,6 @@ function openDetailModal(row) {
     <p><strong>Interview:</strong> ${row.interview}</p>
     <p><strong>Final Admission:</strong> ${row.finalAdmission}</p>
 
-    <hr style="margin:16px 0">
 
     <div style="text-align:center">
       <button

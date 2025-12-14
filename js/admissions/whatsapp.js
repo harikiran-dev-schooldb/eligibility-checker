@@ -23,7 +23,7 @@ Please find the initial details below:
 👶 *Student Name:* ${student}  
 🎂 *Date of Birth:* ${dob}  
 📅 *Age:* ${age}  
-🏫 *Eligible / Seeking Class:* ${admClass}
+🏫 *Seeking Class:* ${admClass}
 
 📌 *Admission application forms will be issued from 15 December 2025.*  
 📌 *Entrance assessment is mandatory for classes from UKG onwards.*  

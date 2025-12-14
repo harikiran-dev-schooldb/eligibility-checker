@@ -58,21 +58,39 @@ self.addEventListener("activate", (event) => {
 });
 
 // --------------------------------------------------
-// FETCH – Network First
+// FETCH – Network First (SAFE)
 // --------------------------------------------------
 self.addEventListener("fetch", (event) => {
-  const req = event.request;
+  const request = event.request;
 
-  if (req.method !== "GET") return;
-  if (req.url.includes("supabase.co")) return;
+  // Ignore non-http(s)
+  if (!request.url.startsWith("http")) return;
 
   event.respondWith(
-    fetch(req)
-      .then((res) => {
-        const clone = res.clone();
-        caches.open(CACHE_NAME).then((c) => c.put(req, clone));
-        return res;
-      })
-      .catch(() => caches.match(req))
+    caches.match(request).then((cachedResponse) => {
+      if (cachedResponse) return cachedResponse;
+
+      return fetch(request).then((networkResponse) => {
+        // 🚫 Do not cache opaque or invalid responses
+        if (
+          !networkResponse ||
+          networkResponse.status !== 200 ||
+          networkResponse.type !== "basic"
+        ) {
+          return networkResponse;
+        }
+
+        // ✅ CLONE IMMEDIATELY
+        const responseToCache = networkResponse.clone();
+
+        caches.open(CACHE_NAME).then((cache) => {
+          cache.put(request, responseToCache);
+        });
+
+        return networkResponse;
+      });
+    })
   );
 });
+
+

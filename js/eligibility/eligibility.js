@@ -1,6 +1,8 @@
 /**************************************************
  ELIGIBILITY LOGIC
 **************************************************/
+let lastCalculatedAge = "";
+let lastEligibleClass = "";
 
 function calculateExactAge(dob) {
   const dobDate = new Date(dob);
@@ -59,6 +61,10 @@ function checkEligibility() {
       break;
     }
   }
+
+  // ✅ STORE GLOBALLY
+  lastCalculatedAge = ageObj.formatted;
+  lastEligibleClass = eligible;
 
   const resultDiv = document.getElementById("result");
   resultDiv.innerHTML = `
