@@ -1,21 +1,18 @@
-// --------------------------------------------------
-// 🔥 FORCE NEW CACHE VERSION EVERY UPDATE
-// --------------------------------------------------
-const CACHE_VERSION = "v" + Date.now();
-const CACHE_NAME = "eligibility-cache-" + CACHE_VERSION;
+/**************************************************
+ KSS – ELIGIBILITY SERVICE WORKER
+ Network-first | Safe cache | No Supabase caching
+**************************************************/
 
-// --------------------------------------------------
-// FILES TO CACHE (STATIC APP SHELL)
-// --------------------------------------------------
+const CACHE_NAME = "kss-eligibility-cache-v1";
+
 const ASSETS_TO_CACHE = [
   "./",
   "./index.html",
-  "./eligibility.css",
+  "./css/eligibility.css",
   "./favicon.ico",
   "./KOTAK_LOGO.png",
   "./manifest.json",
 
-  // Eligibility JS (split)
   "./js/eligibility/config.js",
   "./js/eligibility/utils.js",
   "./js/eligibility/eligibility.js",
@@ -30,8 +27,17 @@ const ASSETS_TO_CACHE = [
 // --------------------------------------------------
 self.addEventListener("install", (event) => {
   self.skipWaiting();
+
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS_TO_CACHE))
+    caches.open(CACHE_NAME).then(async (cache) => {
+      for (const asset of ASSETS_TO_CACHE) {
+        try {
+          await cache.add(asset);
+        } catch (err) {
+          console.warn("[Eligibility SW] Skipped:", asset);
+        }
+      }
+    })
   );
 });
 
@@ -43,35 +49,29 @@ self.addEventListener("activate", (event) => {
     caches.keys().then((keys) =>
       Promise.all(
         keys
-          .filter((key) => key.startsWith("eligibility-cache-"))
-          .filter((key) => key !== CACHE_NAME)
-          .map((key) => caches.delete(key))
+          .filter((k) => k !== CACHE_NAME)
+          .map((k) => caches.delete(k))
       )
     )
   );
-
   self.clients.claim();
 });
 
 // --------------------------------------------------
-// FETCH (Network-first, Safe)
+// FETCH – Network First
 // --------------------------------------------------
 self.addEventListener("fetch", (event) => {
   const req = event.request;
-  const url = req.url;
 
-  // 🚫 Ignore non-GET requests
   if (req.method !== "GET") return;
-
-  // 🚫 Ignore external APIs (Supabase, GitHub)
-  if (url.includes("supabase.co") || url.includes("api.github.com")) return;
+  if (req.url.includes("supabase.co")) return;
 
   event.respondWith(
     fetch(req)
-      .then((response) => {
-        const clone = response.clone();
-        caches.open(CACHE_NAME).then((cache) => cache.put(req, clone));
-        return response;
+      .then((res) => {
+        const clone = res.clone();
+        caches.open(CACHE_NAME).then((c) => c.put(req, clone));
+        return res;
       })
       .catch(() => caches.match(req))
   );

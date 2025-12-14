@@ -10,7 +10,7 @@
 
     <!-- Favicon + Styles -->
     <link rel="icon" href="favicon.ico" />
-    <link rel="stylesheet" href="eligibility.css" />
+    <link rel="stylesheet" href="css/eligibility.css" />
   </head>
 
   <body>
@@ -18,7 +18,11 @@
     <header class="app-header">
       <div class="header-inner">
         <a href="admissions.html">
-          <img src="KOTAK_LOGO.png" alt="Kotak Salesian School" class="school-logo" />
+          <img
+            src="KOTAK_LOGO.png"
+            alt="Kotak Salesian School"
+            class="school-logo"
+          />
         </a>
         <div class="header-text">
           <h1>Kotak Salesian School</h1>
@@ -29,7 +33,6 @@
 
     <!-- ================= MAIN ================= -->
     <main class="container">
-
       <!-- ===== ELIGIBILITY CHECKER ===== -->
       <section class="card hero-card">
         <h2>🎓 Class Eligibility Checker</h2>
@@ -86,13 +89,13 @@
         <div class="card">
           <h3>📌 Admission Process</h3>
           <ul class="info-list">
-            <li>Graduate qualification required for at least one parent</li>
-            <li>Transfer from a recognised school</li>
-            <li>Application fee ₹500 (non-refundable)</li>
-            <li>Entrance test mandatory from UKG onwards</li>
-            <li>Admission fee ₹12,000 after qualification</li>
-            <li>Annual fee revision of approx. 8–10%</li>
-            <li>Books & uniforms charged separately</li>
+            <li>At least one parent should be a graduate</li>
+            <li>Students transferring must be from a recognised school</li>
+            <li>Application fee of ₹500 (non-refundable) is applicable</li>
+            <li>Entrance assessment is mandatory from UKG onwards</li>
+            <li>Admission fee of ₹12,000 is payable upon selection</li>
+            <li>Annual fee revision may range between 8% and 10%</li>
+            <li>Cost of books and uniforms is charged separately</li>
           </ul>
         </div>
 
@@ -100,17 +103,16 @@
         <div class="card">
           <h3>📄 Documents Required</h3>
           <ul class="info-list">
-            <li>Birth Certificate (copy)</li>
-            <li>Transfer Certificate (UKG onwards)</li>
-            <li>Previous class Report Card</li>
-            <li>Aadhaar – Student & Parents</li>
-            <li>Residential proof</li>
-            <li>Passport size photographs</li>
-            <li>Caste Certificate (if applicable)</li>
+            <li>Birth Certificate (photocopy)</li>
+            <li>Transfer Certificate (UKG and above)</li>
+            <li>Previous academic year Report Card</li>
+            <li>Aadhaar copies of student and parents</li>
+            <li>Residential address proof</li>
+            <li>Recent passport-size photographs</li>
+            <li>Caste Certificate, if applicable</li>
           </ul>
         </div>
       </section>
-
     </main>
 
     <!-- ================= ADMISSION MODAL ================= -->
@@ -152,13 +154,27 @@
 
     <script>
       const version = Date.now();
-      document.write(`<script src="app.js?v=${version}"><\/script>`);
+
+      const scripts = [
+        "js/eligibility/config.js",
+        "js/eligibility/utils.js",
+        "js/eligibility/eligibility.js",
+        "js/eligibility/fees.js",
+        "js/eligibility/admission.js",
+        "js/eligibility/whatsapp.js",
+        "js/eligibility/main.js",
+      ];
+
+      scripts.forEach((src) => {
+        document.write(`<script src="${src}?v=${version}"><\/script>`);
+      });
     </script>
 
     <script>
-      if ("serviceWorker" in navigator) {
-        navigator.serviceWorker.register("sw.js");
-      }
-    </script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("/sw-eligibility.js");
+}
+</script>
+
   </body>
 </html>

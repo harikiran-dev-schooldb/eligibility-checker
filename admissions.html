@@ -7,7 +7,7 @@
     <title>Kotak Salesian School — Admissions (Redesign)</title>
 
     <!-- TailwindCSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="css/admissions.css" />
 
     <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
@@ -25,11 +25,7 @@
     >
       <div class="flex items-center gap-4">
         <a href="index.html" class="logo-link">
-          <img
-            src="KOTAK_LOGO.png"
-            alt="Kotak Logo"
-            class="w-16 h-16 rounded-full border p-1 bg-white shadow-sm"
-          />
+          <img src="KOTAK_LOGO.png" alt="Kotak Logo" class="w-16 h-16 rounded-md" />
         </a>
         <div>
           <h1 class="text-xl font-semibold">KOTAK SALESIAN SCHOOL</h1>
@@ -122,11 +118,7 @@
               <option value="NO">NO</option>
             </select>
 
-
-            <button
-              id="resetFilters"
-              class="px-3 py-2 border rounded-md text-sm"
-            >
+            <button id="resetFilters" class="rounded-md border px-3 py-2">
               Reset
             </button>
 
@@ -169,7 +161,7 @@
               </tr>
             </thead>
 
-            <tbody id="tableBody" class="divide-y">
+            <tbody id="tableBody">
               <!-- JS inserts rows here -->
             </tbody>
           </table>
@@ -182,7 +174,7 @@
           <div class="flex items-center gap-2">
             <button
               id="prevPage"
-              class="px-3 py-1 border rounded disabled:opacity-50"
+              class="px-3 py-1 border rounded disabled:opacity-50 bg-gray-100 hover:bg-gray-200"
             >
               Prev
             </button>
@@ -340,6 +332,37 @@
       </div>
     </div>
 
-    <script src="admissions.js"></script>
+    <!-- CONFIG + GLOBAL STATE -->
+    <script src="js/admissions/config.js"></script>
+
+    <!-- UTILS (animateCount, getAgeString, helpers) -->
+    <script src="js/admissions/utils.js"></script>
+
+    <!-- AUTH -->
+    <script src="js/admissions/auth.js"></script>
+
+    <!-- FILTERS + KPI (uses animateCount, renderTable) -->
+    <script src="js/admissions/filters.js"></script>
+
+    <!-- STAGES + MODALS -->
+    <script src="js/admissions/stages.js"></script>
+
+    <!-- WHATSAPP -->
+    <script src="js/admissions/whatsapp.js"></script>
+
+    <!-- TABLE RENDER -->
+    <script src="js/admissions/table.js"></script>
+
+    <!-- EXPORT -->
+    <script src="js/admissions/export.js"></script>
+
+    <!-- INIT (LAST, ALWAYS LAST) -->
+    <script src="js/admissions/main.js"></script>
+
+    <script>
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("./sw-admissions.js");
+      }
+    </script>
   </body>
 </html>
