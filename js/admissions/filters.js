@@ -3,23 +3,18 @@
 **************************************************/
 
 function renderKPIs(data) {
+  if (typeof kpiEnquiries === "undefined" || typeof kpiApps === "undefined") {
+    return; // KPIs not present on this page
+  }
+
   animateCount(kpiEnquiries, data.length);
-  animateCount(
-    kpiApps,
-    data.filter((r) => r.application === "YES").length
-  );
-  animateCount(
-    kpiEntrance,
-    data.filter((r) => r.entrance === "PASS").length
-  );
+  animateCount(kpiApps, data.filter((r) => r.application === "YES").length);
+  animateCount(kpiEntrance, data.filter((r) => r.entrance === "PASS").length);
   animateCount(
     kpiInterview,
     data.filter((r) => r.interview === "SELECTED").length
   );
-  animateCount(
-    kpiFinal,
-    data.filter((r) => r.finalAdmission === "YES").length
-  );
+  animateCount(kpiFinal, data.filter((r) => r.finalAdmission === "YES").length);
 }
 
 function applyFilters() {
@@ -94,23 +89,23 @@ function highlightActiveKpi(type) {
 function populateClassFilter(data) {
   const classOrder = {
     "PRE KG": 1,
-    "LKG": 2,
-    "UKG": 3,
-    "I": 4,
-    "II": 5,
-    "III": 6,
-    "IV": 7,
-    "V": 8,
-    "VI": 9,
-    "VII": 10,
-    "VIII": 11,
-    "IX": 12,
-    "X": 13,
+    LKG: 2,
+    UKG: 3,
+    I: 4,
+    II: 5,
+    III: 6,
+    IV: 7,
+    V: 8,
+    VI: 9,
+    VII: 10,
+    VIII: 11,
+    IX: 12,
+    X: 13,
   };
 
-  const classes = [...new Set(
-    data.map((d) => d.admClass).filter(Boolean)
-  )].sort((a, b) => {
+  const classes = [
+    ...new Set(data.map((d) => d.admClass).filter(Boolean)),
+  ].sort((a, b) => {
     return (classOrder[a] || 99) - (classOrder[b] || 99);
   });
 
@@ -120,7 +115,6 @@ function populateClassFilter(data) {
     filterClass.innerHTML += `<option value="${c}">${c}</option>`;
   });
 }
-
 
 /* Events */
 searchInput.addEventListener("input", () => {
@@ -132,10 +126,10 @@ searchInput.addEventListener("input", () => {
   el.addEventListener("change", applyFilters)
 );
 
-resetFilters.addEventListener("click", () => {
-  searchInput.value = "";
-  filterClass.value = "";
-  filterEligibility.value = "";
-  filterStage.value = "";
-  applyFilters();
-});
+// resetFilters.addEventListener("click", () => {
+//   searchInput.value = "";
+//   filterClass.value = "";
+//   filterEligibility.value = "";
+//   filterStage.value = "";
+//   applyFilters();
+// });

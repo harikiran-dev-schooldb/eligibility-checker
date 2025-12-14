@@ -67,3 +67,6 @@ function renderKPIs(data) {
     data.filter((r) => r.finalAdmission === "YES").length
   );
 }
+
+window.getAgeString = getAgeString;
+window.renderKPIs = renderKPIs;

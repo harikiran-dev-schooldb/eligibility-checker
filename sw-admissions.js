@@ -13,7 +13,6 @@ const ASSETS_TO_CACHE = [
 
   "./js/admissions/config.js",
   "./js/admissions/utils.js",
-  "./js/admissions/state.js",
   "./js/admissions/dom.js",
   "./js/admissions/auth.js",
   "./js/admissions/filters.js",
