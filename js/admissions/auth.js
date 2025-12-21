@@ -4,8 +4,17 @@
 
 function submitAdminLogin() {
   const pwd = document.getElementById("adminPwd").value.trim();
-  if (pwd === "admin") {
+
+  const admins = {
+    harikiran: "Harikiran",
+    naveena: "Naveena",
+    krishnaveni: "Krishnaveni",
+  };
+
+  if (admins[pwd]) {
     localStorage.setItem("isAdmin", "true");
+    localStorage.setItem("adminName", admins[pwd]);
+
     closeAdminModal();
     loadAdminButtons();
     location.reload();
@@ -43,14 +52,36 @@ function isAdmin() {
 
 function loadAdminButtons() {
   const box = document.getElementById("adminButtons");
+  const adminName = localStorage.getItem("adminName");
 
   if (isAdmin()) {
-    box.innerHTML = `<button class="px-4 py-2 bg-red-600 text-white rounded-md" onclick="adminLogout()">Logout</button>`;
+    box.innerHTML = `
+      <div class="flex items-center gap-3">
+        <span class="text-sm text-gray-600">
+          <strong>${adminName}</strong>
+        </span>
+        <button
+          class="px-4 py-2 bg-red-500 text-white rounded-md"
+          onclick="adminLogout()"
+        >
+          Logout
+        </button>
+      </div>
+    `;
+
     ["th-application", "th-entrance", "th-interview", "th-final"].forEach(
       (id) => (document.getElementById(id).style.display = "")
     );
   } else {
-    box.innerHTML = `<button class="px-4 py-2 bg-blue-600 text-white rounded-md" onclick="adminLogin()">Login</button>`;
+    box.innerHTML = `
+      <button
+        class="px-4 py-2 bg-[#028467] text-white rounded-md"
+        onclick="adminLogin()"
+      >
+        Login
+      </button>
+    `;
+
     ["th-application", "th-entrance", "th-interview", "th-final"].forEach(
       (id) => (document.getElementById(id).style.display = "none")
     );

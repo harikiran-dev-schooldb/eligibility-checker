@@ -25,10 +25,14 @@
     >
       <div class="flex items-center gap-4">
         <a href="index.html" class="logo-link">
-          <img src="KOTAK_LOGO.png" alt="Kotak Logo" class="w-16 h-16 rounded-md" />
+          <img
+            src="KOTAK_LOGO.png"
+            alt="Kotak Logo"
+            class="w-16 h-16 rounded-md"
+          />
         </a>
         <div>
-          <h1 class="text-xl font-semibold">KOTAK SALESIAN SCHOOL</h1>
+          <h1 class="text-xl font-semibold">KOTAK SCHOOL</h1>
           <p class="text-xs text-gray-500">
             Admissions — AY 2026–27 · Manage enquiries, applications & stages
           </p>
@@ -112,7 +116,10 @@
               <option value="">All Classes</option>
             </select>
 
-            <select id="filterEligibility" class="h-10 rounded-md border px-3 py-2">
+            <select
+              id="filterEligibility"
+              class="h-10 rounded-md border px-3 py-2"
+            >
               <option value="">Eligibility</option>
               <option value="YES">YES</option>
               <option value="NO">NO</option>
@@ -174,14 +181,16 @@
           <div class="flex items-center gap-2">
             <button
               id="prevPage"
-              class="px-3 py-1 border rounded disabled:opacity-50 bg-gray-100 hover:bg-gray-200"
+              class="px-3 py-1 border rounded disabled:opacity-50 text-white bg-gray-100 hover:bg-gray-200"
+              style="background-color:#0284C7"
             >
               Prev
             </button>
             <span id="currentPage" class="text-sm"></span>
             <button
               id="nextPage"
-              class="px-3 py-1 border rounded disabled:opacity-50"
+              class="px-3 py-1 border rounded text-white disabled:opacity-50 "
+              style="background-color:#0284C7"
             >
               Next
             </button>
@@ -220,7 +229,8 @@
           </button>
           <button
             onclick="submitAdminLogin()"
-            class="px-3 py-2 bg-blue-600 text-white rounded-md shadow-sm"
+            class="px-3 py-2 text-white rounded-md shadow-sm"
+            style="background-color: #0284c7"
           >
             Login
           </button>
@@ -266,7 +276,8 @@
         <div class="text-right mt-4">
           <button
             onclick="closeDetailModal()"
-            class="px-4 py-2 bg-blue-600 text-white rounded"
+            class="px-4 py-2 text-white rounded"
+            style="background-color: #0284C7"
           >
             Close
           </button>
