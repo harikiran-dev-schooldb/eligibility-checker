@@ -120,8 +120,8 @@ function renderTable(page = currentPage) {
         </button>
       </td>
 
-      <td class="p-3">${r.parent || ""}</td>
       <td class="p-3">${r.student || ""}</td>
+      <td class="p-3">${r.parent || ""}</td>
       <td class="p-3">${r.admClass || ""}</td>
       <td class="p-3">${r.mobile || ""}</td>
       <td class="p-3">${r.dob || ""}</td>
