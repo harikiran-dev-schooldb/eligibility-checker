@@ -33,14 +33,10 @@ function adminControlsHTML(r) {
      <!-- APPLICATION SUBMITTED -->
 
     <td class="p-3">
-
       ${statusPill(
         r.applicationSubmitted || "NO",
-
         "applicationSubmitted",
-
         r.enquiryNo,
-
         true,
       )}
 
