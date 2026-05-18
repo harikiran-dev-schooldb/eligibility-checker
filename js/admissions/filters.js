@@ -12,7 +12,7 @@ function renderKPIs(data) {
   animateCount(kpiEntrance, data.filter((r) => r.entrance === "PASS").length);
   animateCount(
     kpiInterview,
-    data.filter((r) => r.interview === "SELECTED").length
+    data.filter((r) => r.interview === "SELECTED").length,
   );
   animateCount(kpiFinal, data.filter((r) => r.finalAdmission === "YES").length);
 }
@@ -32,6 +32,7 @@ function applyFilters() {
     }
 
     if (stage) {
+
       if (stage === "application" && d.application !== "YES") return false;
       if (stage === "entrance" && d.entrance !== "PASS") return false;
       if (stage === "interview" && d.interview !== "SELECTED") return false;
@@ -66,6 +67,7 @@ function applyKpiFilter(type) {
   highlightActiveKpi(type);
 
   filterStage.value = "";
+  if (type === "SUBMITTED") filterStage.value = "submitted";
   if (type === "APPLICATION") filterStage.value = "application";
   if (type === "ENTRANCE") filterStage.value = "entrance";
   if (type === "INTERVIEW") filterStage.value = "interview";
@@ -123,7 +125,7 @@ searchInput.addEventListener("input", () => {
 });
 
 [filterClass, filterEligibility].forEach((el) =>
-  el.addEventListener("change", applyFilters)
+  el.addEventListener("change", applyFilters),
 );
 
 // resetFilters.addEventListener("click", () => {

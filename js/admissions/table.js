@@ -10,17 +10,40 @@
 ================================================== */
 function adminControlsHTML(r) {
   const noEntrance = ["PRE KG", "LKG"].includes(
-    (r.admClass || "").toUpperCase()
+    (r.admClass || "").toUpperCase(),
   );
 
-  const canEntrance = r.application === "YES" && !noEntrance;
+  const canEntrance =
+    r.applicationSubmitted === "YES" && r.application === "YES" && !noEntrance;
   const canInterview =
-    r.application === "YES" && (noEntrance || r.entrance === "PASS");
+    r.applicationSubmitted === "YES" &&
+    r.application === "YES" &&
+    (noEntrance || r.entrance === "PASS");
   const canFinal = r.interview === "SELECTED" || r.entrance === "FAIL";
 
   return `
+
+
+
+    <!-- APPLICATION -->
     <td class="p-3">
       ${statusPill(r.application, "application", r.enquiryNo, true)}
+    </td>
+
+     <!-- APPLICATION SUBMITTED -->
+
+    <td class="p-3">
+
+      ${statusPill(
+        r.applicationSubmitted || "NO",
+
+        "applicationSubmitted",
+
+        r.enquiryNo,
+
+        true,
+      )}
+
     </td>
 
     <td class="p-3">
@@ -31,17 +54,19 @@ function adminControlsHTML(r) {
               r.entrance || "NOT STARTED",
               "entrance",
               r.enquiryNo,
-              canEntrance
+              canEntrance,
             )
       }
     </td>
+
+       
 
     <td class="p-3">
       ${statusPill(
         r.interview || "NOT STARTED",
         "interview",
         r.enquiryNo,
-        canInterview
+        canInterview,
       )}
     </td>
 
@@ -50,7 +75,7 @@ function adminControlsHTML(r) {
         r.finalAdmission || "—",
         "finalAdmission",
         r.enquiryNo,
-        canFinal
+        canFinal,
       )}
     </td>
   `;
@@ -113,7 +138,7 @@ function renderTable(page = currentPage) {
           class="text-sky-600 hover:underline font-medium"
           onclick="openDetailModalFromClick(event, ${JSON.stringify(r).replace(
             /"/g,
-            "&quot;"
+            "&quot;",
           )})"
         >
           ${r.enquiryNo?.split("-").pop() || ""}
@@ -184,7 +209,8 @@ function openDetailModal(row) {
     <p><strong>DOB:</strong> ${row.dob}</p>
     <p><strong>Age:</strong> ${ageVal}</p>
     <p><strong>Eligible Class:</strong> ${row.eligible}</p>
-     <p><strong>Application:</strong> ${row.application}</p>
+    <p><strong>Application:</strong> ${row.application}</p>
+    <p><strong>Application Submitted:</strong> ${row.applicationSubmitted || "NO"}</p>
     <p><strong>Entrance:</strong> ${row.entrance}</p>
     <p><strong>Interview:</strong> ${row.interview}</p>
     <p><strong>Final Admission:</strong> ${row.finalAdmission}</p>

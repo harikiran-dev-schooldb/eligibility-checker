@@ -15,11 +15,24 @@ function handleStageClick(field, enquiryNo, currentValue) {
   if (!row) return;
 
   const noEntrance = ["PRE KG", "LKG"].includes(
-    (row.admClass || "").toUpperCase()
+    (row.admClass || "").toUpperCase(),
   );
 
+  /* ---------------- APPLICATION SUBMITTED ---------------- */
+  if (field === "applicationSubmitted") {
+    const next = currentValue === "YES" ? "NO" : "YES";
+    updateStage(enquiryNo, field, next);
+    return;
+  }
+
+  /* ---------------- APPLICATION ---------------- */
   /* ---------------- APPLICATION ---------------- */
   if (field === "application") {
+    if (row.applicationSubmitted !== "YES") {
+      alert("⚠️ Application form must be submitted first.");
+      return;
+    }
+
     const next = currentValue === "YES" ? "NO" : "YES";
     updateStage(enquiryNo, field, next);
     return;
@@ -40,7 +53,7 @@ function handleStageClick(field, enquiryNo, currentValue) {
       [
         { label: "PASS", value: "PASS", cls: "bg-green-600" },
         { label: "FAIL", value: "FAIL", cls: "bg-red-600" },
-      ]
+      ],
     );
     return;
   }
@@ -66,7 +79,7 @@ function handleStageClick(field, enquiryNo, currentValue) {
       [
         { label: "SELECTED", value: "SELECTED", cls: "bg-green-600" },
         { label: "REJECTED", value: "REJECTED", cls: "bg-red-600" },
-      ]
+      ],
     );
     return;
   }
@@ -92,7 +105,7 @@ function handleStageClick(field, enquiryNo, currentValue) {
       [
         { label: "YES", value: "YES", cls: "bg-green-600" },
         { label: "NO", value: "NO", cls: "bg-red-600" },
-      ]
+      ],
     );
   }
 }
@@ -117,6 +130,13 @@ async function updateStage(enquiryNo, field, value) {
     r.timestamp = new Date().toISOString();
 
     let msg = "";
+
+    if (field === "applicationSubmitted") {
+      msg =
+        value === "YES"
+          ? `Dear ${r.parent}, application form received for ${r.student}.`
+          : `Dear ${r.parent}, application form submission marked pending for ${r.student}.`;
+    }
 
     if (field === "application") {
       msg =
@@ -236,7 +256,7 @@ function confirmOverride() {
       [
         { label: "SELECTED", value: "SELECTED", cls: "bg-green-600" },
         { label: "REJECTED", value: "REJECTED", cls: "bg-red-600" },
-      ]
+      ],
     );
   }
 
@@ -249,7 +269,7 @@ function confirmOverride() {
       [
         { label: "YES", value: "YES", cls: "bg-green-600" },
         { label: "NO", value: "NO", cls: "bg-red-600" },
-      ]
+      ],
     );
   }
 
