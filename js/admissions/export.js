@@ -12,6 +12,7 @@ exportBtn.addEventListener("click", () => {
     Age: r.age || getAgeString(r.dob),
     Eligible: r.eligible,
     Application: r.application,
+    Submission: r.applicationSubmitted,
     Entrance: r.entrance,
     Interview: r.interview,
     FinalAdmission: r.finalAdmission,

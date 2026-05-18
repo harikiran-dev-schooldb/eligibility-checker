@@ -20,23 +20,22 @@ function handleStageClick(field, enquiryNo, currentValue) {
 
   /* ---------------- APPLICATION SUBMITTED ---------------- */
   if (field === "applicationSubmitted") {
-    const next = currentValue === "YES" ? "NO" : "YES";
-    updateStage(enquiryNo, field, next);
+  if (row.application !== "YES") {
+    alert("⚠️ Application must be issued first.");
     return;
   }
 
-  /* ---------------- APPLICATION ---------------- */
+  const next = currentValue === "YES" ? "NO" : "YES";
+  updateStage(enquiryNo, field, next);
+  return;
+}
+
   /* ---------------- APPLICATION ---------------- */
   if (field === "application") {
-    if (row.applicationSubmitted !== "YES") {
-      alert("⚠️ Application form must be submitted first.");
-      return;
-    }
-
-    const next = currentValue === "YES" ? "NO" : "YES";
-    updateStage(enquiryNo, field, next);
-    return;
-  }
+  const next = currentValue === "YES" ? "NO" : "YES";
+  updateStage(enquiryNo, field, next);
+  return;
+}
 
   /* ---------------- ENTRANCE ---------------- */
   if (field === "entrance") {
